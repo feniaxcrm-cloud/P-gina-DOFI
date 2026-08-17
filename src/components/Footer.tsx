@@ -13,13 +13,9 @@ import { Wordmark } from "./Wordmark";
  * Pie de pagina en cuatro columnas: marca, navegacion, contacto y horario.
  * Debajo, un divisor, el copyright centrado y las redes.
  *
- * DATOS A REEMPLAZAR POR LOS REALES (hoy son provisionales):
- *   - Telefono / WhatsApp: el numero de abajo es el mismo placeholder que usa
- *     la seccion de contacto (593 99 999 9999).
- *   - Correo: hola@dofi.ec es de ejemplo.
- *   - Horario de atencion: los horarios son de ejemplo.
- *   - Enlaces de redes: apuntan al inicio de cada plataforma.
- * Cambia estos valores en los arreglos de este archivo.
+ * Telefono, correo y horario son los datos reales de la agencia.
+ * PENDIENTE por reemplazar: los enlaces de redes (social) apuntan al inicio
+ * de cada plataforma, faltan las URLs de los perfiles reales.
  */
 
 const navegacion = [
@@ -33,21 +29,20 @@ const navegacion = [
 const contacto = [
   {
     Icon: WhatsappLogo,
-    label: "+593 99 999 9999",
-    href: "https://wa.me/593999999999",
+    label: "+593 98 447 2869",
+    href: "https://wa.me/593984472869",
   },
   {
     Icon: EnvelopeSimple,
-    label: "hola@dofi.ec",
-    href: "mailto:hola@dofi.ec",
+    label: "dofiagenciacreativa@gmail.com",
+    href: "mailto:dofiagenciacreativa@gmail.com",
   },
   { Icon: MapPin, label: "Cuenca, Ecuador", href: null },
 ];
 
 const horario = [
-  "Lunes a viernes: 9:00 - 18:00",
-  "Sábado: 9:00 - 13:00",
-  "Domingo: cerrado",
+  "Lunes a viernes: 08:30 - 17:30",
+  "Sábado y domingo: cerrado",
 ];
 
 const social = [
