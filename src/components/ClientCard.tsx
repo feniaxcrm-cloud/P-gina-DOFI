@@ -23,7 +23,7 @@ export function ClientCard({
       tabIndex={clone ? -1 : undefined}
       className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-brand-lift/25 bg-deep/40 transition-colors duration-500 hover:border-accent/50"
     >
-      <div className="relative aspect-[16/11] overflow-hidden">
+      <div className="relative aspect-[9/16] overflow-hidden">
         <Image
           src={client.cover}
           alt={clone ? "" : `Trabajo para ${client.name}`}
