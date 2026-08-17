@@ -1,0 +1,2 @@
+﻿Deja aqui los mp4 de cada cuenta.
+Los nombres esperados estan en src/data/clients.ts (campo src de cada video).

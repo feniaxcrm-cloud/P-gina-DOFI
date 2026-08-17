@@ -1,0 +1,11 @@
+﻿Logos oficiales de herramientas.
+
+Deja aqui el SVG con el nombre exacto del slug y aparece solo al reconstruir:
+  kommo.svg
+  capcut.svg
+  meta.svg
+  tiktok.svg
+  instagram.svg
+  facebook.svg
+
+Si el archivo no existe se usa la marca de simple-icons, o un wordmark tipografico.

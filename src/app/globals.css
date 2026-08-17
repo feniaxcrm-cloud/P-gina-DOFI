@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DOFI Agencia Creativa - Sistema de diseño
+   Tema bloqueado: DARK (una sola atmosfera para toda la pagina).
+   Acento unico: naranja DOFI. Base: purpura profundo de marca.
+   Escala de radios: pill (interactivo) / 20px (tarjetas) / 12px (inputs)
+   ============================================================ */
+
+@theme {
+  /* Base */
+  --color-abyss: #120A26;
+  --color-deep: #1A0F3D;
+  --color-surface: #241553;
+  --color-surface-2: #2E1B68;
+  --color-brand: #4B2A93;
+  --color-brand-lift: #6D4BC9;
+
+  /* Acento unico */
+  --color-accent: #F47B20;
+  --color-accent-lift: #FF9440;
+  /* Coral: solo aparece dentro de degradados de marca, nunca como acento suelto */
+  --color-coral: #EE9070;
+
+  /* Texto */
+  --color-foam: #F4F0FE;
+  --color-mist: #B3A5D4;
+  /* Calibrado para pasar WCAG AA (>=4.5:1) sobre abyss, deep y surface */
+  --color-mist-dim: #948AB8;
+
+  /* Tipografia */
+  --font-display: var(--font-sora), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+
+  /* Radios */
+  --radius-card: 20px;
+  --radius-field: 12px;
+
+  /* Capas */
+  --z-grain: 60;
+  --z-nav: 50;
+  --z-overlay: 40;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-abyss);
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+body {
+  background-color: var(--color-abyss);
+  color: var(--color-foam);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  /* clip y no hidden: hidden convierte al body en contenedor de scroll y esa
+     es una causa habitual de que position:sticky deje de funcionar. */
+  overflow-x: clip;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: #1A0F3D;
+}
+
+/* Foco visible y consistente en toda la pagina */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Grano: capa fija, sin repintados durante el scroll */
+.grain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+/* Onda continua de las letras del hero.
+   El desfase negativo por letra (animation-delay) hace que la onda viaje a
+   traves de la palabra en vez de que todas suban a la vez. */
+@keyframes letter-wave {
+  0%,
+  100% {
+    transform: translate3d(0, 0.055em, 0);
+  }
+  50% {
+    transform: translate3d(0, -0.055em, 0);
+  }
+}
+
+/* Sin will-change a proposito: son ~13 letras y fijar la promocion a capa
+   deja 13 capas de composicion vivas todo el tiempo. El navegador ya acelera
+   una animacion de transform mientras se ejecuta. */
+.wave-letter {
+  animation: letter-wave 3.8s ease-in-out infinite;
+}
+
+/* Flotacion del logo del hero.
+   Comparte duracion y curva con letter-wave para que lea como el mismo
+   oleaje, pero con recorrido mayor y una inclinacion minima: es una pieza
+   sola, no una fila de letras, y necesita mas amplitud para percibirse. */
+@keyframes logo-float {
+  0%,
+  100% {
+    transform: translate3d(0, 1.4%, 0) rotate(-0.6deg);
+  }
+  50% {
+    transform: translate3d(0, -1.4%, 0) rotate(0.6deg);
+  }
+}
+
+.logo-float {
+  animation: logo-float 3.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-float {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-letter {
+    animation: none;
+  }
+}
+
+/* Marquesina de una sola aparicion en la pagina (seccion manifiesto) */
+@keyframes tide-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.tide-track {
+  animation: tide-slide 38s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tide-track {
+    animation: none;
+  }
+}
+
+/* Herramientas: la marca vive en gris hasta que el cursor la despierta.
+   El color de cada una llega por la variable --brand del propio elemento. */
+.tool-mark {
+  color: var(--color-mist);
+}
+
+.tool-cell:hover .tool-mark {
+  color: var(--brand, var(--color-accent));
+}
+
+/* Los logos que vienen como archivo propio no se pueden recolorear, asi que
+   se apagan con saturacion y recuperan su color al pasar el cursor. */
+.tool-cell img {
+  filter: grayscale(1) opacity(0.65);
+  transition: filter 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tool-cell:hover img {
+  filter: grayscale(0) opacity(1);
+}
+
+/* Barrido de fondo de las filas de servicios.
+   El origen lo fija JS segun el lado por el que entra el cursor, asi la
+   superficie se revela desde donde viene la mano. */
+.service-sweep {
+  transform: scaleX(0);
+  transform-origin: var(--origin, left);
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.group:hover .service-sweep {
+  transform: scaleX(1);
+}
