@@ -12,9 +12,20 @@ import { clients } from "@/data/clients";
  * Mientras no existan los logotipos reales se usa un monograma geometrico.
  * SUSTITUCION: deja cada logo en /public/clientes/<slug>.svg y cambia el
  * <span> del monograma por <Image src={`/clientes/${c.slug}.svg`} ... />
+ *
+ * VELOCIDAD: la animacion recorre 0% a -50% en un tiempo FIJO en segundos.
+ * Como la tira es mas ancha cuantas mas cuentas hay, ese mismo tiempo fijo
+ * hace que el recorrido se sienta mas rapido a medida que se agregan
+ * cuentas (mas distancia en el mismo tiempo). Por eso la duracion se
+ * calcula en funcion de clients.length en vez de ser un numero fijo: asi
+ * la velocidad real (px/seg) se mantiene igual sin importar cuantas cuentas
+ * haya. Calibrado en 24s para 7 cuentas (la cantidad original).
  */
+const SEGUNDOS_POR_CUENTA = 24 / 7;
+
 export function LogoWall() {
   const strip = [...clients, ...clients];
+  const duracion = `${(clients.length * SEGUNDOS_POR_CUENTA).toFixed(1)}s`;
 
   return (
     <section className="relative overflow-hidden border-y border-brand-lift/15 bg-deep/40 py-14">
@@ -22,7 +33,10 @@ export function LogoWall() {
         Cuentas que confían su marca y su CRM a este equipo
       </p>
 
-      <div className="flex w-max wall-track">
+      <div
+        className="flex w-max wall-track"
+        style={{ animationDuration: duracion }}
+      >
         {strip.map((c, i) => (
           <div
             key={`${c.slug}-${i}`}

@@ -167,9 +167,13 @@ body {
 }
 
 /* Muro de cuentas: mismo mecanismo de bucle continuo que tide-track (traslado
-   de 0 a -50% sobre una tira duplicada), con su propia duracion porque el
-   contenido es mucho mas angosto (chips, no tipografia gigante). Se pausa al
-   pasar el cursor, asi se puede leer un nombre a medio recorrido. */
+   de 0 a -50% sobre una tira duplicada). Se pausa al pasar el cursor, asi
+   se puede leer un nombre a medio recorrido.
+
+   El "24s" de aqui abajo es solo un valor de respaldo: LogoWall.tsx fija la
+   duracion real por inline style (animation-duration), calculada segun
+   cuantas cuentas hay, para que la velocidad en pixeles por segundo se
+   mantenga igual sin importar cuantas cuentas se agreguen despues. */
 .wall-track {
   animation: tide-slide 24s linear infinite;
   will-change: transform;
