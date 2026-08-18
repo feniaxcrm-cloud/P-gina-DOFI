@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // El nombre DEBE coincidir con el proyecto en Cloudflare (pagina-dofi).
+  // El desajuste con este nombre era la causa del error de despliegue:
+  // el binding WORKER_SELF_REFERENCE apuntaba a un worker inexistente.
+  "name": "pagina-dofi",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "services": [
+    {
+      // OpenNext se referencia a si mismo para su cache/revalidacion.
+      // service debe ser igual a "name" de arriba.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "pagina-dofi"
+    }
+  ]
+}

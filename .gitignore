@@ -10,5 +10,10 @@ build
 next-env.d.ts
 *.tsbuildinfo
 
+# build de Cloudflare Workers (OpenNext + wrangler)
+.open-next
+.wrangler
+cloudflare-env.d.ts
+
 # preview local del logo (scripts/preview-logo.mjs)
 logo-preview.png
