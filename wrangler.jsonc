@@ -5,16 +5,17 @@
   // el binding WORKER_SELF_REFERENCE apuntaba a un worker inexistente.
   "name": "pagina-dofi",
   "main": ".open-next/worker.js",
-  // Wrangler corre este comando el mismo, dentro de su propio proceso,
-  // justo antes de desplegar. Con esto "wrangler deploy" (el comando de
-  // deploy que Cloudflare ejecuta) es autosuficiente: genera .open-next por
-  // si mismo en vez de depender de que otra fase de build separada se lo
-  // haya dejado listo. Sin esto, el deploy fallaba con "Could not find
-  // compiled Open Next config" aunque la fase de build previa hubiera
-  // terminado bien: build y deploy no comparten el mismo .open-next.
-  "build": {
-    "command": "npm run build"
-  },
+  // NO agregar aqui un campo "build.command" pensando que resuelve el
+  // deploy: se probo y NO funciona para este proyecto. El propio codigo de
+  // wrangler (maybeDelegateToOpenNextDeployCommand, en wrangler-dist/cli.js)
+  // detecta un proyecto OpenNext por la presencia de open-next.config.ts y
+  // SE SALTA el paso de build personalizado de wrangler.jsonc antes de
+  // siquiera llegar a evaluarlo: delega directo a
+  // `npx opennextjs-cloudflare deploy` como proceso aparte, y ese comando
+  // no construye nada por su cuenta (ver deploy.js: llama
+  // retrieveCompiledConfig() de una y falla si .open-next no existe ya).
+  // El arreglo real esta en el comando de "Deploy" configurado en el
+  // dashboard de Cloudflare, no en este archivo. Ver README.
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {

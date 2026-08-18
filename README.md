@@ -15,11 +15,32 @@ npm run build      # build completo: Next.js + empaquetado para Cloudflare Worke
 npm run build:next # solo build de Next.js, sin el paso de Cloudflare (para probar rapido)
 ```
 
-El despliegue es en **Cloudflare Workers** via OpenNext. La configuracion vive en
-`wrangler.jsonc` y `open-next.config.ts`. `npm run build` es el comando que
-corre Cloudflare en su pipeline: incluye el build de Next.js y el empaquetado
-del Worker, en ese orden. Ver tambien `npm run cf:preview` para probar el
-Worker localmente antes de subir.
+## Despliegue en Cloudflare Workers
+
+El despliegue es via OpenNext. La configuracion vive en `wrangler.jsonc` y
+`open-next.config.ts`.
+
+**Importante, configuracion requerida en el dashboard de Cloudflare**
+(pagina-dofi → Settings → Build):
+
+- **Deploy command:** `npm run cf:deploy`
+
+Cloudflare corre el "Build command" y el "Deploy command" como dos fases que
+NO comparten el `.open-next` que genera el build (se probo: build termina
+bien, pero el deploy no encuentra lo que genero). Ademas, wrangler tiene su
+propia logica que detecta un proyecto OpenNext y se salta cualquier paso de
+build personalizado en `wrangler.jsonc`, delegando directo a
+`opennextjs-cloudflare deploy` — un comando que NO construye nada, solo
+despliega lo que ya existe.
+
+La unica combinacion que funciona es que el **Deploy command mismo** incluya
+el build: `npm run cf:deploy` corre `opennextjs-cloudflare build` seguido de
+`opennextjs-cloudflare deploy` en un solo proceso, asi que siempre tiene el
+`.open-next` fresco disponible. El "Build command" del dashboard puede
+quedar en blanco o en `npm run build`; no es lo que soluciona el error.
+
+Ver tambien `npm run cf:preview` para probar el Worker localmente antes de
+subir.
 
 ## Que vas a querer cambiar primero
 
