@@ -5,6 +5,16 @@
   // el binding WORKER_SELF_REFERENCE apuntaba a un worker inexistente.
   "name": "pagina-dofi",
   "main": ".open-next/worker.js",
+  // Wrangler corre este comando el mismo, dentro de su propio proceso,
+  // justo antes de desplegar. Con esto "wrangler deploy" (el comando de
+  // deploy que Cloudflare ejecuta) es autosuficiente: genera .open-next por
+  // si mismo en vez de depender de que otra fase de build separada se lo
+  // haya dejado listo. Sin esto, el deploy fallaba con "Could not find
+  // compiled Open Next config" aunque la fase de build previa hubiera
+  // terminado bien: build y deploy no comparten el mismo .open-next.
+  "build": {
+    "command": "npm run build"
+  },
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
