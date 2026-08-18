@@ -11,8 +11,15 @@ naranja unico, sin dependencias de imagen externas.
 ```bash
 npm install
 npm run dev        # http://localhost:3000
-npm run build      # verificacion de tipos + build de produccion
+npm run build      # build completo: Next.js + empaquetado para Cloudflare Workers
+npm run build:next # solo build de Next.js, sin el paso de Cloudflare (para probar rapido)
 ```
+
+El despliegue es en **Cloudflare Workers** via OpenNext. La configuracion vive en
+`wrangler.jsonc` y `open-next.config.ts`. `npm run build` es el comando que
+corre Cloudflare en su pipeline: incluye el build de Next.js y el empaquetado
+del Worker, en ese orden. Ver tambien `npm run cf:preview` para probar el
+Worker localmente antes de subir.
 
 ## Que vas a querer cambiar primero
 
