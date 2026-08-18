@@ -10,18 +10,26 @@ import { defineCloudflareConfig } from "@opennextjs/cloudflare";
 const config = defineCloudflareConfig();
 
 /**
- * IMPORTANTE: no borrar ni cambiar esta linea.
+ * IMPORTANTE: no borrar esta linea.
  *
- * Por dentro, "opennextjs-cloudflare build" compila el sitio Next.js
+ * El script "build" de package.json es "opennextjs-cloudflare build" a
+ * proposito: Cloudflare corre ese comando (o "npm run build", que apunta a
+ * lo mismo) para producir la carpeta .open-next completa. Sin eso, el paso
+ * de deploy falla con "Could not find compiled Open Next config" porque
+ * nunca se genero .open-next (esto paso: era el error original).
+ *
+ * Pero por dentro, "opennextjs-cloudflare build" compila el Next.js
  * ejecutando `npm run build` como sub-paso (ver @opennextjs/aws
- * buildNextApp.js). Si el script "build" de package.json alguna vez vuelve
- * a apuntar a "opennextjs-cloudflare build" (en vez de "next build"), ese
- * sub-paso se llama a si mismo sin parar hasta que Cloudflare mata el build
- * por timeout (~29 min) sin haber compilado nada. Ya paso una vez.
+ * buildNextApp.js). Si esa linea de abajo no estuviera, ese sub-paso
+ * volveria a resolver a "opennextjs-cloudflare build" (porque es lo que dice
+ * el script "build"), y el proceso se llamaria a si mismo sin parar hasta
+ * que Cloudflare mata el build por timeout (~29 min) sin compilar nada.
+ * Tambien paso, una vez.
  *
- * Esta linea fija el comando de compilacion directo a "next build",
- * saltandose el script "build" de package.json por completo. Con esto el
- * ciclo no puede repetirse aunque alguien cambie ese script en el futuro.
+ * Esta linea rompe ese ciclo: fija el comando de compilacion interno
+ * directo a "next build", saltandose el script "build" de package.json.
+ * Los dos problemas solo se evitan a la vez con AMBAS piezas en su lugar:
+ * el script "build" apuntando a opennextjs-cloudflare build, Y esta linea.
  */
 config.buildCommand = "npx next build";
 
