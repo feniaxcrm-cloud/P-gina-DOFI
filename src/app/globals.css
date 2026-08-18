@@ -166,6 +166,25 @@ body {
   }
 }
 
+/* Muro de cuentas: mismo mecanismo de bucle continuo que tide-track (traslado
+   de 0 a -50% sobre una tira duplicada), con su propia duracion porque el
+   contenido es mucho mas angosto (chips, no tipografia gigante). Se pausa al
+   pasar el cursor, asi se puede leer un nombre a medio recorrido. */
+.wall-track {
+  animation: tide-slide 24s linear infinite;
+  will-change: transform;
+}
+
+.wall-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wall-track {
+    animation: none;
+  }
+}
+
 /* Herramientas: la marca vive en gris hasta que el cursor la despierta.
    El color de cada una llega por la variable --brand del propio elemento. */
 .tool-mark {
