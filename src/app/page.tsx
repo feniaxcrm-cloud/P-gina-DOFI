@@ -12,13 +12,10 @@ import { Footer } from "@/components/Footer";
 import { getSeccionesPaginaInicio, type SeccionData } from "@/lib/sanity";
 
 /**
- * Diccionario _type -> componente para el bloque dinamico de la home.
- *
- * getSeccionesPaginaInicio() (ver src/lib/sanity.ts) trae, en UNA sola
- * consulta a Sanity, el arreglo "secciones[]" de paginaInicio ya validado
- * y con respaldo aplicado. Este objeto es la unica pieza que sabe traducir
- * cada _type a su componente visual: agregar una seccion nueva es agregar
- * una entrada aca, no reordenar JSX a mano.
+ * Diccionario _type -> componente para las 3 secciones que traen su texto
+ * de Sanity (paginaInicio.secciones[], ver src/lib/sanity.ts). Cada una se
+ * busca por tipo y se pinta en un lugar FIJO del orden de la home (ver nota
+ * en Home mas abajo) — ya no se recorren en el orden del arreglo.
  *
  * `Record<SeccionData["_type"], ...>` obliga a TypeScript a exigir que
  * TODOS los _types de la union tengan renderer: si se agrega un tipo a
@@ -53,41 +50,62 @@ const RENDERERS: Record<
 /**
  * Home.
  *
- * "secciones[]" de Sanity (paginaInicio) hoy solo cubre Hacemos / Socio /
- * Cierre: son las que ya tienen forma y datos reales en el Studio (ver el
- * comentario grande en src/lib/sanity.ts para el detalle completo,
- * incluyendo por que seccionPilares todavia no esta aca). Ese bloque se
- * pinta con un .map() sobre RENDERERS, en el mismo orden en que Sanity
- * devuelve el arreglo: si lo reordenas en el Studio, la pagina cambia de
- * orden sola, sin tocar codigo.
+ * ORDEN FIJO pedido explicitamente (ya no es "el orden que traiga
+ * secciones[] de Sanity", como era antes de este cambio):
  *
- * Hero, LogoWall, Tools, Clients, Manifesto y Process no tienen todavia un
- * tipo de documento en Sanity, asi que se quedan fijos en su lugar de
- * siempre, alrededor del bloque dinamico.
+ *   1. Hero              - introduccion
+ *   2. LogoWall + Clients - clientes con los que ya trabajamos
+ *   3. Services (seccionHacemos) - servicios
+ *   4. Process           - procesos
+ *   5. Manifesto         - no pedido explicitamente; se deja como transicion
+ *                          justo despues de Procesos (antes vivia entre
+ *                          Clientes y Procesos). Mover o quitar si no
+ *                          corresponde.
+ *   6. Tools             - herramientas
+ *   7. Socio (seccionSocio) - socio
+ *   8. Contact (seccionCierre) - formulario, ahora si fijo al final
  *
- * OJO: como seccionCierre (el formulario de contacto) ahora es parte del
- * bloque dinamico, su posicion en la pagina depende del orden real que
- * tenga en Sanity. Hoy cae junto a Hacemos/Socio, ANTES de
- * Tools/Clients/Manifesto/Proceso, no al final como antes. Si prefieres
- * que el formulario siga siendo lo ultimo antes del pie de pagina,
- * ordenalo asi en el arreglo "secciones" del Studio.
+ * "Resultados" (item de la lista original) se salteo a proposito: no
+ * existe todavia como seccion ni hay datos reales que mostrar.
+ *
+ * Hacemos/Socio/Cierre siguen trayendo su TEXTO de Sanity
+ * (getSeccionesPaginaInicio(), con respaldo si falta algo), pero su
+ * POSICION en la pagina ya no depende del orden del arreglo "secciones"
+ * en el Studio: se buscan por _type y se pintan cada una en su lugar fijo
+ * de la lista de arriba. Si mas adelante se vuelve a querer reordenarlas
+ * desde Sanity, hay que volver al patron anterior (secciones.map(...)).
+ *
+ * Hero, LogoWall, Tools, Clients, Manifesto y Process no tienen tipo de
+ * documento en Sanity: su contenido sigue fijo en cada componente.
  */
 export default async function Home() {
   const secciones = await getSeccionesPaginaInicio();
+  const porTipo = (tipo: SeccionData["_type"]) =>
+    secciones.find((s) => s._type === tipo);
+
+  const hacemos = porTipo("seccionHacemos");
+  const socio = porTipo("seccionSocio");
+  const cierre = porTipo("seccionCierre");
 
   return (
     <>
       <Nav />
       <main>
         <Hero />
+
         <LogoWall />
-        {secciones.map((seccion, i) =>
-          RENDERERS[seccion._type](seccion, `${seccion._type}-${i}`)
-        )}
-        <Tools />
         <Clients />
-        <Manifesto />
+
+        {hacemos && RENDERERS.seccionHacemos(hacemos, "hacemos")}
+
         <Process />
+        <Manifesto />
+
+        <Tools />
+
+        {socio && RENDERERS.seccionSocio(socio, "socio")}
+
+        {cierre && RENDERERS.seccionCierre(cierre, "cierre")}
       </main>
       <Footer />
     </>

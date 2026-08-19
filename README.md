@@ -114,14 +114,26 @@ SANITY_DATASET=
 El `_type` que se consulta es `"cliente"` — si tu Sanity Studio usa otro
 nombre de documento, ajústalo en `SANITY_TYPE` al inicio de `src/lib/sanity.ts`.
 
-**El resto de la home (menos Hero, muro de logos, Herramientas, el
-carrusel de Clientes, el eslogan animado y "Cómo entra una marca") se arma
-con una sola consulta a un documento `paginaInicio`**, que trae un arreglo
-ordenable `secciones[]`. `page.tsx` la pinta con un `.map()` sobre un
-diccionario `_type → componente` (`RENDERERS`, definido ahí mismo): **el
-orden visual de esas secciones en la página es el mismo orden que tengan
-en el arreglo `secciones` del Studio** — reordenarlas en Sanity reordena la
-página sola, sin tocar código.
+**El texto de "Lo que hacemos", "El Socio" y el cierre/formulario sale de
+una sola consulta a un documento `paginaInicio`**, que trae un arreglo
+`secciones[]`. `page.tsx` busca cada una por `_type` con el diccionario
+`RENDERERS` (definido ahí mismo) y la pinta en un **lugar fijo del orden
+de la home**:
+
+```
+Hero -> LogoWall + Clientes -> Services (seccionHacemos) -> Process
+     -> Manifesto -> Tools -> Socio (seccionSocio) -> Contact (seccionCierre)
+```
+
+⚠️ **Esto cambió**: antes, el orden entre Hacemos/Socio/Cierre lo decidía
+el orden real del arreglo `secciones` en el Studio (reordenar ahí
+reordenaba la página sola). Por un pedido explícito de orden fijo para
+toda la home, esas tres secciones ahora tienen una posición fija en
+`page.tsx` — el **texto** de cada una sigue viniendo de Sanity, pero ya no
+se pueden reordenar *entre sí* sin volver a tocar código. Si en algún
+momento se quiere recuperar el reordenamiento dinámico, hay que volver al
+patrón anterior (`secciones.map(...)` en vez de buscar cada una por
+`_type` en un lugar fijo — queda documentado en el propio `page.tsx`).
 
 ```groq
 *[_type == "paginaInicio"][0]{
@@ -151,11 +163,8 @@ Notas importantes:
   arriba del formulario y el botón de WhatsApp — son, literalmente, un
   título y un botón con enlace. El título y subtítulo grandes del
   formulario siguen fijos en `Contact.tsx`.
-- **`seccionCierre` ahora es parte del bloque dinámico**, igual que
-  Hacemos y Socio. Antes el formulario de contacto era siempre la última
-  sección antes del pie de página; ahora su posición depende del orden real
-  en `secciones[]`. Si quieres que el formulario se quede al final,
-  ordénalo así en el Studio.
+- **`seccionCierre` (el formulario) vuelve a ser fijo como última sección**
+  antes del pie de página, igual que siempre.
 - **`seccionPilares` todavía no tiene componente.** Se decidió no adivinar:
   el esquema (`listaHerramientas[]{nombre, icono}`) no trae el texto de
   rol/descripción que cada herramienta necesita en `Tools.tsx` ("Con qué
