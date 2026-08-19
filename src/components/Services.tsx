@@ -1,26 +1,11 @@
-import { ServiceRow, type Service } from "./ServiceRow";
-import { getSeccionHacemos } from "@/lib/sanity";
+import { ServiceRow, type Service, type ServiceIcon } from "./ServiceRow";
+import { getSeccionHacemos, getSeccionPilares } from "@/lib/sanity";
 
-const services: Service[] = [
-  {
-    name: "Marketing Digital 360",
-    body: "Una sola idea sostenida en todos los formatos, del concepto a la pauta.",
-    includes: "Dirección creativa, producción audiovisual, contenidos, pauta",
-    icon: "megaphone",
-  },
-  {
-    name: "CRM",
-    body: "Cada conversación queda registrada, asignada y medida. Nada se enfría en una bandeja.",
-    includes: "Kommo, embudos, campos, automatizaciones, reportes",
-    icon: "funnel",
-  },
-  {
-    name: "Inteligencia Artificial",
-    body: "Atención que no duerme: responde, califica y entrega el lead listo al vendedor.",
-    includes: "Bots de WhatsApp, calificación automática, respuestas con contexto",
-    icon: "sparkle",
-  },
-];
+// Sanity no maneja el icono de cada fila (megaphone/funnel/sparkle): se
+// asigna por posicion, en el mismo orden en que ya estaban las 3 filas
+// (Marketing, CRM, IA). Si algun dia hay mas de 3 pilares, los que se pasen
+// de este arreglo caen en "sparkle" en vez de romper.
+const ICONOS_POR_ORDEN: ServiceIcon[] = ["megaphone", "funnel", "sparkle"];
 
 /**
  * Servicios como lista editorial.
@@ -31,12 +16,23 @@ const services: Service[] = [
  *
  * La seccion se renderiza en el servidor; solo cada fila es isla de cliente.
  *
- * El titulo y la bajada vienen de Sanity (seccionHacemos, ver
- * src/lib/sanity.ts). Las tres filas de servicio siguen siendo estaticas:
- * ese contenido no estaba en el alcance de esta migracion.
+ * Titulo, bajada y las 3 filas (titulo/descripcion/etiquetas de cada una)
+ * vienen de Sanity: seccionHacemos y seccionPilares, ver src/lib/sanity.ts.
+ * ServiceRow no cambio nada: "etiquetas" llega como texto unido con ", "
+ * para reproducir exactamente el mismo renglon de metadato que ya existia.
  */
 export async function Services() {
-  const { titulo, descripcion } = await getSeccionHacemos();
+  const [{ titulo, descripcion }, pilares] = await Promise.all([
+    getSeccionHacemos(),
+    getSeccionPilares(),
+  ]);
+
+  const services: Service[] = pilares.map((p, i) => ({
+    name: p.titulo,
+    body: p.descripcion,
+    includes: p.etiquetas.join(", "),
+    icon: ICONOS_POR_ORDEN[i] ?? "sparkle",
+  }));
 
   return (
     <section id="servicios" className="relative bg-abyss py-32 md:py-48">

@@ -186,6 +186,76 @@ export async function getSeccionHacemos(): Promise<SeccionHacemos> {
   };
 }
 
+// --- Filas de "Lo que hacemos": Marketing / CRM / IA (ServiceRow.tsx) ----
+
+export type Pilar = {
+  titulo: string;
+  descripcion: string;
+  etiquetas: string[];
+};
+
+// Mismo texto que tenia Services.tsx antes de esta migracion. El orden
+// importa: Services.tsx le asigna el icono (megaphone/funnel/sparkle) por
+// posicion, no hay campo de icono en Sanity.
+const FALLBACK_PILARES: Pilar[] = [
+  {
+    titulo: "Marketing Digital 360",
+    descripcion:
+      "Una sola idea sostenida en todos los formatos, del concepto a la pauta.",
+    etiquetas: [
+      "Dirección creativa",
+      "producción audiovisual",
+      "contenidos",
+      "pauta",
+    ],
+  },
+  {
+    titulo: "CRM",
+    descripcion:
+      "Cada conversación queda registrada, asignada y medida. Nada se enfría en una bandeja.",
+    etiquetas: ["Kommo", "embudos", "campos", "automatizaciones", "reportes"],
+  },
+  {
+    titulo: "Inteligencia Artificial",
+    descripcion:
+      "Atención que no duerme: responde, califica y entrega el lead listo al vendedor.",
+    etiquetas: [
+      "Bots de WhatsApp",
+      "calificación automática",
+      "respuestas con contexto",
+    ],
+  },
+];
+
+type SanityPilar = {
+  titulo: string | null;
+  descripcion: string | null;
+  etiquetas: string[] | null;
+};
+
+function toPilar(doc: SanityPilar): Pilar | null {
+  // etiquetas puede venir vacio (se renderiza sin metadato bajo la
+  // descripcion), pero titulo y descripcion son la fila en si: sin ellos
+  // se descarta el item en vez de mostrar una fila en blanco.
+  if (!doc.titulo || !doc.descripcion) return null;
+  return {
+    titulo: doc.titulo,
+    descripcion: doc.descripcion,
+    etiquetas: doc.etiquetas ?? [],
+  };
+}
+
+export async function getSeccionPilares(): Promise<Pilar[]> {
+  const doc = await sanityQuery<{ pilares: SanityPilar[] | null }>(
+    `*[_type == "seccionPilares"][0]{pilares[]{titulo, descripcion, etiquetas}}`
+  );
+  const pilares = (doc?.pilares ?? [])
+    .map(toPilar)
+    .filter((p): p is Pilar => p !== null);
+
+  return pilares.length > 0 ? pilares : FALLBACK_PILARES;
+}
+
 // --- "El Socio" (Socio.tsx + SocioPortrait.tsx) --------------------------
 
 export type SeccionSocio = {

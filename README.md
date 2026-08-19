@@ -119,9 +119,17 @@ documento singleton (`[0]`, siempre el primero/único):
 
 | Sección | `_type` en Sanity | Campos | Se usa en |
 | --- | --- | --- | --- |
-| "Lo que hacemos" | `seccionHacemos` | `titulo`, `descripcion` | `Services.tsx` |
+| "Lo que hacemos" (cabecera) | `seccionHacemos` | `titulo`, `descripcion` | `Services.tsx` |
+| "Lo que hacemos" (las 3 filas) | `seccionPilares` | `pilares[]{titulo, descripcion, etiquetas}` | `Services.tsx` → `ServiceRow.tsx` |
 | "El Socio" | `seccionSocio` | `nombre`, `parrafo1`, `parrafo2`, `imagen` | `Socio.tsx` + `SocioPortrait.tsx` |
 | Cierre y formulario | `seccionCierre` | `slogan`, `formularioTitulo`, `formularioSubtitulo` | `Contact.tsx` (via `page.tsx`, que es quien hace el fetch) |
+
+`seccionPilares` es un documento con un solo campo `pilares`, un arreglo de
+objetos (uno por fila: Marketing, CRM, IA — en ese orden). El icono de cada
+fila (megaphone/funnel/sparkle) no vive en Sanity, se asigna por posición en
+`Services.tsx`. `etiquetas` es un arreglo de strings; se unen con `", "` al
+pintarlos, para reproducir el mismo renglón de metadato que ya existía bajo
+cada descripción.
 
 Mismo patrón de respaldo que Clientes: si Sanity no responde o el documento
 todavía no existe en el Studio, cada campo cae de vuelta al texto que ya
