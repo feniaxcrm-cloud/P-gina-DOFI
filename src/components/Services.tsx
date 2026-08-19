@@ -1,11 +1,16 @@
 import { ServiceRow, type Service, type ServiceIcon } from "./ServiceRow";
-import { getSeccionHacemos, getSeccionPilares } from "@/lib/sanity";
 
 // Sanity no maneja el icono de cada fila (megaphone/funnel/sparkle): se
 // asigna por posicion, en el mismo orden en que ya estaban las 3 filas
-// (Marketing, CRM, IA). Si algun dia hay mas de 3 pilares, los que se pasen
-// de este arreglo caen en "sparkle" en vez de romper.
+// (Marketing, CRM, IA). Si algun dia hay mas de 3 tarjetas, las que se
+// pasen de este arreglo caen en "sparkle" en vez de romper.
 const ICONOS_POR_ORDEN: ServiceIcon[] = ["megaphone", "funnel", "sparkle"];
+
+export type ServicesProps = {
+  titulo: string;
+  subtitulo: string;
+  tarjetas: { titulo: string; descripcion: string }[];
+};
 
 /**
  * Servicios como lista editorial.
@@ -16,21 +21,17 @@ const ICONOS_POR_ORDEN: ServiceIcon[] = ["megaphone", "funnel", "sparkle"];
  *
  * La seccion se renderiza en el servidor; solo cada fila es isla de cliente.
  *
- * Titulo, bajada y las 3 filas (titulo/descripcion/etiquetas de cada una)
- * vienen de Sanity: seccionHacemos y seccionPilares, ver src/lib/sanity.ts.
- * ServiceRow no cambio nada: "etiquetas" llega como texto unido con ", "
- * para reproducir exactamente el mismo renglon de metadato que ya existia.
+ * Presentacional: ya no hace su propio fetch. page.tsx trae
+ * paginaInicio.secciones (ver src/lib/sanity.ts) de una sola vez y le pasa
+ * a esta seccion la parte que le toca (_type "seccionHacemos") por props.
+ * El esquema nuevo no trae "etiquetas" por tarjeta (el metadato fino que
+ * ServiceRow mostraba bajo cada descripcion): ver ServiceRow.tsx, ese
+ * renglon ahora es opcional y se omite si no hay dato.
  */
-export async function Services() {
-  const [{ titulo, descripcion }, pilares] = await Promise.all([
-    getSeccionHacemos(),
-    getSeccionPilares(),
-  ]);
-
-  const services: Service[] = pilares.map((p, i) => ({
-    name: p.titulo,
-    body: p.descripcion,
-    includes: p.etiquetas.join(", "),
+export function Services({ titulo, subtitulo, tarjetas }: ServicesProps) {
+  const services: Service[] = tarjetas.map((t, i) => ({
+    name: t.titulo,
+    body: t.descripcion,
     icon: ICONOS_POR_ORDEN[i] ?? "sparkle",
   }));
 
@@ -42,7 +43,7 @@ export async function Services() {
             {titulo}
           </h2>
           <p className="mt-6 font-sans text-lg leading-relaxed text-mist">
-            {descripcion}
+            {subtitulo}
           </p>
         </div>
 

@@ -1,7 +1,12 @@
 import { MagneticCta } from "./MagneticCta";
 import { Reveal } from "./Reveal";
 import { SocioPortrait } from "./SocioPortrait";
-import { getSeccionSocio } from "@/lib/sanity";
+
+export type SocioProps = {
+  nombre: string;
+  descripcion: string;
+  foto: string;
+};
 
 /**
  * Daniel Vallejo, El Socio.
@@ -17,12 +22,13 @@ import { getSeccionSocio } from "@/lib/sanity";
  * el contexto del negocio. No lleva cifras ni fechas inventadas a proposito.
  * Daniel deberia revisarla y agregar los datos concretos que solo el conoce.
  *
- * Nombre, los dos primeros parrafos y el retrato vienen de Sanity
- * (seccionSocio, ver src/lib/sanity.ts). La cita en blockquote y el cierre
- * con el CTA se quedan estaticos: no estaban en los campos pedidos.
+ * Presentacional: ya no hace su propio fetch. page.tsx trae
+ * paginaInicio.secciones (ver src/lib/sanity.ts) de una sola vez y le pasa
+ * a esta seccion la parte que le toca (_type "seccionSocio") por props. La
+ * cita en blockquote y el cierre con el CTA se quedan estaticos: no estan
+ * en el esquema de Sanity.
  */
-export async function Socio() {
-  const { nombre, parrafo1, parrafo2, imagen } = await getSeccionSocio();
+export function Socio({ nombre, descripcion, foto }: SocioProps) {
   // "Daniel Vallejo" -> dos lineas, igual que el diseño original. Si el
   // nombre no trae espacio, se muestra completo en una sola linea.
   const espacio = nombre.indexOf(" ");
@@ -30,6 +36,15 @@ export async function Socio() {
     espacio === -1
       ? [nombre, null]
       : [nombre.slice(0, espacio), nombre.slice(espacio + 1)];
+
+  // El esquema nuevo trae un solo campo "descripcion" (antes eran
+  // parrafo1/parrafo2 separados). Si en Sanity se separan los parrafos con
+  // una linea en blanco, aca se respetan como parrafos distintos; si no,
+  // se pinta como uno solo.
+  const parrafos = descripcion
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 
   return (
     // Sin overflow-hidden: un ancestro con overflow recortado anula el
@@ -44,7 +59,7 @@ export async function Socio() {
       <div className="relative mx-auto grid max-w-[1400px] grid-cols-1 gap-14 px-5 md:px-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-24">
         {/* Retrato. En desktop se queda fijo mientras el relato avanza. */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <SocioPortrait src={imagen} alt={`Retrato de ${nombre}`} />
+          <SocioPortrait src={foto} alt={`Retrato de ${nombre}`} />
         </div>
 
         <div className="max-w-[42rem]">
@@ -65,8 +80,9 @@ export async function Socio() {
 
           <Reveal delay={0.1}>
             <div className="mt-12 space-y-6 font-sans text-lg leading-relaxed text-mist">
-              <p>{parrafo1}</p>
-              <p>{parrafo2}</p>
+              {parrafos.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
             </div>
           </Reveal>
 

@@ -11,8 +11,9 @@ export type ServiceIcon = keyof typeof icons;
 export type Service = {
   name: string;
   body: string;
-  /** Lo que incluye. Metadato fino bajo la descripcion. */
-  includes: string;
+  /** Lo que incluye. Metadato fino bajo la descripcion. Opcional: el
+   *  esquema de Sanity (seccionHacemos.tarjetas) no trae este campo. */
+  includes?: string;
   icon: ServiceIcon;
 };
 
@@ -83,9 +84,11 @@ export function ServiceRow({
 
         <div>
           <p className="font-sans text-base leading-relaxed text-mist">{body}</p>
-          <p className="mt-3 font-sans text-sm leading-relaxed text-mist-dim">
-            {includes}
-          </p>
+          {includes && (
+            <p className="mt-3 font-sans text-sm leading-relaxed text-mist-dim">
+              {includes}
+            </p>
+          )}
         </div>
 
         <ArrowUpRight

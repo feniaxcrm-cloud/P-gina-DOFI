@@ -127,19 +127,33 @@ export async function getClientesSanity(): Promise<Client[]> {
 
 /**
  * ============================================================
- * Secciones de texto (documentos singleton)
+ * paginaInicio: una sola consulta para todas las secciones de texto
  * ============================================================
- * "Lo que hacemos", "El Socio" y el cierre/formulario viven cada uno en un
- * unico documento de Sanity (de ahi el "[0]" en la query: siempre se toma
- * el primero/unico). Mismo patron que getClientesSanity(): si faltan
- * credenciales, la API falla o el documento no existe todavia en el
- * Studio, cada seccion cae de vuelta al texto que ya tenia la pagina, campo
- * por campo, asi que nunca queda una seccion vacia o a medias.
+ * Reemplaza las 4 consultas sueltas que existian antes (una por
+ * componente). Ahora hay un unico documento "paginaInicio" con un arreglo
+ * ordenable "secciones[]"; cada item se resuelve segun su _type via
+ * proyeccion condicional de GROQ. page.tsx pinta ese arreglo con un solo
+ * .map() sobre un diccionario _type -> componente (ver RENDERERS ahi), asi
+ * que si el orden cambia en el Studio, la pagina cambia de orden sola.
+ *
+ * Alcance actual: "secciones[]" en Sanity solo trae seccionHacemos,
+ * seccionSocio, seccionPilares y seccionCierre. Hero, LogoWall, Tools,
+ * Clients, Manifesto y Process no tienen todavia un tipo de documento en
+ * el Studio (no estan en este GROQ), asi que page.tsx los sigue pintando
+ * fijos, alrededor del bloque dinamico.
+ *
+ * seccionPilares llega en el arreglo pero con forma de lista de
+ * herramientas (listaHerramientas[]{nombre, icono}) que no trae el texto
+ * de rol/descripcion que Tools.tsx necesita por herramienta, ni el color
+ * de marca ni el ancho de celda del bento. Mientras esos campos no esten
+ * definidos, normalizarSeccion() la descarta sin romper nada (con un aviso
+ * en consola) y Tools.tsx se queda con su contenido de siempre.
  */
 
-/** Fetch generico a la query API publica. Devuelve null ante cualquier
- *  problema (sin credenciales, red, documento inexistente); cada
- *  getSeccionX() decide el respaldo especifico para sus propios campos. */
+// --- Fetch generico a la query API publica --------------------------------
+
+/** Devuelve null ante cualquier problema (sin credenciales, red, documento
+ *  inexistente); getSeccionesPaginaInicio() decide el respaldo. */
 async function sanityQuery<T>(query: string): Promise<T | null> {
   const projectId = process.env.SANITY_PROJECT_ID;
   const dataset = process.env.SANITY_DATASET;
@@ -166,149 +180,182 @@ async function sanityQuery<T>(query: string): Promise<T | null> {
   }
 }
 
-// --- "Lo que hacemos" (Services.tsx) ------------------------------------
+// --- Tipos de las secciones ya conectadas a un componente -----------------
 
-export type SeccionHacemos = { titulo: string; descripcion: string };
-
-const FALLBACK_HACEMOS: SeccionHacemos = {
-  titulo: "Lo que hacemos",
-  descripcion:
-    "Tres frentes que se sostienen entre sí. La campaña atrae, el CRM ordena, la IA responde.",
-};
-
-export async function getSeccionHacemos(): Promise<SeccionHacemos> {
-  const doc = await sanityQuery<Partial<SeccionHacemos>>(
-    `*[_type == "seccionHacemos"][0]{titulo, descripcion}`
-  );
-  return {
-    titulo: doc?.titulo || FALLBACK_HACEMOS.titulo,
-    descripcion: doc?.descripcion || FALLBACK_HACEMOS.descripcion,
-  };
-}
-
-// --- Filas de "Lo que hacemos": Marketing / CRM / IA (ServiceRow.tsx) ----
-
-export type Pilar = {
+export type SeccionHacemosData = {
+  _type: "seccionHacemos";
   titulo: string;
-  descripcion: string;
-  etiquetas: string[];
+  subtitulo: string;
+  tarjetas: { titulo: string; descripcion: string }[];
 };
 
-// Mismo texto que tenia Services.tsx antes de esta migracion. El orden
-// importa: Services.tsx le asigna el icono (megaphone/funnel/sparkle) por
-// posicion, no hay campo de icono en Sanity.
-const FALLBACK_PILARES: Pilar[] = [
+export type SeccionSocioData = {
+  _type: "seccionSocio";
+  nombre: string;
+  descripcion: string;
+  foto: string;
+};
+
+export type SeccionCierreData = {
+  _type: "seccionCierre";
+  titulo: string;
+  textoBoton: string;
+  enlace: string;
+};
+
+/** Union de las secciones que page.tsx sabe pintar hoy. */
+export type SeccionData =
+  | SeccionHacemosData
+  | SeccionSocioData
+  | SeccionCierreData;
+
+// --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
+
+// Forma laxa a proposito: cada item siempre trae _type, pero el resto de
+// campos depende de cual sea y puede no venir (incluso puede ser un _type
+// que este archivo todavia no conoce). Validar la forma exacta por tipo es
+// responsabilidad de normalizarSeccion(), no de este tipo — un union
+// discriminado con un miembro generico "cualquier otro _type" hace que
+// TypeScript no pueda acotar los casos conocidos dentro del switch.
+type SeccionRaw = {
+  _type: string;
+  titulo?: string | null;
+  subtitulo?: string | null;
+  tarjetas?: { titulo: string | null; descripcion: string | null }[] | null;
+  nombre?: string | null;
+  descripcion?: string | null;
+  foto?: string | null;
+  listaHerramientas?: { nombre: string | null; icono: string | null }[] | null;
+  textoBoton?: string | null;
+  enlace?: string | null;
+};
+
+type PaginaInicioRaw = {
+  titulo: string | null;
+  secciones: SeccionRaw[] | null;
+};
+
+const QUERY_PAGINA_INICIO = `*[_type == "paginaInicio"][0]{
+  titulo,
+  secciones[]{
+    _type,
+    _type == "seccionHacemos" => { titulo, subtitulo, tarjetas[]{ titulo, descripcion } },
+    _type == "seccionSocio" => { nombre, descripcion, "foto": foto.asset->url },
+    _type == "seccionPilares" => { titulo, listaHerramientas[]{ nombre, icono } },
+    _type == "seccionCierre" => { titulo, textoBoton, enlace }
+  }
+}`;
+
+// Texto de siempre, por si el documento paginaInicio no existe todavia o
+// falta alguna seccion puntual en el Studio. Mismo orden que tenia la
+// pagina antes de esta migracion.
+const SECCIONES_FALLBACK: SeccionData[] = [
   {
-    titulo: "Marketing Digital 360",
-    descripcion:
-      "Una sola idea sostenida en todos los formatos, del concepto a la pauta.",
-    etiquetas: [
-      "Dirección creativa",
-      "producción audiovisual",
-      "contenidos",
-      "pauta",
+    _type: "seccionHacemos",
+    titulo: "Lo que hacemos",
+    subtitulo:
+      "Tres frentes que se sostienen entre sí. La campaña atrae, el CRM ordena, la IA responde.",
+    tarjetas: [
+      {
+        titulo: "Marketing Digital 360",
+        descripcion:
+          "Una sola idea sostenida en todos los formatos, del concepto a la pauta.",
+      },
+      {
+        titulo: "CRM",
+        descripcion:
+          "Cada conversación queda registrada, asignada y medida. Nada se enfría en una bandeja.",
+      },
+      {
+        titulo: "Inteligencia Artificial",
+        descripcion:
+          "Atención que no duerme: responde, califica y entrega el lead listo al vendedor.",
+      },
     ],
   },
   {
-    titulo: "CRM",
+    _type: "seccionSocio",
+    nombre: "Daniel Vallejo",
     descripcion:
-      "Cada conversación queda registrada, asignada y medida. Nada se enfría en una bandeja.",
-    etiquetas: ["Kommo", "embudos", "campos", "automatizaciones", "reportes"],
+      "Daniel es quien se sienta con el dueño del negocio antes de que exista una sola pieza. Pregunta qué se vende, con qué margen y por qué el cliente vuelve. De ahí sale el brief, no de un formato.\n\nSu trabajo es que la creatividad y el sistema no vayan por separado. Que la campaña que se produce sea la que el CRM puede sostener, y que el equipo comercial reciba leads que efectivamente sabe atender.",
+    foto: "/media/socio-retrato.jpg",
   },
   {
-    titulo: "Inteligencia Artificial",
-    descripcion:
-      "Atención que no duerme: responde, califica y entrega el lead listo al vendedor.",
-    etiquetas: [
-      "Bots de WhatsApp",
-      "calificación automática",
-      "respuestas con contexto",
-    ],
+    _type: "seccionCierre",
+    titulo: "Hablemos",
+    textoBoton: "Escribir por WhatsApp",
+    enlace: "https://wa.me/593999999999",
   },
 ];
 
-type SanityPilar = {
-  titulo: string | null;
-  descripcion: string | null;
-  etiquetas: string[] | null;
-};
-
-function toPilar(doc: SanityPilar): Pilar | null {
-  // etiquetas puede venir vacio (se renderiza sin metadato bajo la
-  // descripcion), pero titulo y descripcion son la fila en si: sin ellos
-  // se descarta el item en vez de mostrar una fila en blanco.
-  if (!doc.titulo || !doc.descripcion) return null;
-  return {
-    titulo: doc.titulo,
-    descripcion: doc.descripcion,
-    etiquetas: doc.etiquetas ?? [],
-  };
+/** Valida un item crudo del arreglo y lo deja listo para pintar, o
+ *  descarta lo que venga incompleto o de un tipo que todavia no tiene
+ *  componente asignado (ver nota de seccionPilares mas arriba). */
+function normalizarSeccion(raw: SeccionRaw): SeccionData | null {
+  switch (raw._type) {
+    case "seccionHacemos": {
+      const tarjetas = (raw.tarjetas ?? []).filter(
+        (t): t is { titulo: string; descripcion: string } =>
+          Boolean(t.titulo && t.descripcion)
+      );
+      if (!raw.titulo || !raw.subtitulo || tarjetas.length === 0) return null;
+      return {
+        _type: "seccionHacemos",
+        titulo: raw.titulo,
+        subtitulo: raw.subtitulo,
+        tarjetas,
+      };
+    }
+    case "seccionSocio": {
+      if (!raw.nombre || !raw.descripcion || !raw.foto) return null;
+      return {
+        _type: "seccionSocio",
+        nombre: raw.nombre,
+        descripcion: raw.descripcion,
+        foto: raw.foto,
+      };
+    }
+    case "seccionCierre": {
+      if (!raw.titulo || !raw.textoBoton || !raw.enlace) return null;
+      return {
+        _type: "seccionCierre",
+        titulo: raw.titulo,
+        textoBoton: raw.textoBoton,
+        enlace: raw.enlace,
+      };
+    }
+    case "seccionPilares":
+      console.error(
+        '[sanity] seccionPilares llego del CMS pero todavia no tiene componente asignado (le faltan campos que Tools.tsx necesita). Se ignora sin romper la pagina; Tools.tsx sigue con su contenido fijo.'
+      );
+      return null;
+    default:
+      console.error(
+        `[sanity] La seccion "${raw._type}" no tiene componente asignado en page.tsx, se ignora.`
+      );
+      return null;
+  }
 }
 
-export async function getSeccionPilares(): Promise<Pilar[]> {
-  const doc = await sanityQuery<{ pilares: SanityPilar[] | null }>(
-    `*[_type == "seccionPilares"][0]{pilares[]{titulo, descripcion, etiquetas}}`
+/**
+ * Trae y arma el arreglo final de secciones para la home. Si Sanity no
+ * responde o el documento no existe, usa SECCIONES_FALLBACK completo. Si
+ * responde pero le falta alguna seccion puntual, respeta el orden real de
+ * lo que si vino bien formado y agrega al final el respaldo de lo que
+ * falte, para que ninguna seccion desaparezca de la pagina mientras se
+ * termina de cargar contenido en el Studio.
+ */
+export async function getSeccionesPaginaInicio(): Promise<SeccionData[]> {
+  const doc = await sanityQuery<PaginaInicioRaw>(QUERY_PAGINA_INICIO);
+  const crudo = doc?.secciones ?? [];
+  const validas = crudo
+    .map(normalizarSeccion)
+    .filter((s): s is SeccionData => s !== null);
+
+  const tiposPresentes = new Set(validas.map((s) => s._type));
+  const faltantes = SECCIONES_FALLBACK.filter(
+    (s) => !tiposPresentes.has(s._type)
   );
-  const pilares = (doc?.pilares ?? [])
-    .map(toPilar)
-    .filter((p): p is Pilar => p !== null);
 
-  return pilares.length > 0 ? pilares : FALLBACK_PILARES;
-}
-
-// --- "El Socio" (Socio.tsx + SocioPortrait.tsx) --------------------------
-
-export type SeccionSocio = {
-  nombre: string;
-  parrafo1: string;
-  parrafo2: string;
-  imagen: string;
-};
-
-const FALLBACK_SOCIO: SeccionSocio = {
-  nombre: "Daniel Vallejo",
-  parrafo1:
-    "Daniel es quien se sienta con el dueño del negocio antes de que exista una sola pieza. Pregunta qué se vende, con qué margen y por qué el cliente vuelve. De ahí sale el brief, no de un formato.",
-  parrafo2:
-    "Su trabajo es que la creatividad y el sistema no vayan por separado. Que la campaña que se produce sea la que el CRM puede sostener, y que el equipo comercial reciba leads que efectivamente sabe atender.",
-  imagen: "/media/socio-retrato.jpg",
-};
-
-export async function getSeccionSocio(): Promise<SeccionSocio> {
-  const doc = await sanityQuery<Partial<SeccionSocio>>(
-    `*[_type == "seccionSocio"][0]{nombre, parrafo1, parrafo2, "imagen": imagen.asset->url}`
-  );
-  return {
-    nombre: doc?.nombre || FALLBACK_SOCIO.nombre,
-    parrafo1: doc?.parrafo1 || FALLBACK_SOCIO.parrafo1,
-    parrafo2: doc?.parrafo2 || FALLBACK_SOCIO.parrafo2,
-    imagen: doc?.imagen || FALLBACK_SOCIO.imagen,
-  };
-}
-
-// --- Cierre + formulario (Contact.tsx) ------------------------------------
-
-export type SeccionCierre = {
-  slogan: string;
-  formularioTitulo: string;
-  formularioSubtitulo: string;
-};
-
-const FALLBACK_CIERRE: SeccionCierre = {
-  slogan: "Hablemos",
-  formularioTitulo: "Tu próxima campaña empieza aquí",
-  formularioSubtitulo:
-    "Cuéntanos qué vendes y a quién. En la primera llamada sales con una ruta clara, con o sin nosotros.",
-};
-
-export async function getSeccionCierre(): Promise<SeccionCierre> {
-  const doc = await sanityQuery<Partial<SeccionCierre>>(
-    `*[_type == "seccionCierre"][0]{slogan, formularioTitulo, formularioSubtitulo}`
-  );
-  return {
-    slogan: doc?.slogan || FALLBACK_CIERRE.slogan,
-    formularioTitulo: doc?.formularioTitulo || FALLBACK_CIERRE.formularioTitulo,
-    formularioSubtitulo:
-      doc?.formularioSubtitulo || FALLBACK_CIERRE.formularioSubtitulo,
-  };
+  return [...validas, ...faltantes];
 }

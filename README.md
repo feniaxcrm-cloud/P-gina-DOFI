@@ -114,29 +114,69 @@ SANITY_DATASET=
 El `_type` que se consulta es `"cliente"` — si tu Sanity Studio usa otro
 nombre de documento, ajústalo en `SANITY_TYPE` al inicio de `src/lib/sanity.ts`.
 
-**Otras tres secciones de texto también vienen de Sanity**, cada una de un
-documento singleton (`[0]`, siempre el primero/único):
+**El resto de la home (menos Hero, muro de logos, Herramientas, el
+carrusel de Clientes, el eslogan animado y "Cómo entra una marca") se arma
+con una sola consulta a un documento `paginaInicio`**, que trae un arreglo
+ordenable `secciones[]`. `page.tsx` la pinta con un `.map()` sobre un
+diccionario `_type → componente` (`RENDERERS`, definido ahí mismo): **el
+orden visual de esas secciones en la página es el mismo orden que tengan
+en el arreglo `secciones` del Studio** — reordenarlas en Sanity reordena la
+página sola, sin tocar código.
 
-| Sección | `_type` en Sanity | Campos | Se usa en |
+```groq
+*[_type == "paginaInicio"][0]{
+  titulo,
+  secciones[]{
+    _type,
+    _type == "seccionHacemos" => { titulo, subtitulo, tarjetas[]{ titulo, descripcion } },
+    _type == "seccionSocio" => { nombre, descripcion, "foto": foto.asset->url },
+    _type == "seccionPilares" => { titulo, listaHerramientas[]{ nombre, icono } },
+    _type == "seccionCierre" => { titulo, textoBoton, enlace }
+  }
+}
+```
+
+| `_type` en `secciones[]` | Campos | Se usa en | Estado |
 | --- | --- | --- | --- |
-| "Lo que hacemos" (cabecera) | `seccionHacemos` | `titulo`, `descripcion` | `Services.tsx` |
-| "Lo que hacemos" (las 3 filas) | `seccionPilares` | `pilares[]{titulo, descripcion, etiquetas}` | `Services.tsx` → `ServiceRow.tsx` |
-| "El Socio" | `seccionSocio` | `nombre`, `parrafo1`, `parrafo2`, `imagen` | `Socio.tsx` + `SocioPortrait.tsx` |
-| Cierre y formulario | `seccionCierre` | `slogan`, `formularioTitulo`, `formularioSubtitulo` | `Contact.tsx` (via `page.tsx`, que es quien hace el fetch) |
+| `seccionHacemos` | `titulo`, `subtitulo`, `tarjetas[]{titulo, descripcion}` | `Services.tsx` | ✅ conectado |
+| `seccionSocio` | `nombre`, `descripcion`, `foto` | `Socio.tsx` + `SocioPortrait.tsx` | ✅ conectado |
+| `seccionCierre` | `titulo`, `textoBoton`, `enlace` | `Contact.tsx` (etiqueta de arriba + botón de WhatsApp) | ✅ conectado |
+| `seccionPilares` | `titulo`, `listaHerramientas[]{nombre, icono}` | — | ⏸️ sin componente todavía (ver más abajo) |
 
-`seccionPilares` es un documento con un solo campo `pilares`, un arreglo de
-objetos (uno por fila: Marketing, CRM, IA — en ese orden). El icono de cada
-fila (megaphone/funnel/sparkle) no vive en Sanity, se asigna por posición en
-`Services.tsx`. `etiquetas` es un arreglo de strings; se unen con `", "` al
-pintarlos, para reproducir el mismo renglón de metadato que ya existía bajo
-cada descripción.
+Notas importantes:
 
-Mismo patrón de respaldo que Clientes: si Sanity no responde o el documento
-todavía no existe en el Studio, cada campo cae de vuelta al texto que ya
-tenía la página (ver las constantes `FALLBACK_*` en `src/lib/sanity.ts`).
-Dentro de cada sección, solo esos campos son dinámicos — el resto del
-contenido (las 3 filas de servicios, la cita en blockquote de El Socio, el
-CTA de cierre) sigue escrito directo en el componente.
+- **El formulario real de contacto (nombre, correo, mensaje, envío a
+  `/api/contacto`) no viene de Sanity y no se tocó.** `seccionCierre` solo
+  trae `titulo`/`textoBoton`/`enlace`, que se usan para la etiqueta pequeña
+  arriba del formulario y el botón de WhatsApp — son, literalmente, un
+  título y un botón con enlace. El título y subtítulo grandes del
+  formulario siguen fijos en `Contact.tsx`.
+- **`seccionCierre` ahora es parte del bloque dinámico**, igual que
+  Hacemos y Socio. Antes el formulario de contacto era siempre la última
+  sección antes del pie de página; ahora su posición depende del orden real
+  en `secciones[]`. Si quieres que el formulario se quede al final,
+  ordénalo así en el Studio.
+- **`seccionPilares` todavía no tiene componente.** Se decidió no adivinar:
+  el esquema (`listaHerramientas[]{nombre, icono}`) no trae el texto de
+  rol/descripción que cada herramienta necesita en `Tools.tsx` ("Con qué
+  trabajamos"), ni su color de marca ni el ancho de celda del bento grid.
+  Mientras tanto, si esta sección llega en el arreglo, se ignora sin romper
+  nada (con un aviso en consola) y `Tools.tsx` se sigue pintando fijo, con
+  su contenido de siempre. Cuando definas esos campos que faltan, se puede
+  conectar igual que las otras tres.
+- **Hero, muro de logos, Herramientas, el carrusel de Clientes, el eslogan
+  animado ("Un mar de ideas...") y "Cómo entra una marca al agua" no están
+  en `secciones[]`** — no tienen todavía un tipo de documento en el Studio,
+  así que `page.tsx` los sigue pintando fijos, alrededor del bloque
+  dinámico (después del muro de logos, antes de Herramientas).
+
+Mismo patrón de respaldo que Clientes: si Sanity no responde, el documento
+`paginaInicio` no existe todavía, o falta alguna sección puntual, esa
+sección cae de vuelta al texto que ya tenía la página — respetando el
+orden real de lo que sí vino bien formado y agregando al final lo que
+falte (ver `SECCIONES_FALLBACK` en `src/lib/sanity.ts`). Ninguna sección
+desaparece de la página por un problema de conexión o de contenido a
+medio cargar.
 
 **La página individual en `/clientes/<slug>` sigue viniendo de
 `src/data/clients.ts`**, no de Sanity — esta migración cubrió solo las
