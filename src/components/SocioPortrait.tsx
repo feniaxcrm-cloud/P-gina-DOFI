@@ -14,8 +14,18 @@ import { motion, useReducedMotion } from "motion/react";
  *
  * `overflow-hidden` en la tarjeta recorta el zoom de la foto; no afecta al
  * position:sticky del contenedor padre, que vive un nivel mas arriba.
+ *
+ * `src`/`alt` llegan como props (Socio.tsx los trae de Sanity, con el
+ * retrato local como respaldo) para no tener que volver este componente
+ * async: es "use client" por la animacion, y ahi no se puede hacer fetch.
  */
-export function SocioPortrait() {
+export function SocioPortrait({
+  src = "/media/socio-retrato.jpg",
+  alt = "Retrato de Daniel Vallejo",
+}: {
+  src?: string;
+  alt?: string;
+}) {
   const reduce = useReducedMotion();
 
   return (
@@ -34,8 +44,8 @@ export function SocioPortrait() {
         className="absolute inset-0"
       >
         <Image
-          src="/media/socio-retrato.jpg"
-          alt="Retrato de Daniel Vallejo"
+          src={src}
+          alt={alt}
           fill
           sizes="(max-width: 1024px) 100vw, 26rem"
           className="object-cover"

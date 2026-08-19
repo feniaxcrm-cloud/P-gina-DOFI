@@ -124,3 +124,121 @@ export async function getClientesSanity(): Promise<Client[]> {
     return clientesRespaldo;
   }
 }
+
+/**
+ * ============================================================
+ * Secciones de texto (documentos singleton)
+ * ============================================================
+ * "Lo que hacemos", "El Socio" y el cierre/formulario viven cada uno en un
+ * unico documento de Sanity (de ahi el "[0]" en la query: siempre se toma
+ * el primero/unico). Mismo patron que getClientesSanity(): si faltan
+ * credenciales, la API falla o el documento no existe todavia en el
+ * Studio, cada seccion cae de vuelta al texto que ya tenia la pagina, campo
+ * por campo, asi que nunca queda una seccion vacia o a medias.
+ */
+
+/** Fetch generico a la query API publica. Devuelve null ante cualquier
+ *  problema (sin credenciales, red, documento inexistente); cada
+ *  getSeccionX() decide el respaldo especifico para sus propios campos. */
+async function sanityQuery<T>(query: string): Promise<T | null> {
+  const projectId = process.env.SANITY_PROJECT_ID;
+  const dataset = process.env.SANITY_DATASET;
+
+  if (!projectId || !dataset) {
+    console.error(
+      "[sanity] Faltan SANITY_PROJECT_ID / SANITY_DATASET en el entorno."
+    );
+    return null;
+  }
+
+  const url = `https://${projectId}.apicdn.sanity.io/v${API_VERSION}/data/query/${dataset}?query=${encodeURIComponent(query)}`;
+
+  try {
+    const res = await fetch(url, { next: { revalidate: 60 } });
+    if (!res.ok) {
+      throw new Error(`Sanity respondio ${res.status} ${res.statusText}`);
+    }
+    const { result } = (await res.json()) as { result: T | null };
+    return result ?? null;
+  } catch (err) {
+    console.error("[sanity] fetch fallo:", err);
+    return null;
+  }
+}
+
+// --- "Lo que hacemos" (Services.tsx) ------------------------------------
+
+export type SeccionHacemos = { titulo: string; descripcion: string };
+
+const FALLBACK_HACEMOS: SeccionHacemos = {
+  titulo: "Lo que hacemos",
+  descripcion:
+    "Tres frentes que se sostienen entre sí. La campaña atrae, el CRM ordena, la IA responde.",
+};
+
+export async function getSeccionHacemos(): Promise<SeccionHacemos> {
+  const doc = await sanityQuery<Partial<SeccionHacemos>>(
+    `*[_type == "seccionHacemos"][0]{titulo, descripcion}`
+  );
+  return {
+    titulo: doc?.titulo || FALLBACK_HACEMOS.titulo,
+    descripcion: doc?.descripcion || FALLBACK_HACEMOS.descripcion,
+  };
+}
+
+// --- "El Socio" (Socio.tsx + SocioPortrait.tsx) --------------------------
+
+export type SeccionSocio = {
+  nombre: string;
+  parrafo1: string;
+  parrafo2: string;
+  imagen: string;
+};
+
+const FALLBACK_SOCIO: SeccionSocio = {
+  nombre: "Daniel Vallejo",
+  parrafo1:
+    "Daniel es quien se sienta con el dueño del negocio antes de que exista una sola pieza. Pregunta qué se vende, con qué margen y por qué el cliente vuelve. De ahí sale el brief, no de un formato.",
+  parrafo2:
+    "Su trabajo es que la creatividad y el sistema no vayan por separado. Que la campaña que se produce sea la que el CRM puede sostener, y que el equipo comercial reciba leads que efectivamente sabe atender.",
+  imagen: "/media/socio-retrato.jpg",
+};
+
+export async function getSeccionSocio(): Promise<SeccionSocio> {
+  const doc = await sanityQuery<Partial<SeccionSocio>>(
+    `*[_type == "seccionSocio"][0]{nombre, parrafo1, parrafo2, "imagen": imagen.asset->url}`
+  );
+  return {
+    nombre: doc?.nombre || FALLBACK_SOCIO.nombre,
+    parrafo1: doc?.parrafo1 || FALLBACK_SOCIO.parrafo1,
+    parrafo2: doc?.parrafo2 || FALLBACK_SOCIO.parrafo2,
+    imagen: doc?.imagen || FALLBACK_SOCIO.imagen,
+  };
+}
+
+// --- Cierre + formulario (Contact.tsx) ------------------------------------
+
+export type SeccionCierre = {
+  slogan: string;
+  formularioTitulo: string;
+  formularioSubtitulo: string;
+};
+
+const FALLBACK_CIERRE: SeccionCierre = {
+  slogan: "Hablemos",
+  formularioTitulo: "Tu próxima campaña empieza aquí",
+  formularioSubtitulo:
+    "Cuéntanos qué vendes y a quién. En la primera llamada sales con una ruta clara, con o sin nosotros.",
+};
+
+export async function getSeccionCierre(): Promise<SeccionCierre> {
+  const doc = await sanityQuery<Partial<SeccionCierre>>(
+    `*[_type == "seccionCierre"][0]{slogan, formularioTitulo, formularioSubtitulo}`
+  );
+  return {
+    slogan: doc?.slogan || FALLBACK_CIERRE.slogan,
+    formularioTitulo: doc?.formularioTitulo || FALLBACK_CIERRE.formularioTitulo,
+    formularioSubtitulo:
+      doc?.formularioSubtitulo || FALLBACK_CIERRE.formularioSubtitulo,
+  };
+}

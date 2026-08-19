@@ -8,7 +8,23 @@ type Status = "idle" | "sending" | "sent" | "error";
 const fieldClass =
   "w-full rounded-[12px] border border-brand-lift/40 bg-surface/70 px-4 py-3 font-sans text-base text-foam placeholder:text-fog focus:border-accent focus:outline-none";
 
-export function Contact() {
+/**
+ * Textos de la cabecera + subtitulo del formulario. Llegan como props con
+ * valores por defecto (en vez de fetch propio) porque este es un componente
+ * "use client" por el manejo del formulario, y ahi no se puede hacer
+ * async/await: page.tsx trae seccionCierre de Sanity y los pasa aqui.
+ */
+type ContactProps = {
+  slogan?: string;
+  formularioTitulo?: string;
+  formularioSubtitulo?: string;
+};
+
+export function Contact({
+  slogan = "Hablemos",
+  formularioTitulo = "Tu próxima campaña empieza aquí",
+  formularioSubtitulo = "Cuéntanos qué vendes y a quién. En la primera llamada sales con una ruta clara, con o sin nosotros.",
+}: ContactProps) {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -61,14 +77,13 @@ export function Contact() {
       <div className="relative mx-auto grid max-w-[1400px] grid-cols-1 gap-14 px-5 md:px-8 lg:grid-cols-[1fr_1fr] lg:gap-24">
         <div>
           <p className="mb-6 font-display text-[11px] font-medium uppercase tracking-[0.3em] text-accent">
-            Hablemos
+            {slogan}
           </p>
           <h2 className="max-w-[16ch] font-display text-4xl font-extrabold leading-[1.03] tracking-tighter text-foam md:text-6xl">
-            Tu próxima campaña empieza aquí
+            {formularioTitulo}
           </h2>
           <p className="mt-6 max-w-[48ch] font-sans text-lg leading-relaxed text-mist">
-            Cuéntanos qué vendes y a quién. En la primera llamada sales con una
-            ruta clara, con o sin nosotros.
+            {formularioSubtitulo}
           </p>
 
           <a

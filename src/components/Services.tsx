@@ -1,4 +1,5 @@
 import { ServiceRow, type Service } from "./ServiceRow";
+import { getSeccionHacemos } from "@/lib/sanity";
 
 const services: Service[] = [
   {
@@ -29,18 +30,23 @@ const services: Service[] = [
  * dejan respirar la tipografia y dan un lugar natural a la microanimacion.
  *
  * La seccion se renderiza en el servidor; solo cada fila es isla de cliente.
+ *
+ * El titulo y la bajada vienen de Sanity (seccionHacemos, ver
+ * src/lib/sanity.ts). Las tres filas de servicio siguen siendo estaticas:
+ * ese contenido no estaba en el alcance de esta migracion.
  */
-export function Services() {
+export async function Services() {
+  const { titulo, descripcion } = await getSeccionHacemos();
+
   return (
     <section id="servicios" className="relative bg-abyss py-32 md:py-48">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
         <div className="max-w-[34rem]">
           <h2 className="font-display text-4xl font-extrabold leading-[1.02] tracking-tighter text-foam md:text-6xl">
-            Lo que hacemos
+            {titulo}
           </h2>
           <p className="mt-6 font-sans text-lg leading-relaxed text-mist">
-            Tres frentes que se sostienen entre sí. La campaña atrae, el CRM
-            ordena, la IA responde.
+            {descripcion}
           </p>
         </div>
 

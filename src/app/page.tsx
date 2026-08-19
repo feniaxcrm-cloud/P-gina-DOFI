@@ -9,8 +9,14 @@ import { Manifesto } from "@/components/Manifesto";
 import { Process } from "@/components/Process";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
+import { getSeccionCierre } from "@/lib/sanity";
 
-export default function Home() {
+export default async function Home() {
+  // Contact es "use client" (maneja el formulario) y no puede hacer su
+  // propio fetch async, asi que el texto de seccionCierre se trae aca y
+  // baja como props. Ver src/lib/sanity.ts.
+  const cierre = await getSeccionCierre();
+
   return (
     <>
       <Nav />
@@ -23,7 +29,11 @@ export default function Home() {
         <Clients />
         <Manifesto />
         <Process />
-        <Contact />
+        <Contact
+          slogan={cierre.slogan}
+          formularioTitulo={cierre.formularioTitulo}
+          formularioSubtitulo={cierre.formularioSubtitulo}
+        />
       </main>
       <Footer />
     </>

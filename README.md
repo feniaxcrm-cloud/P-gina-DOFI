@@ -114,6 +114,22 @@ SANITY_DATASET=
 El `_type` que se consulta es `"cliente"` — si tu Sanity Studio usa otro
 nombre de documento, ajústalo en `SANITY_TYPE` al inicio de `src/lib/sanity.ts`.
 
+**Otras tres secciones de texto también vienen de Sanity**, cada una de un
+documento singleton (`[0]`, siempre el primero/único):
+
+| Sección | `_type` en Sanity | Campos | Se usa en |
+| --- | --- | --- | --- |
+| "Lo que hacemos" | `seccionHacemos` | `titulo`, `descripcion` | `Services.tsx` |
+| "El Socio" | `seccionSocio` | `nombre`, `parrafo1`, `parrafo2`, `imagen` | `Socio.tsx` + `SocioPortrait.tsx` |
+| Cierre y formulario | `seccionCierre` | `slogan`, `formularioTitulo`, `formularioSubtitulo` | `Contact.tsx` (via `page.tsx`, que es quien hace el fetch) |
+
+Mismo patrón de respaldo que Clientes: si Sanity no responde o el documento
+todavía no existe en el Studio, cada campo cae de vuelta al texto que ya
+tenía la página (ver las constantes `FALLBACK_*` en `src/lib/sanity.ts`).
+Dentro de cada sección, solo esos campos son dinámicos — el resto del
+contenido (las 3 filas de servicios, la cita en blockquote de El Socio, el
+CTA de cierre) sigue escrito directo en el componente.
+
 **La página individual en `/clientes/<slug>` sigue viniendo de
 `src/data/clients.ts`**, no de Sanity — esta migración cubrió solo las
 tarjetas del carrusel. Cada cuenta ahí lleva nombre, sector, resumen,

@@ -1,6 +1,7 @@
 import { MagneticCta } from "./MagneticCta";
 import { Reveal } from "./Reveal";
 import { SocioPortrait } from "./SocioPortrait";
+import { getSeccionSocio } from "@/lib/sanity";
 
 /**
  * Daniel Vallejo, El Socio.
@@ -15,8 +16,21 @@ import { SocioPortrait } from "./SocioPortrait";
  * OJO CON EL TEXTO: la historia esta escrita en terminos verificables desde
  * el contexto del negocio. No lleva cifras ni fechas inventadas a proposito.
  * Daniel deberia revisarla y agregar los datos concretos que solo el conoce.
+ *
+ * Nombre, los dos primeros parrafos y el retrato vienen de Sanity
+ * (seccionSocio, ver src/lib/sanity.ts). La cita en blockquote y el cierre
+ * con el CTA se quedan estaticos: no estaban en los campos pedidos.
  */
-export function Socio() {
+export async function Socio() {
+  const { nombre, parrafo1, parrafo2, imagen } = await getSeccionSocio();
+  // "Daniel Vallejo" -> dos lineas, igual que el diseño original. Si el
+  // nombre no trae espacio, se muestra completo en una sola linea.
+  const espacio = nombre.indexOf(" ");
+  const [primerNombre, apellido] =
+    espacio === -1
+      ? [nombre, null]
+      : [nombre.slice(0, espacio), nombre.slice(espacio + 1)];
+
   return (
     // Sin overflow-hidden: un ancestro con overflow recortado anula el
     // position:sticky del retrato. El degradado ya queda acotado por ser
@@ -30,7 +44,7 @@ export function Socio() {
       <div className="relative mx-auto grid max-w-[1400px] grid-cols-1 gap-14 px-5 md:px-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-24">
         {/* Retrato. En desktop se queda fijo mientras el relato avanza. */}
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <SocioPortrait />
+          <SocioPortrait src={imagen} alt={`Retrato de ${nombre}`} />
         </div>
 
         <div className="max-w-[42rem]">
@@ -39,26 +53,20 @@ export function Socio() {
               El Socio
             </p>
             <h2 className="mt-6 font-display text-5xl font-extrabold leading-[1] tracking-tighter text-foam md:text-7xl">
-              Daniel
-              <br />
-              Vallejo
+              {primerNombre}
+              {apellido && (
+                <>
+                  <br />
+                  {apellido}
+                </>
+              )}
             </h2>
           </Reveal>
 
           <Reveal delay={0.1}>
             <div className="mt-12 space-y-6 font-sans text-lg leading-relaxed text-mist">
-              <p>
-                Daniel es quien se sienta con el dueño del negocio antes de que
-                exista una sola pieza. Pregunta qué se vende, con qué margen y
-                por qué el cliente vuelve. De ahí sale el brief, no de un
-                formato.
-              </p>
-              <p>
-                Su trabajo es que la creatividad y el sistema no vayan por
-                separado. Que la campaña que se produce sea la que el CRM puede
-                sostener, y que el equipo comercial reciba leads que
-                efectivamente sabe atender.
-              </p>
+              <p>{parrafo1}</p>
+              <p>{parrafo2}</p>
             </div>
           </Reveal>
 
