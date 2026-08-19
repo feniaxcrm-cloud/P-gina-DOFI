@@ -1,5 +1,6 @@
 import { Reveal } from "./Reveal";
 import { ClientsCarousel } from "./ClientsCarousel";
+import { getClientesSanity } from "@/lib/sanity";
 
 /**
  * Galeria de clientes, en carrusel.
@@ -10,10 +11,14 @@ import { ClientsCarousel } from "./ClientsCarousel";
  * Familia de layout propia, distinta de la lista de servicios y del bento
  * de herramientas.
  *
- * Las portadas son provisionales. Reemplaza el campo `cover` de cada cuenta
- * en src/data/clients.ts por la foto real.
+ * Las cuentas se traen de Sanity (ver src/lib/sanity.ts) en el servidor;
+ * ClientsCarousel y ClientCard reciben la lista ya lista, sin saber de
+ * donde vino. Si Sanity no responde, getClientesSanity() cae de vuelta a
+ * src/data/clients.ts para que el carrusel nunca se rompa ni quede vacio.
  */
-export function Clients() {
+export async function Clients() {
+  const clientes = await getClientesSanity();
+
   return (
     <section id="clientes" className="relative bg-abyss py-32 md:py-48">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
@@ -30,7 +35,7 @@ export function Clients() {
           </p>
         </Reveal>
 
-        <ClientsCarousel />
+        <ClientsCarousel clients={clientes} />
       </div>
     </section>
   );

@@ -95,12 +95,37 @@ hay que tocar codigo:
 
 ### 3. Los clientes, sus páginas y sus videos
 
-Todo en `src/data/clients.ts`. Cada cuenta lleva nombre, sector, resumen,
-servicios y una lista de videos, y alimenta dos cosas a la vez:
+**El carrusel de la home (sección Clientes) se pinta con datos de Sanity**,
+via `src/lib/sanity.ts` (`getClientesSanity`, un `fetch()` directo a la query
+API pública — sin SDK). Lee `titulo`, `descripcion`, `imagen` y `categoria`
+de cada documento `cliente` y los mapea a `name` / `summary` / `cover` /
+`sector`. Si Sanity no responde (o faltan las variables de entorno), cae de
+vuelta a `src/data/clients.ts` para que el carrusel nunca se quede roto ni
+vacío.
 
-- la **galería** de la home (sección Clientes),
+Variables de entorno necesarias (ya están en Cloudflare; para local, copia
+`.env.example` a `.env.local`):
+
+```
+SANITY_PROJECT_ID=
+SANITY_DATASET=
+```
+
+El `_type` que se consulta es `"cliente"` — si tu Sanity Studio usa otro
+nombre de documento, ajústalo en `SANITY_TYPE` al inicio de `src/lib/sanity.ts`.
+
+**La página individual en `/clientes/<slug>` sigue viniendo de
+`src/data/clients.ts`**, no de Sanity — esta migración cubrió solo las
+tarjetas del carrusel. Cada cuenta ahí lleva nombre, sector, resumen,
+servicios y una lista de videos, y alimenta:
+
+- la **galería** de respaldo (si Sanity falla),
 - su **página individual** en `/clientes/<slug>` (generada sola por cada
   cuenta que exista en el arreglo).
+
+Si agregas una cuenta nueva solo en Sanity (no en este archivo), su tarjeta
+va a aparecer en el carrusel pero el enlace "ver más" va a dar 404 hasta que
+también tenga una entrada aquí.
 
 La página individual muestra solo las secciones que tengan contenido. Campos
 opcionales por cuenta:
@@ -143,8 +168,10 @@ npx vercel        # primera vez, vincula el proyecto
 npx vercel --prod
 ```
 
-No hay variables de entorno todavia. Cuando conectes el formulario a un servicio
-real, agregalas en el panel de Vercel y leelas desde el route handler.
+Agrega `SANITY_PROJECT_ID` y `SANITY_DATASET` en el panel de Vercel (Settings →
+Environment Variables) para que el carrusel de Clientes tambien funcione ahi.
+Cuando conectes el formulario a un servicio real, agrega esas variables igual
+y leelas desde el route handler.
 
 ## Accesibilidad y rendimiento
 

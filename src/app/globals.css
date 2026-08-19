@@ -27,6 +27,11 @@
   --color-mist: #B3A5D4;
   /* Calibrado para pasar WCAG AA (>=4.5:1) sobre abyss, deep y surface */
   --color-mist-dim: #948AB8;
+  /* Gris claro neutro para el texto secundario donde se pidio mas contraste
+     puntual: tarjetas de clientes, footer, formulario de contacto y nav. El
+     resto de la pagina sigue con mist/mist-dim (ya cumplen AA por si solos;
+     "fog" es una variante mas clara pedida explicitamente para esas zonas). */
+  --color-fog: #cbd5e1;
 
   /* Tipografia. --font-geist-sans es el nombre fijo que expone el paquete
      oficial geist/font/sans (ver layout.tsx), no --font-geist. */

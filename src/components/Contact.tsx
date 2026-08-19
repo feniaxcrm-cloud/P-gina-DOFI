@@ -6,7 +6,7 @@ import { CheckCircle, WarningCircle, WhatsappLogo } from "@phosphor-icons/react"
 type Status = "idle" | "sending" | "sent" | "error";
 
 const fieldClass =
-  "w-full rounded-[12px] border border-brand-lift/40 bg-surface/70 px-4 py-3 font-sans text-base text-foam placeholder:text-mist focus:border-accent focus:outline-none";
+  "w-full rounded-[12px] border border-brand-lift/40 bg-surface/70 px-4 py-3 font-sans text-base text-foam placeholder:text-fog focus:border-accent focus:outline-none";
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
@@ -146,7 +146,7 @@ export function Contact() {
                 {errors.email}
               </p>
             ) : (
-              <p id="help-email" className="font-sans text-sm text-mist">
+              <p id="help-email" className="font-sans text-sm text-fog">
                 Respondemos en menos de 24 horas hábiles.
               </p>
             )}

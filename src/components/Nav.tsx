@@ -46,7 +46,7 @@ export function Nav() {
               <li key={l.href}>
                 <Link
                   href={l.href}
-                  className="relative font-sans text-sm text-mist transition-colors duration-300 hover:text-foam"
+                  className="relative font-sans text-sm text-fog transition-colors duration-300 hover:text-foam"
                 >
                   {l.label}
                   <span className="absolute -bottom-1.5 left-0 h-px w-0 bg-accent transition-all duration-300 group-hover:w-full" />

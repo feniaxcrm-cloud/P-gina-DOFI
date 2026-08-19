@@ -81,13 +81,20 @@ export function Process() {
                 }}
                 className="relative"
               >
-                <span
-                  aria-hidden="true"
-                  className="absolute -left-10 top-3 h-1.5 w-1.5 rounded-full bg-accent md:-left-20 md:h-2 md:w-2"
-                />
-                <h3 className="font-display text-3xl font-extrabold tracking-tighter text-foam md:text-4xl">
-                  {s.verb}
-                </h3>
+                {/* Flexbox en vez de "top" fijo: el punto queda centrado con
+                    el titulo via items-center, sin depender de un offset en
+                    pixeles calculado a ojo. El -ml- reproduce la misma
+                    posicion horizontal de antes (el punto cae sobre el riel,
+                    fuera del padding del contenedor). */}
+                <div className="-ml-10 flex items-center gap-6 md:-ml-20 md:gap-10">
+                  <span
+                    aria-hidden="true"
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent md:h-2 md:w-2"
+                  />
+                  <h3 className="font-display text-3xl font-extrabold tracking-tighter text-foam md:text-4xl">
+                    {s.verb}
+                  </h3>
+                </div>
                 <p className="mt-3 max-w-[52ch] font-sans text-lg leading-relaxed text-mist">
                   {s.body}
                 </p>

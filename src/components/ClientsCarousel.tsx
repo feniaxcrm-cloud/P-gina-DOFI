@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { clients } from "@/data/clients";
+import type { Client } from "@/data/clients";
 import { ClientCard } from "./ClientCard";
 
 /**
@@ -13,9 +13,10 @@ import { ClientCard } from "./ClientCard";
  * y cada 5 segundos salta al siguiente grupo entero. Nunca deja tarjetas a
  * medias: cada pagina se desliza completa.
  *
- * Como son 7 marcas y 7 no es multiplo de 3, la ultima pagina se rellena
- * dando la vuelta a las primeras (modulo N), asi siempre hay un grupo lleno
- * sin huecos.
+ * `clients` llega como prop (lo trae Clients.tsx desde Sanity, con caida a
+ * los datos locales si la API no responde). Si el numero de cuentas no es
+ * multiplo de perView, la ultima pagina se rellena dando la vuelta a las
+ * primeras (modulo N), asi siempre hay un grupo lleno sin huecos.
  *
  * Bucle sin tiron: se agrega al final una copia de la primera pagina; al
  * llegar a ella, terminada la transicion, se salta al inicio sin animacion.
@@ -26,7 +27,6 @@ import { ClientCard } from "./ClientCard";
  * Se pausa al pasar el cursor o al enfocar con teclado. Con movimiento
  * reducido no auto-avanza y no desliza.
  */
-const N = clients.length;
 const INTERVAL = 5000;
 
 function usePerView() {
@@ -46,9 +46,10 @@ function usePerView() {
   return pv;
 }
 
-export function ClientsCarousel() {
+export function ClientsCarousel({ clients }: { clients: Client[] }) {
   const reduce = useReducedMotion();
   const perView = usePerView();
+  const N = clients.length;
   const pages = Math.ceil(N / perView);
 
   const [page, setPage] = useState(0);
@@ -68,7 +69,7 @@ export function ClientsCarousel() {
     }
     gs.push({ key: "clone", row: gs[0].row });
     return gs;
-  }, [pages, perView]);
+  }, [pages, perView, clients, N]);
 
   // Si cambia el numero de paginas (rotacion / resize), no dejar el indice fuera.
   useEffect(() => {

@@ -68,7 +68,7 @@ export function Footer() {
           {/* Marca */}
           <div>
             <Wordmark size="md" withTagline />
-            <p className="mt-6 max-w-[34ch] font-sans text-sm leading-relaxed text-mist">
+            <p className="mt-6 max-w-[34ch] font-sans text-sm leading-relaxed text-fog">
               Creatividad, producción y CRM para marcas que necesitan vender, no
               solo publicar.
             </p>
@@ -82,7 +82,7 @@ export function Footer() {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    className="font-sans text-sm text-mist transition-colors duration-300 hover:text-accent"
+                    className="font-sans text-sm text-fog transition-colors duration-300 hover:text-accent"
                   >
                     {l.label}
                   </Link>
@@ -97,7 +97,7 @@ export function Footer() {
             <ul className="mt-6 flex flex-col gap-3">
               {contacto.map(({ Icon, label, href }) => {
                 const inner = (
-                  <span className="flex items-center gap-2.5 font-sans text-sm text-mist transition-colors duration-300 group-hover:text-foam">
+                  <span className="flex items-center gap-2.5 font-sans text-sm text-fog transition-colors duration-300 group-hover:text-foam">
                     <Icon
                       size={16}
                       weight="fill"
@@ -126,7 +126,7 @@ export function Footer() {
             <ColTitle>Horario de atención</ColTitle>
             <ul className="mt-6 flex flex-col gap-3">
               {horario.map((h) => (
-                <li key={h} className="font-sans text-sm text-mist">
+                <li key={h} className="font-sans text-sm text-fog">
                   {h}
                 </li>
               ))}
@@ -136,7 +136,7 @@ export function Footer() {
 
         {/* Divisor */}
         <div className="mt-14 border-t border-brand-lift/20 pt-8">
-          <p className="text-center font-sans text-sm text-mist-dim">
+          <p className="text-center font-sans text-sm text-fog">
             © {new Date().getFullYear()} DOFI Agencia Creativa. Todos los
             derechos reservados. Sistemas por{" "}
             <span className="text-accent">FENIAX</span>.

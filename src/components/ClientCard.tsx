@@ -52,14 +52,14 @@ export function ClientCard({
             className="mt-1 shrink-0 text-mist-dim transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-accent"
           />
         </div>
-        <p className="mt-3 flex-1 font-sans text-sm leading-relaxed text-mist">
+        <p className="mt-3 flex-1 font-sans text-sm leading-relaxed text-fog">
           {client.summary}
         </p>
         <ul className="mt-5 flex flex-wrap gap-2">
           {client.services.slice(0, 3).map((s) => (
             <li
               key={s}
-              className="rounded-full border border-brand-lift/30 px-2.5 py-1 font-sans text-[11px] text-mist-dim"
+              className="rounded-full border border-brand-lift/30 px-2.5 py-1 font-sans text-[11px] text-fog"
             >
               {s}
             </li>
