@@ -1,8 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle, WarningCircle, WhatsappLogo } from "@phosphor-icons/react";
+import { whatsappUrl } from "@/lib/whatsapp";
+import {
+  validarContacto,
+  extraerUtm,
+  type ContactErrors,
+  type Utm,
+} from "@/lib/contact/validation";
 
+/** idle -> sending -> (sent | error). "error" ya no es un estado unico:
+ *  el mensaje cambia segun por que fallo, pero NUNCA se muestra exito si la
+ *  entrega no fue confirmada por el servidor. */
 type Status = "idle" | "sending" | "sent" | "error";
 
 const fieldClass =
@@ -15,11 +25,14 @@ const fieldClass =
  * paginaInicio.secciones de Sanity (ver src/lib/sanity.ts) y le pasa a
  * esta seccion la parte "seccionCierre".
  *
- * El esquema de esa seccion (titulo/textoBoton/enlace) no trae campos de
- * formulario: se usan para la etiqueta de arriba y el CTA de WhatsApp, que
- * ya eran justo eso, un titulo corto + un boton con enlace. El titulo y
- * subtitulo grandes del formulario, y el formulario en si (nombre, correo,
- * mensaje, envio a /api/contacto), NO vienen de Sanity y no se tocan.
+ * WHATSAPP: el enlace por defecto ya NO se escribe a mano aqui. Sale de
+ * createWhatsAppUrl() sobre el numero de src/config/company.ts. Antes este
+ * archivo tenia escrito wa.me/593999999999 —un numero inventado— mientras
+ * el pie mostraba el numero real.
+ *
+ * ENTREGA: el estado "sent" solo se activa cuando /api/contacto responde
+ * 200. Si el destino no esta configurado o falla, se muestra el error y se
+ * ofrece WhatsApp como salida.
  */
 type ContactProps = {
   titulo?: string;
@@ -30,10 +43,18 @@ type ContactProps = {
 export function Contact({
   titulo = "Hablemos",
   textoBoton = "Escribir por WhatsApp",
-  enlace = "https://wa.me/593999999999",
+  enlace = whatsappUrl,
 }: ContactProps) {
   const [status, setStatus] = useState<Status>("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<ContactErrors>({});
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Atribucion: se lee de la URL al montar, no se pide al usuario.
+  // useRef y no useState porque no repinta nada; solo viaja con el envio.
+  const utm = useRef<Utm>({});
+  useEffect(() => {
+    utm.current = extraerUtm(window.location.search);
+  }, []);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,33 +62,55 @@ export function Contact({
     // e.currentTarget al terminar el handler sincrono.
     const form = e.currentTarget;
     const data = new FormData(form);
-    const next: Record<string, string> = {};
 
-    const nombre = String(data.get("nombre") ?? "").trim();
-    const email = String(data.get("email") ?? "").trim();
-    const mensaje = String(data.get("mensaje") ?? "").trim();
-
-    if (nombre.length < 2) next.nombre = "Escribe tu nombre completo.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
-      next.email = "Revisa el correo, no parece válido.";
-    if (mensaje.length < 12)
-      next.mensaje = "Cuéntanos un poco más, mínimo una frase.";
+    // Misma regla que aplica el servidor (lib/contact/validation.ts), asi
+    // el navegador y la API no pueden discrepar.
+    const { valid, errors: next, data: limpio } = validarContacto(
+      Object.fromEntries(data)
+    );
 
     setErrors(next);
-    if (Object.keys(next).length > 0) return;
+    if (!valid) return;
 
     setStatus("sending");
+    setErrorMsg("");
+
     try {
       const res = await fetch("/api/contacto", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(data)),
+        body: JSON.stringify({ ...limpio, utm: utm.current }),
       });
-      if (!res.ok) throw new Error("bad status");
-      setStatus("sent");
-      form.reset();
+
+      if (res.ok) {
+        setStatus("sent");
+        form.reset();
+        return;
+      }
+
+      // Cada fallo dice algo distinto. Ninguno dice "recibido".
+      const cuerpo = await res.json().catch(() => null);
+      const codigo = cuerpo?.error as string | undefined;
+
+      if (res.status === 400 && cuerpo?.errors) {
+        setErrors(cuerpo.errors as ContactErrors);
+        setStatus("idle");
+        return;
+      }
+
+      setStatus("error");
+      setErrorMsg(
+        codigo === "delivery_not_configured"
+          ? "El envío por formulario no está disponible en este momento. Escríbenos por WhatsApp y te respondemos igual."
+          : res.status === 429
+            ? "Demasiados intentos seguidos. Espera un momento o escríbenos por WhatsApp."
+            : "No se pudo enviar tu mensaje. Inténtalo por WhatsApp mientras lo revisamos."
+      );
     } catch {
       setStatus("error");
+      setErrorMsg(
+        "No se pudo enviar tu mensaje. Revisa tu conexión o escríbenos por WhatsApp."
+      );
     }
   };
 
@@ -214,14 +257,18 @@ export function Contact({
               </p>
             )}
             {status === "error" && (
-              <p className="flex items-center gap-2 font-sans text-sm text-foam">
+              <p className="flex items-start gap-2 font-sans text-sm text-foam">
                 <WarningCircle
                   size={18}
                   weight="fill"
-                  className="text-accent"
+                  className="mt-0.5 shrink-0 text-accent"
                 />
-                No se pudo enviar. Escríbenos por WhatsApp mientras lo
-                revisamos.
+                <span>
+                  {errorMsg}{" "}
+                  <a href={enlace} className="underline hover:text-accent">
+                    Abrir WhatsApp
+                  </a>
+                </span>
               </p>
             )}
           </div>

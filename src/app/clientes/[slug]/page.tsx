@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import { clients } from "@/data/clients";
+import { company } from "@/config/company";
+import { site } from "@/config/site";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { VideoTile } from "@/components/VideoTile";
@@ -23,11 +25,22 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!client) return { title: "Cliente no encontrado | DOFI" };
 
   return {
-    title: `${client.name} | Casos DOFI Agencia Creativa`,
+    title: `${client.name} | Casos ${company.name}`,
     description: client.summary,
+    // Canonical solo con dominio definitivo configurado. En staging se omite
+    // a proposito: un canonical a *.workers.dev seria peor que ninguno.
+    // Ver src/config/site.ts.
+    alternates: site.isIndexable
+      ? { canonical: `/clientes/${client.slug}` }
+      : undefined,
     openGraph: {
-      title: `${client.name} | Casos DOFI`,
+      title: `${client.name} | Casos ${company.shortName}`,
       description: client.summary,
+      url: `/clientes/${client.slug}`,
+      // NOTA: hoy client.cover es la misma portada generica en las 26
+      // cuentas (ver AUDITORIA-DOFI-V1, VIS-012). Se conserva para no dejar
+      // las tarjetas de enlace sin imagen; se reemplaza cuando exista el
+      // material real de cada caso.
       images: [client.cover],
     },
   };

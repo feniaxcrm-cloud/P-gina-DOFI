@@ -8,14 +8,22 @@ import {
   MapPin,
 } from "@phosphor-icons/react/dist/ssr";
 import { Wordmark } from "./Wordmark";
+import { company, socialLinks, type SocialKey } from "@/config/company";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 /**
  * Pie de pagina en cuatro columnas: marca, navegacion, contacto y horario.
  * Debajo, un divisor, el copyright centrado y las redes.
  *
- * Telefono, correo y horario son los datos reales de la agencia.
- * PENDIENTE por reemplazar: los enlaces de redes (social) apuntan al inicio
- * de cada plataforma, faltan las URLs de los perfiles reales.
+ * TODOS los datos corporativos salen de src/config/company.ts. Antes estaban
+ * escritos a mano aqui, y el numero de WhatsApp de este archivo era el bueno
+ * mientras Contact.tsx usaba otro inventado.
+ *
+ * REDES: solo se pintan las que tienen URL de perfil real configurada. Antes
+ * los tres iconos enlazaban a instagram.com, tiktok.com y linkedin.com —las
+ * portadas de las plataformas—, lo que resta credibilidad a una agencia que
+ * vende gestion de redes. Sin URL verificada, el icono no aparece. Se
+ * activan definiendo NEXT_PUBLIC_INSTAGRAM_URL / _TIKTOK_URL / _LINKEDIN_URL.
  */
 
 const navegacion = [
@@ -29,27 +37,24 @@ const navegacion = [
 const contacto = [
   {
     Icon: WhatsappLogo,
-    label: "+593 98 447 2869",
-    href: "https://wa.me/593984472869",
+    label: company.phone.display,
+    href: whatsappUrl,
   },
   {
     Icon: EnvelopeSimple,
-    label: "dofiagenciacreativa@gmail.com",
-    href: "mailto:dofiagenciacreativa@gmail.com",
+    label: company.email,
+    href: `mailto:${company.email}`,
   },
-  { Icon: MapPin, label: "Cuenca, Ecuador", href: null },
+  { Icon: MapPin, label: company.location.label, href: null },
 ];
 
-const horario = [
-  "Lunes a viernes: 08:30 - 17:30",
-  "Sábado y domingo: cerrado",
-];
+const horario = company.hours;
 
-const social = [
-  { label: "Instagram", href: "https://instagram.com", Icon: InstagramLogo },
-  { label: "TikTok", href: "https://tiktok.com", Icon: TiktokLogo },
-  { label: "LinkedIn", href: "https://linkedin.com", Icon: LinkedinLogo },
-];
+const ICONOS_SOCIAL = {
+  instagram: InstagramLogo,
+  tiktok: TiktokLogo,
+  linkedin: LinkedinLogo,
+} satisfies Record<SocialKey, typeof InstagramLogo>;
 
 function ColTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -137,25 +142,32 @@ export function Footer() {
         {/* Divisor */}
         <div className="mt-14 border-t border-brand-lift/20 pt-8">
           <p className="text-center font-sans text-sm text-fog">
-            © {new Date().getFullYear()} DOFI Agencia Creativa. Todos los
-            derechos reservados. Sistemas por{" "}
-            <span className="text-accent">FENIAX</span>.
+            © {new Date().getFullYear()} {company.name}. Todos los derechos
+            reservados. Sistemas por{" "}
+            <span className="text-accent">{company.partner.name}</span>.
           </p>
 
-          {/* Redes */}
-          <ul className="mt-8 flex items-center justify-center gap-3">
-            {social.map(({ label, href, Icon }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
-                >
-                  <Icon size={18} weight="fill" />
-                </a>
-              </li>
-            ))}
-          </ul>
+          {/* Redes. La lista puede venir vacia: ver nota de arriba. */}
+          {socialLinks.length > 0 && (
+            <ul className="mt-8 flex items-center justify-center gap-3">
+              {socialLinks.map(({ key, label, href }) => {
+                const Icon = ICONOS_SOCIAL[key];
+                return (
+                  <li key={key}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      <Icon size={18} weight="fill" />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
     </footer>

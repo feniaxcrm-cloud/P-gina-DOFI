@@ -7,8 +7,15 @@ import { motion, useReducedMotion } from "motion/react";
  *
  * Dos capas de movimiento, deliberadamente separadas:
  *
- *  1. ENTRADA (Motion): cada letra sube y aparece en cascada. Comunica que la
- *     pagina acaba de cargar y ordena la lectura de izquierda a derecha.
+ *  1. ENTRADA (Motion): cada letra sube en cascada. Comunica que la pagina
+ *     acaba de cargar y ordena la lectura de izquierda a derecha.
+ *
+ *     La cascada es SOLO de transform, sin opacity. Antes cada letra nacia
+ *     invisible y aparecia con un desfase de hasta ~1,3s contando el delay
+ *     por indice mas la duracion; como el H1 es el bloque de texto mas
+ *     grande del hero, ese retraso entraba directo en la LCP. Con transform
+ *     puro el texto se pinta en el primer frame y la cascada se conserva:
+ *     el efecto sigue viendose, la metrica deja de pagarlo.
  *  2. ONDA CONTINUA (CSS): cada letra oscila en vertical con un desfase
  *     proporcional a su indice, asi la onda viaja a traves de la palabra en
  *     vez de hacer que todas floten a la vez. Es la metafora del mar.
@@ -43,8 +50,8 @@ export function WaveText({
                 key={`${char}-${c}`}
                 aria-hidden="true"
                 className="inline-block"
-                initial={reduce ? false : { y: "0.5em", opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
+                initial={reduce ? false : { y: "0.5em" }}
+                animate={{ y: 0 }}
                 transition={{
                   duration: 0.9,
                   delay: delay + i * 0.035,

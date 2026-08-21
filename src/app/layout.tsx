@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { GeistSans } from "geist/font/sans";
+import { company } from "@/config/company";
+import { site } from "@/config/site";
 import "./globals.css";
 
 /**
@@ -25,33 +27,56 @@ const sora = localFont({
   weight: "300 800",
 });
 
-const siteUrl = "https://dofi.agency";
-
+/**
+ * URL publica y permiso de indexacion: ambos salen de src/config/site.ts.
+ *
+ * Antes aqui estaba escrito a mano `const siteUrl = "https://dofi.agency"`,
+ * un dominio que no sirve este sitio. Con eso, og:url mandaba a cada enlace
+ * compartido a un destino equivocado.
+ *
+ * Mientras NEXT_PUBLIC_SITE_URL no traiga un dominio propio, el sitio se
+ * comporta como staging: noindex,nofollow y SIN canonical (un canonical a
+ * *.workers.dev seria peor que no tenerlo). En cuanto se defina el dominio
+ * definitivo, el mismo codigo pasa a emitir canonical e indexable.
+ */
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: "DOFI Agencia Creativa | Un Mar de Ideas",
+  metadataBase: new URL(site.url),
+  title: `${company.name} | ${company.tagline}`,
   description:
     "Agencia creativa que produce campañas, contenido audiovisual y sistemas de CRM que convierten. DOFI crea, FENIAX automatiza.",
   keywords: [
     "agencia creativa",
     "producción audiovisual",
     "CRM Kommo",
-    "marketing digital Cuenca",
-    "DOFI",
-    "FENIAX",
+    `marketing digital ${company.location.city}`,
+    company.shortName,
+    company.partner.name,
   ],
+  // Solo con dominio definitivo. Ver nota de arriba.
+  alternates: site.isIndexable ? { canonical: "/" } : undefined,
+  robots: site.isIndexable
+    ? undefined
+    : {
+        index: false,
+        follow: false,
+        googleBot: { index: false, follow: false },
+      },
   openGraph: {
-    title: "DOFI Agencia Creativa | Un Mar de Ideas",
+    title: `${company.name} | ${company.tagline}`,
     description:
       "Creatividad que se ve y sistemas que venden. Producción audiovisual, campañas y CRM en un solo equipo.",
-    url: siteUrl,
-    siteName: "DOFI Agencia Creativa",
+    url: site.url,
+    siteName: company.name,
     locale: "es_EC",
     type: "website",
+    // PENDIENTE og:image: no existe todavia un asset propio de 1200x630.
+    // Los archivos disponibles son el logo (cuadrado) y una portada
+    // generica de relleno; ninguno sirve como tarjeta de enlace y no se
+    // pone una imagen mediocre solo por rellenar el campo.
   },
   twitter: {
     card: "summary_large_image",
-    title: "DOFI Agencia Creativa | Un Mar de Ideas",
+    title: `${company.name} | ${company.tagline}`,
     description:
       "Creatividad que se ve y sistemas que venden. Producción audiovisual, campañas y CRM.",
   },

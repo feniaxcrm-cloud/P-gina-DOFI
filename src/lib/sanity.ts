@@ -1,4 +1,5 @@
 import { clients as clientesRespaldo, type Client } from "@/data/clients";
+import { whatsappUrl } from "@/lib/whatsapp";
 
 /**
  * Conexion a Sanity para la seccion de Clientes (carrusel de marcas).
@@ -284,7 +285,13 @@ const SECCIONES_FALLBACK: SeccionData[] = [
     _type: "seccionCierre",
     titulo: "Hablemos",
     textoBoton: "Escribir por WhatsApp",
-    enlace: "https://wa.me/593999999999",
+    // El enlace sale de la configuracion corporativa, no escrito a mano.
+    // Aqui vivia "wa.me/593999999999", un numero inventado, y como Sanity no
+    // esta sirviendo contenido en produccion, ESTE respaldo era el que se
+    // publicaba: el CTA de WhatsApp del sitio apuntaba a un numero que no
+    // existe. Si algun dia se edita el enlace desde el Studio, ese valor
+    // gana sobre este respaldo.
+    enlace: whatsappUrl,
   },
 ];
 

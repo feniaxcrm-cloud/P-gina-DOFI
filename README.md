@@ -228,11 +228,24 @@ Deja los mp4 en `public/videos/` y el fotograma de portada en `public/media/`.
 
 ### 4. Contacto
 
-- El numero de WhatsApp esta en `src/components/Contact.tsx` (`wa.me/593999999999`).
-- El formulario postea a `src/app/api/contacto/route.ts`, que hoy solo valida y
-  escribe en el log del servidor. Ahi se conecta Kommo, un correo o un webhook
-  de n8n.
-- Las redes del pie estan en `src/components/Footer.tsx`.
+Todos los datos corporativos viven en **`src/config/company.ts`** (fuente unica
+de verdad: nombre, telefono, WhatsApp, correo, ciudad, horario, redes). Ningun
+componente los escribe a mano. Para cambiar cualquiera sin tocar codigo, define
+la variable de entorno correspondiente (ver `.env.example`).
+
+- **WhatsApp**: el numero sale de `company.whatsapp.number` y la URL se arma con
+  `createWhatsAppUrl()` en `src/lib/whatsapp.ts`. No escribas `wa.me/...` a mano
+  en ningun componente.
+- **Formulario**: postea a `src/app/api/contacto/route.ts`, que entrega el lead
+  al webhook de `CONTACT_WEBHOOK_URL` (ver `src/lib/contact/delivery.ts`).
+  **Si esa variable no esta definida, la API responde 503 y el formulario avisa
+  al usuario y le ofrece WhatsApp.** Nunca confirma un envio que no ocurrio.
+  El webhook puede ser n8n, Make o una funcion que cree el lead en Kommo.
+- **Redes del pie**: cada icono se muestra solo si su
+  `NEXT_PUBLIC_<RED>_URL` tiene la URL del perfil real. Sin ella, el icono no
+  se pinta.
+- **Atribucion**: los parametros `utm_*`, `gclid`, `fbclid` y `ttclid` se leen
+  de la URL y viajan con el lead. No hay campos visibles nuevos.
 
 ## Desplegar en Vercel
 
