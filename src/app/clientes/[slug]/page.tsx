@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "@phosphor-icons/react/dist/ssr";
-import { clients } from "@/data/clients";
+import {
+  ArrowLeft,
+  InstagramLogo,
+  FacebookLogo,
+  TiktokLogo,
+  Globe,
+} from "@phosphor-icons/react/dist/ssr";
+import { getAccountBySlug, getAllActiveSlugs } from "@/lib/sanity";
 import { company } from "@/config/company";
 import { site } from "@/config/site";
 import { Nav } from "@/components/Nav";
@@ -12,16 +18,19 @@ import { VideoTile } from "@/components/VideoTile";
 import { MagneticCta } from "@/components/MagneticCta";
 import { Reveal } from "@/components/Reveal";
 
-/** Genera una ruta estatica por cada cuenta en tiempo de build. */
-export function generateStaticParams() {
-  return clients.map((c) => ({ slug: c.slug }));
+/** Genera una ruta estatica por cada cuenta activa en tiempo de build.
+ *  Una cuenta creada despues sigue funcionando: dynamicParams (por defecto
+ *  en Next) la renderiza on-demand la primera vez que alguien entra. */
+export async function generateStaticParams() {
+  const slugs = await getAllActiveSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const client = clients.find((c) => c.slug === slug);
+  const client = await getAccountBySlug(slug);
   if (!client) return { title: "Cliente no encontrado | DOFI" };
 
   return {
@@ -48,10 +57,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ClientePage({ params }: Params) {
   const { slug } = await params;
-  const client = clients.find((c) => c.slug === slug);
+  const client = await getAccountBySlug(slug);
   if (!client) notFound();
 
   const hasResults = Boolean(client.results?.length);
+  const social = client.social;
+  const hasSocial = Boolean(
+    social &&
+      (social.instagram || social.facebook || social.tiktok || social.sitioWeb || social.otros?.length)
+  );
 
   return (
     <>
@@ -98,6 +112,75 @@ export default async function ClientePage({ params }: Params) {
                 </li>
               ))}
             </ul>
+
+            {hasSocial && (
+              <ul className="mt-6 flex flex-wrap items-center gap-3">
+                {social?.instagram && (
+                  <li>
+                    <a
+                      href={social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${client.name} en Instagram`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      <InstagramLogo size={18} weight="fill" />
+                    </a>
+                  </li>
+                )}
+                {social?.facebook && (
+                  <li>
+                    <a
+                      href={social.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${client.name} en Facebook`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      <FacebookLogo size={18} weight="fill" />
+                    </a>
+                  </li>
+                )}
+                {social?.tiktok && (
+                  <li>
+                    <a
+                      href={social.tiktok}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${client.name} en TikTok`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      <TiktokLogo size={18} weight="fill" />
+                    </a>
+                  </li>
+                )}
+                {social?.sitioWeb && (
+                  <li>
+                    <a
+                      href={social.sitioWeb}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Sitio web de ${client.name}`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-lift/35 text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      <Globe size={18} weight="fill" />
+                    </a>
+                  </li>
+                )}
+                {social?.otros?.map((o) => (
+                  <li key={o.url}>
+                    <a
+                      href={o.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full border border-brand-lift/35 px-3.5 py-1.5 font-sans text-xs text-mist transition-colors duration-300 hover:border-accent/70 hover:text-accent"
+                    >
+                      {o.etiqueta}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </header>
 

@@ -1,46 +1,34 @@
-import { clients as clientesRespaldo, type Client } from "@/data/clients";
+import {
+  clients as clientesRespaldo,
+  type Client,
+  type VideoSource,
+  type SocialLinks,
+} from "@/data/clients";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 /**
- * Conexion a Sanity para la seccion de Clientes (carrusel de marcas).
+ * Conexion a Sanity para las Cuentas (carrusel, muro de logos, pagina
+ * individual y sitemap) y sus Contenidos asociados.
  *
  * Deliberadamente SIN el SDK @sanity/client: es un fetch() plano a la API
  * publica de consulta (query API), tal como la expone cualquier dataset con
  * lectura publica. No hace falta token para leer.
  *
- * Variables de entorno esperadas (ya configuradas en Cloudflare):
+ * Variables de entorno esperadas (ver .env.example):
  *   SANITY_PROJECT_ID
  *   SANITY_DATASET
  *
- * Se leen server-side (sin prefijo NEXT_PUBLIC_) porque esta funcion corre
- * en Clients.tsx, un componente de servidor: el fetch nunca llega al
- * navegador, asi que no hace falta exponerlas al cliente.
+ * Se leen server-side (sin prefijo NEXT_PUBLIC_) porque estas funciones
+ * corren en componentes de servidor: el fetch nunca llega al navegador.
  *
- * AJUSTA "_type == \"cliente\"" si el nombre del documento en tu Sanity
- * Studio es distinto (revisalo en Structure). Los alias del GROQ ya mapean
- * titulo/descripcion/imagen/categoria a los nombres que usa el resto de la
- * app (name/summary/cover/sector), asi que ClientCard y ClientsCarousel no
- * necesitan saber nada de Sanity.
+ * Los tipos de documento son "cuenta", "contenido" y "servicio" (ver
+ * studio/schemaTypes/). Los campos del schema estan en español; los alias
+ * del GROQ los mapean a los nombres que usa el resto de la app
+ * (name/summary/cover/sector/...), asi que ClientCard, ClientsCarousel,
+ * VideoTile y la pagina de detalle no necesitan saber nada de Sanity.
  */
 
-const SANITY_TYPE = "cliente";
 const API_VERSION = "2024-01-01";
-
-const QUERY = `*[_type == "${SANITY_TYPE}" && defined(imagen.asset)]{
-  "slug": slug.current,
-  "name": titulo,
-  "summary": descripcion,
-  "sector": categoria,
-  "cover": imagen.asset->url
-} | order(_createdAt asc)`;
-
-type SanityCliente = {
-  slug: string | null;
-  name: string | null;
-  summary: string | null;
-  sector: string | null;
-  cover: string | null;
-};
 
 /** Reemplazo manual de vocales acentuadas: evita marcas combinadas en el
  *  codigo fuente (fragiles entre editores/encodings) para el slug de
@@ -64,30 +52,197 @@ function slugify(input: string): string {
     .replace(/(^-+|-+$)/g, "");
 }
 
-function toClient(doc: SanityCliente): Client | null {
-  // titulo e imagen son los unicos campos realmente indispensables para
-  // pintar la tarjeta (ver ClientCard). Sin ellos, se descarta el doc.
-  if (!doc.name || !doc.cover) return null;
+/** Arma la URL de la API de consulta publica de Sanity, con parametros
+ *  ($nombre) codificados correctamente via URLSearchParams. */
+function buildQueryUrl(
+  projectId: string,
+  dataset: string,
+  query: string,
+  params?: Record<string, string>
+): string {
+  const search = new URLSearchParams({ query });
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      search.set(`$${key}`, JSON.stringify(value));
+    }
+  }
+  return `https://${projectId}.apicdn.sanity.io/v${API_VERSION}/data/query/${dataset}?${search.toString()}`;
+}
+
+// ============================================================
+// Cuentas
+// ============================================================
+
+type SanityCuentaResumen = {
+  slug: string | null;
+  name: string | null;
+  summary: string | null;
+  sector: string | null;
+  logo: string | null;
+  cover: string | null;
+  services: (string | null)[] | null;
+};
+
+type SanityContenido = {
+  _id: string;
+  titulo: string | null;
+  tipoMedia: "imagen" | "video" | null;
+  imagenUrl: string | null;
+  tipoVideo: "youtube" | "archivo" | null;
+  youtubeId: string | null;
+  videoUrl: string | null;
+  posterUrl: string | null;
+  formatoVideo: string | null;
+  relacionAspecto: VideoSource["ratio"] | null;
+};
+
+type SanityCuentaCompleta = SanityCuentaResumen & {
+  city: string | null;
+  challenge: string | null;
+  approach: string | null;
+  results: { valor: string | null; etiqueta: string | null }[] | null;
+  testimonial: { cita: string | null; autor: string | null; cargo: string | null } | null;
+  social: {
+    instagram?: string | null;
+    facebook?: string | null;
+    tiktok?: string | null;
+    sitioWeb?: string | null;
+    otros?: { etiqueta: string; url: string }[] | null;
+  } | null;
+  contenidos: SanityContenido[] | null;
+};
+
+// Campos livianos: para el carrusel y el muro de logos, sin el join de
+// contenidos (que solo hace falta en la pagina individual).
+const CAMPOS_CUENTA_RESUMEN = `
+  "slug": slug.current,
+  "name": nombre,
+  "summary": resumen,
+  "sector": categoria,
+  "logo": logo.asset->url + "?w=160&auto=format",
+  "cover": portada.asset->url + "?w=1200&auto=format",
+  "services": servicios[]->nombre
+`;
+
+const QUERY_CUENTAS_ACTIVAS = `*[_type == "cuenta" && activa == true] | order(orden asc){
+  ${CAMPOS_CUENTA_RESUMEN}
+}`;
+
+const QUERY_SLUGS_ACTIVOS = `*[_type == "cuenta" && activa == true].slug.current`;
+
+const QUERY_CUENTA_POR_SLUG = `*[_type == "cuenta" && activa == true && slug.current == $slug][0]{
+  ${CAMPOS_CUENTA_RESUMEN},
+  "city": ciudad,
+  "challenge": reto,
+  "approach": enfoque,
+  "results": resultados[]{ "valor": valor, "etiqueta": etiqueta },
+  "testimonial": testimonio{ "cita": cita, "autor": autor, "cargo": cargo },
+  "social": redes,
+  "cover": portada.asset->url + "?w=1600&auto=format",
+  "contenidos": *[_type == "contenido" && references(^._id) && publicado == true] | order(orden asc){
+    _id,
+    "titulo": titulo,
+    "tipoMedia": tipoMedia,
+    "imagenUrl": imagen.asset->url + "?w=1200&auto=format",
+    "tipoVideo": tipoVideo,
+    "youtubeId": youtubeId,
+    "videoUrl": archivoVideo.asset->url,
+    "posterUrl": poster.asset->url + "?w=1200&auto=format",
+    "formatoVideo": formatoVideo,
+    "relacionAspecto": relacionAspecto
+  }
+}`;
+
+function toAccountSummary(doc: SanityCuentaResumen): Client | null {
+  if (!doc.name) return null;
   return {
     slug: doc.slug || slugify(doc.name),
     name: doc.name,
     sector: doc.sector ?? "",
     city: "",
     summary: doc.summary ?? "",
-    // Sanity no maneja "services" (etiquetas Creatividad/Audiovisual/...):
-    // ese campo no esta en el alcance de esta migracion, queda vacio.
-    services: [],
-    cover: doc.cover,
+    services: (doc.services ?? []).filter((s): s is string => Boolean(s)),
+    logo: doc.logo ?? undefined,
+    cover: doc.cover ?? "/media/cover-16-9.jpg",
     videos: [],
   };
 }
 
+function toContenidoVideo(c: SanityContenido): VideoSource | null {
+  const src = c.tipoVideo === "youtube" ? c.youtubeId : c.videoUrl;
+  if (!src) return null;
+  return {
+    id: c._id,
+    title: c.titulo ?? "",
+    format: c.formatoVideo ?? "",
+    kind: c.tipoVideo === "youtube" ? "youtube" : "file",
+    src,
+    poster: c.posterUrl ?? "/media/cover-16-9.jpg",
+    ratio: c.relacionAspecto ?? "16/9",
+  };
+}
+
+function toAccountFull(doc: SanityCuentaCompleta): Client | null {
+  if (!doc.name) return null;
+
+  const contenidos = doc.contenidos ?? [];
+  const videos = contenidos
+    .filter((c) => c.tipoMedia === "video")
+    .map(toContenidoVideo)
+    .filter((v): v is VideoSource => v !== null);
+  const gallery = contenidos
+    .filter((c): c is SanityContenido & { imagenUrl: string } => c.tipoMedia === "imagen" && Boolean(c.imagenUrl))
+    .map((c) => c.imagenUrl);
+
+  const results = (doc.results ?? [])
+    .filter((r): r is { valor: string; etiqueta: string } => Boolean(r.valor && r.etiqueta))
+    .map((r) => ({ value: r.valor, label: r.etiqueta }));
+
+  const testimonial =
+    doc.testimonial?.cita && doc.testimonial.autor && doc.testimonial.cargo
+      ? {
+          quote: doc.testimonial.cita,
+          author: doc.testimonial.autor,
+          role: doc.testimonial.cargo,
+        }
+      : undefined;
+
+  const social: SocialLinks | undefined = doc.social
+    ? {
+        instagram: doc.social.instagram ?? undefined,
+        facebook: doc.social.facebook ?? undefined,
+        tiktok: doc.social.tiktok ?? undefined,
+        sitioWeb: doc.social.sitioWeb ?? undefined,
+        otros: doc.social.otros ?? undefined,
+      }
+    : undefined;
+
+  return {
+    slug: doc.slug || slugify(doc.name),
+    name: doc.name,
+    sector: doc.sector ?? "",
+    city: doc.city ?? "",
+    summary: doc.summary ?? "",
+    services: (doc.services ?? []).filter((s): s is string => Boolean(s)),
+    logo: doc.logo ?? undefined,
+    cover: doc.cover ?? "/media/cover-16-9.jpg",
+    videos,
+    challenge: doc.challenge ?? undefined,
+    approach: doc.approach ?? undefined,
+    results: results.length > 0 ? results : undefined,
+    gallery: gallery.length > 0 ? gallery : undefined,
+    testimonial,
+    social,
+  };
+}
+
 /**
- * Trae las cuentas desde Sanity. Si faltan credenciales, la API falla o el
- * dataset viene vacio, cae de vuelta a src/data/clients.ts: el carrusel de
- * la home NUNCA debe quedar roto ni vacio por un problema de conexion.
+ * Cuentas activas para el carrusel y el muro de logos. Si faltan
+ * credenciales, la API falla o el dataset viene vacio, cae de vuelta a
+ * src/data/clients.ts: esas secciones NUNCA deben quedar rotas ni vacias
+ * por un problema de conexion.
  */
-export async function getClientesSanity(): Promise<Client[]> {
+export async function getActiveAccounts(): Promise<Client[]> {
   const projectId = process.env.SANITY_PROJECT_ID;
   const dataset = process.env.SANITY_DATASET;
 
@@ -98,31 +253,78 @@ export async function getClientesSanity(): Promise<Client[]> {
     return clientesRespaldo;
   }
 
-  const url = `https://${projectId}.apicdn.sanity.io/v${API_VERSION}/data/query/${dataset}?query=${encodeURIComponent(QUERY)}`;
+  const url = buildQueryUrl(projectId, dataset, QUERY_CUENTAS_ACTIVAS);
 
   try {
     const res = await fetch(url, {
-      // ISR: revalida cada 60s en vez de pegarle a Sanity en cada request,
-      // pero sin necesitar un rebuild para ver contenido nuevo.
+      // ISR: revalida cada 60s en vez de pegarle a Sanity en cada request.
+      // /api/revalidate invalida esto al instante cuando se publica algo.
       next: { revalidate: 60 },
     });
+    if (!res.ok) throw new Error(`Sanity respondio ${res.status} ${res.statusText}`);
 
-    if (!res.ok) {
-      throw new Error(`Sanity respondio ${res.status} ${res.statusText}`);
-    }
+    const { result } = (await res.json()) as { result: SanityCuentaResumen[] };
+    const cuentas = result.map(toAccountSummary).filter((c): c is Client => c !== null);
 
-    const { result } = (await res.json()) as { result: SanityCliente[] };
-    const clientes = result
-      .map(toClient)
-      .filter((c): c is Client => c !== null);
-
-    return clientes.length > 0 ? clientes : clientesRespaldo;
+    return cuentas.length > 0 ? cuentas : clientesRespaldo;
   } catch (err) {
-    console.error(
-      "[sanity] No se pudo obtener las cuentas, se muestran las locales de respaldo:",
-      err
-    );
+    console.error("[sanity] No se pudo obtener las cuentas, se muestran las locales de respaldo:", err);
     return clientesRespaldo;
+  }
+}
+
+/** Solo los slugs de cuentas activas, para generateStaticParams() y el sitemap. */
+export async function getAllActiveSlugs(): Promise<string[]> {
+  const projectId = process.env.SANITY_PROJECT_ID;
+  const dataset = process.env.SANITY_DATASET;
+
+  if (!projectId || !dataset) {
+    return clientesRespaldo.map((c) => c.slug);
+  }
+
+  const url = buildQueryUrl(projectId, dataset, QUERY_SLUGS_ACTIVOS);
+
+  try {
+    const res = await fetch(url, { next: { revalidate: 60 } });
+    if (!res.ok) throw new Error(`Sanity respondio ${res.status} ${res.statusText}`);
+
+    const { result } = (await res.json()) as { result: (string | null)[] };
+    const slugs = result.filter((s): s is string => Boolean(s));
+
+    return slugs.length > 0 ? slugs : clientesRespaldo.map((c) => c.slug);
+  } catch (err) {
+    console.error("[sanity] No se pudo obtener los slugs de cuentas, se usan los locales de respaldo:", err);
+    return clientesRespaldo.map((c) => c.slug);
+  }
+}
+
+/**
+ * Una cuenta activa completa, con su contenido asociado ya separado en
+ * videos/gallery. Usada por la pagina individual /clientes/[slug]. Si la
+ * cuenta no existe o esta inactiva, o si Sanity no responde, cae al
+ * respaldo local (y si tampoco esta ahi, null -> notFound()).
+ */
+export async function getAccountBySlug(slug: string): Promise<Client | null> {
+  const projectId = process.env.SANITY_PROJECT_ID;
+  const dataset = process.env.SANITY_DATASET;
+
+  if (!projectId || !dataset) {
+    return clientesRespaldo.find((c) => c.slug === slug) ?? null;
+  }
+
+  const url = buildQueryUrl(projectId, dataset, QUERY_CUENTA_POR_SLUG, { slug });
+
+  try {
+    const res = await fetch(url, { next: { revalidate: 60 } });
+    if (!res.ok) throw new Error(`Sanity respondio ${res.status} ${res.statusText}`);
+
+    const { result } = (await res.json()) as { result: SanityCuentaCompleta | null };
+    if (!result) return clientesRespaldo.find((c) => c.slug === slug) ?? null;
+
+    return toAccountFull(result);
+  } catch (err) {
+    console.error(`[sanity] No se pudo obtener la cuenta "${slug}", se usa el respaldo local:`, err);
+    return clientesRespaldo.find((c) => c.slug === slug) ?? null;
   }
 }
 

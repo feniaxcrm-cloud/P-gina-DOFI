@@ -40,6 +40,14 @@ export type Testimonial = {
   role: string;
 };
 
+export type SocialLinks = {
+  instagram?: string;
+  facebook?: string;
+  tiktok?: string;
+  sitioWeb?: string;
+  otros?: { etiqueta: string; url: string }[];
+};
+
 export type Client = {
   slug: string;
   name: string;
@@ -47,9 +55,10 @@ export type Client = {
   city: string;
   /** Frase corta de que se hizo para la cuenta. Max ~18 palabras. */
   summary: string;
-  /** Servicios activos en la cuenta */
-  services: ("Creatividad" | "Audiovisual" | "Pauta" | "CRM" | "Bot IA")[];
-  /** Logo del cliente en /public/clientes. Si no existe se usa el monograma. */
+  /** Servicios activos en la cuenta. Gestionados como referencias en Sanity
+   *  (ver studio/schemaTypes/servicio.ts): no es un enum cerrado. */
+  services: string[];
+  /** Logo del cliente. Si no existe se usa el monograma. */
   logo?: string;
   cover: string;
   videos: VideoSource[];
@@ -66,6 +75,8 @@ export type Client = {
   /** Imagenes del proyecto en /public/clientes o /public/media. */
   gallery?: string[];
   testimonial?: Testimonial;
+  /** Redes/enlaces de la cuenta. Todos opcionales. */
+  social?: SocialLinks;
 };
 
 export const clients: Client[] = [

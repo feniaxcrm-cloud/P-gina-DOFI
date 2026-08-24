@@ -1,6 +1,6 @@
 import { Reveal } from "./Reveal";
 import { ClientsCarousel } from "./ClientsCarousel";
-import { getClientesSanity } from "@/lib/sanity";
+import { getActiveAccounts } from "@/lib/sanity";
 
 /**
  * Galeria de clientes, en carrusel.
@@ -13,11 +13,11 @@ import { getClientesSanity } from "@/lib/sanity";
  *
  * Las cuentas se traen de Sanity (ver src/lib/sanity.ts) en el servidor;
  * ClientsCarousel y ClientCard reciben la lista ya lista, sin saber de
- * donde vino. Si Sanity no responde, getClientesSanity() cae de vuelta a
+ * donde vino. Si Sanity no responde, getActiveAccounts() cae de vuelta a
  * src/data/clients.ts para que el carrusel nunca se rompa ni quede vacio.
  */
 export async function Clients() {
-  const clientes = await getClientesSanity();
+  const clientes = await getActiveAccounts();
 
   return (
     <section id="clientes" className="relative bg-abyss py-32 md:py-48">

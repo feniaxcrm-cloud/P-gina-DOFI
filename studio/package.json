@@ -1,0 +1,24 @@
+{
+  "name": "dofi-sanity-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CMS de DOFI Agencia Creativa: Cuentas, Contenidos y Servicios. Proyecto Sanity independiente, no forma parte del build de la web (Next.js/Cloudflare Workers).",
+  "scripts": {
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "^3.0.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@sanity/vision": "^3.0.0",
+    "@types/react": "^18.3.0",
+    "typescript": "^5.6.0"
+  }
+}
