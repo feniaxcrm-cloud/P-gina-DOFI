@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent } from "motion/react";
 import { List, X } from "@phosphor-icons/react";
@@ -21,9 +21,43 @@ export function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   // Motivo: la barra gana contraste al salir del hero para no perder legibilidad.
   useMotionValueEvent(scrollY, "change", (v) => setSolid(v > 40));
+
+  // PREFLIGHT NAVBAR: con el panel movil abierto, <main> queda "inert" —
+  // fuera del arbol de foco y de lectores de pantalla — para que Tab no se
+  // escape hacia el Hero que sigue detras (el panel es un desplegable corto,
+  // no un modal a pantalla completa, asi que no hace falta una libreria de
+  // focus trap: alcanza con anular el contenido que queda atras). document.
+  // querySelector en vez de un ref cruzado de componentes porque <main> es
+  // hermano de <Nav/> en cada pagina (page.tsx y [slug]/page.tsx), no un
+  // descendiente: no hay una referencia de React que pasar sin levantar
+  // estado a un layout compartido, y eso es mas cambio del que pide este
+  // arreglo puntual.
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (!(main instanceof HTMLElement)) return;
+    main.inert = open;
+    return () => {
+      main.inert = false;
+    };
+  }, [open]);
+
+  // Escape cierra el panel y devuelve el foco a la hamburguesa, igual que
+  // cualquier desplegable accesible (el patron "disclosure" del WAI-ARIA
+  // Authoring Practices, no el de "dialog").
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      hamburgerRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
@@ -63,9 +97,11 @@ export function Nav() {
               <MagneticCta href="/#contacto">Iniciar proyecto</MagneticCta>
             </div>
             <button
+              ref={hamburgerRef}
               type="button"
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
+              aria-controls="menu-movil"
               aria-label={open ? "Cerrar menu" : "Abrir menu"}
               className="rounded-full border border-brand-lift/40 p-2.5 text-foam lg:hidden"
             >
@@ -77,6 +113,7 @@ export function Nav() {
 
       {open && (
         <motion.div
+          id="menu-movil"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
