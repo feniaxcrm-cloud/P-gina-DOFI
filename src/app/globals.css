@@ -46,65 +46,6 @@
   --z-grain: 60;
   --z-nav: 50;
   --z-overlay: 40;
-
-  /* ==========================================================
-     DESIGN SYSTEM V1 — tokens semanticos
-     Ver audit/DOFI-DESIGN-SYSTEM-V1.md
-
-     CONVIVEN a proposito con los tokens de arriba: los nuevos
-     apuntan a los MISMOS valores, pero nombrados por su ROL en
-     lugar de por su aspecto. Se migra componente a componente;
-     los legacy se retiran cuando no queden referencias.
-
-     Hoy solo los usa el Hero (Sprint 2). No migrar el resto.
-
-     Nota de nombres: el rol "text.*" del documento se escribe
-     aqui "fg-*" porque Tailwind antepone la utilidad
-     (text-fg-muted se lee mejor que text-text-secondary).
-     ========================================================== */
-
-  /* Superficies */
-  --color-surface-base: #120A26;    /* = abyss   · fondo por defecto */
-  --color-surface-raised: #1A0F3D;  /* = deep    · zona elevada */
-  --color-surface-overlay: #241553; /* = surface · tarjetas, campos */
-
-  /* Texto sobre oscuro (rol) */
-  --color-fg-primary: #F4F0FE;   /* = foam     · 17,08:1 */
-  --color-fg-muted: #B3A5D4;     /* = mist     ·  8,43:1 */
-  --color-fg-subtle: #948AB8;    /* = mist-dim ·  6,00:1 */
-  --color-fg-on-accent: #1A0F3D; /*            ·  6,53:1 sobre accent */
-
-  /* Contenedores */
-  --container-page: 1320px;
-  --container-copy: 560px;
-
-  /* Tipografia.
-     El H1 sube en dos tramos y no en una sola rampa continua,
-     porque en xl la maqueta pasa de una columna a 7/5 y la
-     columna de texto se estrecha de golpe (1183 -> 671 px a
-     1280). Con una rampa unica el mismo titular saltaba de 2 a
-     4 lineas justo en ese punto. Medido, no estimado. */
-  --text-h1: clamp(2.75rem, 2rem + 3.05vw, 4rem);        /* 44 -> 64 */
-  --text-h1--line-height: 1;
-  --text-h1--letter-spacing: -0.02em;
-  --text-h1--font-weight: 800;
-
-  --text-h1-wide: clamp(4.25rem, 0.25rem + 5vw, 4.75rem); /* 68 -> 76 */
-  --text-h1-wide--line-height: 1;
-  --text-h1-wide--letter-spacing: -0.02em;
-  --text-h1-wide--font-weight: 800;
-
-  --text-body-lg: 1.125rem;
-  --text-body-lg--line-height: 1.6;
-
-  --text-eyebrow: 0.75rem;
-  --text-eyebrow--line-height: 1.4;
-  --text-eyebrow--letter-spacing: 0.14em;
-  --text-eyebrow--font-weight: 600;
-
-  --text-button: 0.9375rem;   /* 15px */
-  --text-button--line-height: 1;
-  --text-button--font-weight: 600;
 }
 
 html {
@@ -243,38 +184,13 @@ body {
   will-change: transform;
 }
 
-/* Se pausa al pasar el cursor y tambien si algo dentro recibe el foco de
-   teclado: hoy los nombres no son enlaces, pero cuando lleguen los logos
-   reales y sean navegables, la pausa ya funcionara. */
-.wall-track:hover,
-.wall-track:focus-within {
+.wall-track:hover {
   animation-play-state: paused;
-}
-
-/* La ventana recorta la tira. Va aqui y no en una utilidad suelta porque
-   con movimiento reducido tiene que cambiar de comportamiento. */
-.wall-viewport {
-  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .wall-track {
     animation: none;
-  }
-
-  /* Sin animacion, la tira se queda quieta y la mitad quedaria cortada.
-     Se cambia a desplazamiento manual: el usuario recorre la franja
-     cuando quiere. NO se oculta ninguna empresa. */
-  .wall-viewport {
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-
-  /* La copia duplicada solo existe para que el bucle no muestre costura.
-     Sin bucle no hace falta, y ademas duplicaria la lista al desplazarla.
-     Son exactamente los elementos marcados aria-hidden. */
-  .wall-track > [aria-hidden="true"] {
-    display: none;
   }
 }
 
@@ -310,93 +226,4 @@ body {
 
 .group:hover .service-sweep {
   transform: scaleX(1);
-}
-
-/* ============================================================
-   SMART SALES SYSTEM (Hero V1)
-
-   Recorrido Atraer -> Convertir -> Escalar. Un ciclo de 6s en
-   el que cada modulo se enciende 2s, y entre uno y otro baja un
-   pulso por el conector.
-
-   Va en CSS y no en Motion a proposito: es una animacion
-   perpetua y sin estado, asi que la resuelve el compositor sin
-   ocupar el hilo principal ni hidratar nada. El visual entero
-   se renderiza en el servidor.
-
-   Nada de esto oculta informacion: en reposo los tres modulos
-   ya muestran su texto completo. Solo cambia el color del
-   borde y la posicion de un punto.
-   ============================================================ */
-
-@keyframes sss-modulo {
-  0%,
-  22% {
-    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
-  }
-  33%,
-  100% {
-    border-color: color-mix(in srgb, var(--color-brand-lift) 25%, transparent);
-  }
-}
-
-@keyframes sss-etiqueta {
-  0%,
-  22% {
-    color: var(--color-accent);
-  }
-  33%,
-  100% {
-    color: var(--color-fg-subtle);
-  }
-}
-
-/* El punto recorre el conector justo antes de que se encienda
-   el modulo siguiente. */
-@keyframes sss-pulso {
-  0%,
-  60% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  66% {
-    opacity: 1;
-  }
-  90% {
-    transform: translateY(100%);
-    opacity: 1;
-  }
-  96%,
-  100% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-}
-
-.sss-modulo {
-  animation: sss-modulo 6s linear infinite;
-}
-
-.sss-etiqueta {
-  animation: sss-etiqueta 6s linear infinite;
-}
-
-.sss-pulso {
-  animation: sss-pulso 6s linear infinite;
-}
-
-/* Con movimiento reducido el sistema se muestra completo y
-   estatico: se apagan los ciclos y se deja marcado el modulo
-   central, que es el que la composicion destaca. No se pierde
-   ninguna informacion. */
-@media (prefers-reduced-motion: reduce) {
-  .sss-modulo,
-  .sss-etiqueta,
-  .sss-pulso {
-    animation: none;
-  }
-  .sss-pulso {
-    opacity: 1;
-    transform: none;
-  }
 }
