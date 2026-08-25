@@ -343,6 +343,139 @@ body {
 }
 
 /* ============================================================
+   HERO — entrada + flotacion continua de texto/CTA
+   (Sprint "Motion final". Ver src/components/Hero.tsx)
+
+   Cada elemento lleva DOS animaciones en la misma propiedad (transform),
+   compuestas via lista separada por comas:
+
+     1. Una entrada de una sola pasada (`animation-fill-mode: both`),
+        stagger por elemento via animation-delay.
+     2. Una flotacion infinita que arranca justo cuando la entrada termina
+        (su propio animation-delay = delay de la entrada + su duracion), y
+        cuyo primer fotograma (0%) es exactamente el mismo transform final
+        de la entrada — asi el relevo entre una y otra no da un salto.
+
+   Como la flotacion esta MAS ADELANTE en la lista, sus fotogramas ganan
+   sobre los de la entrada en cuanto empieza a estar activa (spec de CSS
+   Animations: cuando dos animaciones tocan la misma propiedad, la ultima
+   de la lista manda). No hace falta JS para la secuencia.
+
+   Todo es transform puro — nunca opacity — porque el H1 y el resto del
+   texto critico no pueden nacer invisibles (regla de LCP del sprint del
+   Hero). La regla global de prefers-reduced-motion (arriba en este
+   archivo) ya aplasta animation-duration y fija iteration-count a 1 en
+   TODA la pagina: eso deja cada elemento congelado en el transform final
+   de su propia entrada (que es tambien el fotograma 0%/100% de su
+   flotacion), sin necesitar una media query propia aqui. */
+@keyframes hero-enter-h1 {
+  from { transform: translateY(12px); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-float-h1 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.hero-anim-h1 {
+  animation:
+    hero-enter-h1 620ms cubic-bezier(0.16, 1, 0.3, 1) 0ms both,
+    hero-float-h1 8s ease-in-out 620ms infinite;
+}
+
+@keyframes hero-enter-brand {
+  from { transform: translateY(9px); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-float-brand {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.hero-anim-brand {
+  animation:
+    hero-enter-brand 600ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both,
+    hero-float-brand 9.5s ease-in-out 700ms infinite;
+}
+
+@keyframes hero-enter-proposal {
+  from { transform: translateY(8px); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-float-proposal {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.hero-anim-proposal {
+  animation:
+    hero-enter-proposal 600ms cubic-bezier(0.16, 1, 0.3, 1) 190ms both,
+    hero-float-proposal 10.5s ease-in-out 790ms infinite;
+}
+
+@keyframes hero-enter-cta {
+  from { transform: translateY(6px); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-float-cta {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+.hero-anim-cta {
+  animation:
+    hero-enter-cta 600ms cubic-bezier(0.16, 1, 0.3, 1) 270ms both,
+    hero-float-cta 8.8s ease-in-out 870ms infinite;
+}
+
+/* ============================================================
+   TARJETAS DEL HERO — glow de borde que sigue al cursor
+   (ver src/components/HeroCards.tsx)
+
+   --mouse-x/--mouse-y se escriben por JS directo sobre el elemento (sin
+   pasar por React) en cada pointermove. El glow es un pseudo-elemento
+   posicionado con esas variables y recortado a un anillo del grosor del
+   borde: dos capas de mascara (una a partir del padding-box, otra del
+   border-box completo) combinadas con mask-composite:exclude dejan
+   visible solo la diferencia entre ambas, es decir, el borde. Por eso
+   NUNCA se ve como un box-shadow parejo alrededor de toda la tarjeta.
+
+   La tarjeta en si (el elemento con .card-glow) no lleva NINGUNA
+   transicion de transform: el glow cambia color/mascara/opacidad, nunca
+   mueve, inclina, rota ni escala la tarjeta — esa es la regla dura del
+   sprint. Solo se habilita el seguimiento con mouse/trackpad real
+   (hover:hover + pointer:fine); en touch el borde se queda en su estado
+   normal, sin intentar simular el dedo. */
+.card-glow {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: radial-gradient(
+    220px circle at var(--mouse-x) var(--mouse-y),
+    color-mix(in srgb, var(--color-accent) 75%, var(--color-brand-lift)) 0%,
+    color-mix(in srgb, var(--color-brand-lift) 60%, transparent) 45%,
+    transparent 72%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-glow:hover::before {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
    SMART SALES SYSTEM (Hero V1)
 
    Recorrido Atraer -> Convertir -> Escalar. Un ciclo de 6s en

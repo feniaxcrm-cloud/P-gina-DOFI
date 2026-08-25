@@ -324,6 +324,155 @@ verificar animación.
 
 ---
 
+## 16. Motion final aprobado para revisión
+
+**Base:** `f6ac03a` (Hero DOFI V1, composición ya aprobada). Este sprint
+era exclusivamente de motion/interacción — pero el brief daba por
+existentes 4 tarjetas ("Planificación Estratégica" / "Conversación" /
+"Producción Audiovisual" / "Publicación de Contenido") que no estaban en el
+código. Se confirmó con el propietario y se crearon primero (copy exacto,
+sin inventar nada), en una segunda zona del mismo `<section>` del Hero,
+debajo del grupo de CTA — la zona de statement (H1/marca/propuesta/CTA +
+onda) no cambió de tamaño ni posición.
+
+### 16.1 Entrada + flotación de texto/CTA
+
+Los 4 elementos existentes (H1, marca, propuesta, CTA) ganaron una clase
+`hero-anim-*` cada uno, resuelta 100% en CSS (`globals.css`), sin JS ni
+`"use client"` en `Hero.tsx` — sigue siendo un componente de servidor.
+
+| Elemento | Entrada (`from`) | Delay entrada | Flotación (amplitud) | Duración flotación |
+|---|---:|---:|---:|---:|
+| H1 "Un Mar de Ideas" | `translateY(12px)` | 0ms | ±3px | 8s |
+| "DOFI Agencia Creativa" | `translateY(9px)` | 100ms | ±2px | 9.5s |
+| Propuesta comercial | `translateY(8px)` | 190ms | ±2px | 10.5s |
+| Grupo de CTA | `translateY(6px)` | 270ms | ±1.5px | 8.8s |
+
+Duración de la entrada: 600–620ms en los 4 (dentro de 500–700ms), curva
+`cubic-bezier(0.16,1,0.3,1)`, delay total 270ms (dentro del máximo de
+320ms). **Técnica:** cada elemento lleva DOS animaciones CSS en la misma
+propiedad (`transform`), compuestas en una sola declaración separada por
+comas — la entrada (`animation-fill-mode: both`, una sola pasada) y la
+flotación infinita, cuyo propio `animation-delay` es exactamente el
+momento en que la entrada termina, y cuyo fotograma `0%` es el mismo
+`translateY` final de la entrada: no hay salto entre una y otra. Nunca se
+usó `opacity` — el H1 y el resto del texto existen desde el primer paint,
+solo se desplazan unos px.
+
+**Verificado con Puppeteer, no solo declarado:** se tomaron 3 capturas
+separadas por 2,5s y se midió la posición Y real del H1 y del CTA en cada
+una — el H1 se movió 3px entre el primer y segundo frame (coincide con la
+amplitud declarada), el CTA 0,72px (dentro de su rango ±1,5px, con dos
+puntos de muestreo cualquiera de un ciclo de 8,8s no tienen por qué caer en
+los extremos). Confirma que la flotación es real, no solo código presente.
+
+### 16.2 Tarjetas — entrada y confirmación de que NO flotan
+
+Entrada: `HeroCards.tsx` (nuevo, `"use client"` — es el único punto de
+interactividad real, el resto del Hero sigue siendo servidor), Framer
+Motion `whileInView` una sola vez, `translateY(14px) → 0` + opacidad,
+stagger de **75ms** entre tarjetas (dentro de 60–90ms), duración **550ms**
+(dentro de 500–600ms), misma curva del sistema.
+
+**Confirmación de estabilidad, medida, no asumida:** se compararon los
+`getBoundingClientRect()` de las 4 tarjetas en los mismos 3 frames que se
+usaron para verificar la flotación del texto (separados 2,5s cada uno,
+tiempo de sobra para que cualquier animación residual se notara). Resultado
+para las 4 tarjetas, en los 3 frames:
+
+```
+dx: 0, dy: 0   (las 4 tarjetas, los 3 frames)
+```
+
+**Cero drift.** Inspeccionado también el código: ninguna tarjeta tiene
+`repeat: Infinity`, keyframes infinitos, ni transform-loop de ningún tipo
+— la única animación que tocan es la entrada de una sola pasada, y el
+`::before` del glow (que nunca anima `transform`, solo `opacity` y las
+variables del gradiente).
+
+### 16.3 Glow interactivo — técnica
+
+`--mouse-x`/`--mouse-y` se escriben **directo sobre el elemento** vía
+`style.setProperty()` dentro de un listener nativo de `pointermove`
+(`useGlowSeguidor` en `HeroCards.tsx`) — **sin `setState`**, así que no hay
+un rerender de React por cada movimiento del mouse (regla del punto 17/23).
+
+El brillo es un pseudo-elemento (`::before`) posicionado con esas
+variables vía `radial-gradient(220px circle at var(--mouse-x)
+var(--mouse-y), ...)`, recortado a un anillo del grosor del borde con la
+técnica de doble máscara + `mask-composite: exclude` (una máscara desde el
+`padding-box`, otra desde el `border-box` completo; lo que queda visible es
+solo la diferencia entre ambas, es decir, el borde). **No es un
+`box-shadow` parejo** — verificado visualmente en las 4 capturas de borde
+(`desktop-card-glow-top/right/bottom/left.png`): el brillo se concentra
+exactamente en el lado donde está el cursor.
+
+Paleta: `accent`(naranja) mezclado con `brand-lift`(lila) vía
+`color-mix()`, sin verde, cyan ni azul SaaS — mismos tokens que el resto
+del sitio.
+
+**La tarjeta nunca se mueve por el glow:** el `::before` no anima
+`transform` en ningún momento, solo `opacity` (habilitado únicamente con
+`@media (hover: hover) and (pointer: fine)`, así que en touch el borde se
+queda en su estado normal sin intentar simular el dedo) y el
+`background`/máscara, que se recalculan solos porque son funciones de las
+CSS custom properties.
+
+Verificado en navegador: tras mover el cursor a la esquina superior de una
+tarjeta, `--mouse-x`/`--mouse-y` quedaron en `4px`/`65.75px` (coincide con
+la posición real del cursor relativa a la tarjeta) y la opacidad computada
+del `::before` pasó a `1`.
+
+### 16.4 Reduced motion
+
+`prefers-reduced-motion: reduce` emulado en Puppeteer:
+
+| Comprobación | Resultado |
+|---|---|
+| `animation-duration` de H1 y CTA | `0.000001s` |
+| H1 se movió en 2s de espera real | **0px** |
+| CTA se movió en 2s de espera real | **0px** |
+| Onda | Sigue con su propio tratamiento (ya congelada desde el sprint anterior) |
+| Tarjetas | Estáticas (ya lo eran incluso con movimiento activado) |
+
+No hizo falta ninguna regla `@media` nueva para el texto/CTA: la regla
+global que ya fuerza `animation-duration`/`animation-iteration-count` en
+toda la página deja cada elemento congelado en el fotograma final de su
+propia entrada (que es también el `0%`/`100%` de su flotación), sin
+residuo de movimiento — confirmado con una espera real de 2 segundos, no
+solo con el valor de la propiedad CSS.
+
+### 16.5 Performance
+
+- Cero dependencias nuevas.
+- `Hero.tsx` y `DofiWave.tsx` siguen siendo de servidor. El único cliente
+  nuevo es `HeroCards.tsx`, acotado a las 4 tarjetas (Framer Motion, ya
+  instalado).
+- El glow no usa `setState` por movimiento — mutación directa de estilo
+  sobre el nodo DOM vía `ref`, cero rerenders de React durante el
+  `pointermove`.
+- Toda la flotación de texto es `transform` puro vía CSS `@keyframes` — no
+  se anima `top`/`left`/`width`/`height` en ningún punto de este sprint.
+
+### 16.6 Screenshots
+
+```
+audit/hero-final-v1/motion-final/
+  desktop-default.png
+  desktop-card-glow-top.png
+  desktop-card-glow-right.png
+  desktop-card-glow-bottom.png
+  desktop-card-glow-left.png
+  mobile-390.png
+  desktop-reduced-motion.png
+  hero-float-frame-01.png
+  hero-float-frame-02.png
+  hero-float-frame-03.png
+```
+
+---
+
 *Hero DOFI V1 sobre `6040d32`. Dos archivos de componente (uno reescrito,
-uno nuevo) + una animación en `globals.css`. Sin dependencias nuevas, sin
-commit ni deploy.*
+uno nuevo) + una animación en `globals.css`. Motion final sobre `f6ac03a`:
+un componente nuevo (`HeroCards.tsx`) + CSS de entrada/flotación/glow. Sin
+dependencias nuevas en ningún punto, sin commit ni deploy.*
