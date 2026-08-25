@@ -313,6 +313,36 @@ body {
 }
 
 /* ============================================================
+   CINTA DE LUZ DOFI (Hero V1) — ver src/components/DofiWave.tsx
+
+   Mismo mecanismo que .wall-track/.tide-track: el SVG dibuja su curva DOS
+   veces seguidas dentro de un viewBox del doble de ancho, se renderiza al
+   200% del contenedor, y esta animacion lo desliza exactamente un "tile"
+   (50% de su propio ancho) antes de reiniciar. Como las tres curvas son
+   periodicas por construccion (suma de senos con ciclos enteros sobre el
+   ancho del tile), la costura del bucle es invisible.
+
+   linear a proposito (motion.ease.linear: "solo marquesinas y barras de
+   progreso"), igual que las otras animaciones de bucle continuo del sitio.
+   La regla global de prefers-reduced-motion (arriba en este archivo) ya
+   fuerza animation-duration casi a cero en TODA la pagina, asi que esta
+   capa no necesita su propia media query: se congela sola en un fotograma
+   que, al ser un bucle sin costura, es visualmente identico al de reposo. */
+@keyframes dofi-wave-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.dofi-wave-track {
+  animation: dofi-wave-drift linear infinite;
+  will-change: transform;
+}
+
+/* ============================================================
    SMART SALES SYSTEM (Hero V1)
 
    Recorrido Atraer -> Convertir -> Escalar. Un ciclo de 6s en
