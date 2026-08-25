@@ -368,5 +368,128 @@ Puppeteer todo animó y se asentó correctamente).
 
 ---
 
+## 16. Correcciones posteriores a revisión
+
+**Base:** `b2e70c4` (Navbar V1 ya aprobado en dirección general). Alcance
+estrictamente el pedido de corrección — nada de arquitectura, rutas, logo,
+colores generales, CTA superior, comportamiento flotante, ancho del
+container, active routing, `layoutId`, animación, scroll state,
+accesibilidad, `inert` ni reduced motion.
+
+### 16.1 CTA duplicado del panel mobile — eliminado
+
+El panel abierto mostraba dos veces "Empecemos": una en la barra superior
+(que nunca desaparece al abrir el panel) y otra, en contorno, al final del
+panel. Se eliminó por completo el bloque del panel (link + `ArrowRight` +
+el `<div>` con `border-t` que lo envolvía). El panel ahora contiene
+**únicamente** los 5 links:
+
+```
+DOFI
+FENIAX
+EL SOCIO
+CLIENTES
+CONTÁCTANOS
+```
+
+Sin acción sustituta, sin copy adicional, sin mensaje de respuesta — tal
+como pedía la corrección.
+
+### 16.2 Panel compactado — altura antes/después
+
+| | Antes | Después |
+|---|---:|---:|
+| Alto del panel (390×844 y 360×800) | 398px | **305px** |
+| Alto por link | 56px | 56px (**sin cambio**, según lo pedido) |
+
+305px está debajo del rango objetivo (310–340), pero es el resultado
+natural del contenido — 5 links de 56px + `pt-2`(8) + `pb-4`(16) + borde
+superior(1) = 305px exactos. No se forzó ningún relleno para entrar en el
+rango: el punto 2 de la corrección pedía explícitamente "no fijar una
+altura arbitraria si el contenido necesita otra. Debe resultar del
+contenido + padding" — 305px **es** ese resultado.
+
+### 16.3 Active pill desktop — medidas finales
+
+| Propiedad | Antes | Después |
+|---|---:|---:|
+| Alto de la cápsula | 40px | **40px** (ya estaba en el techo del rango 36–40, sin cambio) |
+| Padding horizontal del link | 16px (`px-4`) | **20px** (`px-5`) |
+| Ancho cápsula "DOFI" | — | **75px** |
+
+Color, `layoutId`, easing, duración (350ms, `cubic-bezier(0.16,1,0.3,1)`,
+`type:"tween"`) y concepto: **sin cambios**, tal como exigía la corrección.
+Sin glow, sin shadow, sin degradado, sin escala, sin borde brillante — sigue
+siendo un borde `brand-lift/25` + `bg-surface/80`, claramente más liviano
+que el relleno sólido del CTA naranja.
+
+### 16.4 Mobile active — sin cambios
+
+El punto naranja de 6px + texto `fg-primary` para el link activo se dejó
+exactamente igual, tal como pedía la corrección (punto 4).
+
+### 16.5 Hero — no tocado
+
+Ningún archivo de Hero, Smart Sales System ni su spacing se modificó en esta
+ronda. Las capturas lo muestran solo porque comparte pantalla con el
+Navbar.
+
+### 16.6 Re-test de accesibilidad
+
+Repetido después de quitar el CTA del panel (Puppeteer, Chrome real):
+
+| Comprobación | Resultado |
+|---|---|
+| `main.inert` con el panel abierto | ✅ `true` |
+| `footer.inert` con el panel abierto | ✅ `true` |
+| Foco forzado por JS dentro de `main` mientras el panel está abierto | ✅ no lo roba (`stoleFocus: false`) |
+| `body.style.overflow` con el panel abierto | ✅ `"hidden"` |
+| Escape cierra el panel | ✅ |
+| Foco vuelve a la hamburguesa | ✅ |
+| `main.inert` después de cerrar | ✅ `false` |
+| `footer.inert` después de cerrar | ✅ `false` |
+| `body.style.overflow` después de cerrar | ✅ `""` (restaurado) |
+| El panel se desmonta del DOM tras cerrar | ✅ |
+
+Sin cambios de comportamiento respecto al reporte original — esperado,
+porque el mecanismo de `inert`/scroll-lock no se tocó, solo el contenido
+que había *dentro* del panel.
+
+### 16.7 Hallazgo adicional, fuera del alcance de esta corrección — reportado, no corregido
+
+Verificando el punto 16.3 encontré algo que vale la pena documentar aunque
+esta ronda prohíba tocar `layoutId`/animación: **al navegar entre páginas
+reales (DOFI → FENIAX, por ejemplo), el nodo `<header>` se destruye y se
+crea uno nuevo** — lo confirmé marcando el DOM con un atributo antes de
+navegar y comprobando que no sobrevive al cambio de ruta. Es consecuencia
+de que `<Nav />` se declara dentro de cada `page.tsx` (punto de diseño ya
+aprobado, no de esta corrección) en vez de en un `layout.tsx` compartido:
+cada página es un árbol de React distinto, así que el `layoutId` de Framer
+Motion no tiene continuidad para interpolar — la cápsula **aparece ya en su
+posición final** en la página nueva en vez de deslizarse visiblemente desde
+la posición de la página anterior. El estado final (qué página está activa)
+siempre es correcto, medido y capturado en todas las pruebas; lo que no
+ocurre es el desplazamiento visible entre una ruta y otra.
+
+No lo corregí porque implicaría mover `<Nav />` a `src/app/layout.tsx`
+— un cambio de arquitectura explícitamente fuera del alcance de esta ronda
+("NO cambies: arquitectura desktop"). Si en algún momento se quiere que la
+cápsula se vea deslizar entre páginas de verdad, esa es la solución; queda
+documentado para cuando se decida abordarlo.
+
+### 16.8 Screenshots de corrección
+
+```
+audit/navbar-final-v1/correction/
+  desktop-1440-dofi.png
+  desktop-1440-feniax.png
+  mobile-390-closed.png
+  mobile-390-open.png
+  mobile-360-open.png
+```
+
+---
+
 *Navbar DOFI V1 sobre `5a8aaf1`. Un componente reescrito, 5 archivos nuevos,
-sin dependencias nuevas, sin commit ni deploy.*
+sin dependencias nuevas, sin commit ni deploy. Correcciones de aprobación
+sobre `b2e70c4`, mismo estado: sin commit, sin deploy.*

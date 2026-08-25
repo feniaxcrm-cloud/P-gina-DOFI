@@ -196,7 +196,7 @@ export function Nav() {
                         href={l.href}
                         aria-current={esActivo ? "page" : undefined}
                         className={[
-                          "relative inline-flex h-10 items-center whitespace-nowrap rounded-full px-4 font-sans text-[15px] font-medium transition-colors duration-200",
+                          "relative inline-flex h-10 items-center whitespace-nowrap rounded-full px-5 font-sans text-[15px] font-medium transition-colors duration-200",
                           esActivo
                             ? "text-fg-primary"
                             : "text-fg-muted hover:bg-surface/40 hover:text-fg-primary",
@@ -284,7 +284,11 @@ export function Nav() {
                 }}
                 className="lg:hidden"
               >
-                <div className="border-t border-brand-lift/15 px-4 pb-5 pt-2 md:px-6">
+                <div className="border-t border-brand-lift/15 px-4 pb-4 pt-2 md:px-6">
+                  {/* Solo los 5 links. El CTA "Empecemos" ya esta siempre
+                      visible en la barra superior (no desaparece al abrir
+                      el panel) — repetirlo aqui era un segundo CTA
+                      redundante sin ninguna accion nueva que ofrecer. */}
                   <nav aria-label="Navegación principal">
                     <ul className="flex flex-col">
                       {LINKS.map((l) => {
@@ -313,20 +317,6 @@ export function Nav() {
                       })}
                     </ul>
                   </nav>
-
-                  {/* Contorno, no relleno: la barra no desaparece al abrir
-                      el panel, asi que su CTA naranja solido sigue visible
-                      arriba. Dos rellenos naranja a la vez anulan la
-                      jerarquia. */}
-                  <div className="mt-4 border-t border-brand-lift/15 pt-5">
-                    <Link
-                      href="/contactanos"
-                      className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-full border border-brand-lift/45 px-6 font-display text-button text-fg-primary transition-colors duration-200 hover:border-accent/60 active:scale-[0.98]"
-                    >
-                      Empecemos
-                      <ArrowRight size={18} weight="bold" aria-hidden="true" className="text-accent" />
-                    </Link>
-                  </div>
                 </div>
               </motion.div>
             )}
