@@ -2,80 +2,76 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { List, X, ArrowRight } from "@phosphor-icons/react";
 import { Wordmark } from "./Wordmark";
 
 /**
- * Navbar V1 — infraestructura de orientacion y conversion.
+ * Navbar DOFI V1 — flotante, multipagina, con capsula de pagina activa.
  *
- * QUE RESUELVE (ver AUDITORIA-DOFI-V1)
- * ------------------------------------
- *  · Sin CTA por debajo de 640px: en movil no habia ninguna accion posible
- *    hasta el pixel 7 301. Ahora el CTA vive en la barra siempre.
- *  · Sin estado activo: en una pagina de 9 pantallas con navegacion por
- *    anclas, el usuario no sabia donde estaba. Ahora hay scrollspy.
- *  · Hover roto: el filete usaba group-hover pero el enlace no tenia la
- *    clase group, asi que el efecto nunca se disparaba. Corregido.
- *  · "Herramientas" en tercera posicion: software de terceros por delante
- *    de la prueba social. Fuera de la navegacion principal.
- *  · CTA generico: "Iniciar proyecto" describia la intencion del usuario,
- *    no lo que ocurre al pulsar. Ahora dice "Solicitar diagnostico", igual
- *    que el Hero: una sola accion comercial en toda la pagina.
- *  · Contenedor de 1400px: no alineaba con el Hero. Ahora comparte
- *    container.page (1320) y el mismo padding por breakpoint, asi que el
- *    logo cae exactamente sobre el borde izquierdo del H1.
+ * Reemplaza por completo al navbar anterior (de una sola pagina, con
+ * scrollspy sobre anclas). DOFI pasa a ser un sitio multipagina: la fuente
+ * de verdad de "donde estoy" ya no es que seccion cruza el centro de la
+ * pantalla, es la RUTA (usePathname()).
  *
- * ESCRITORIO DESDE lg (1024)
- * --------------------------
- * Medido: logo (48) + 4 enlaces (207) + gaps (96) + CTA (198) = 549px de
- * los 928 utiles a 1024. Sobran 379px, asi que no hay compresion y no hace
- * falta retrasar la navegacion completa hasta xl.
- *
- * MOVIL
+ * FORMA
  * -----
- * Tres zonas: marca · CTA compacto · hamburguesa. El CTA dice
- * "Diagnostico" y no el texto completo porque a 360 el contenido son 320px
- * y el texto largo no deja aire entre las tres zonas. Dentro del menu si
- * aparece completo.
+ * Ya no es una barra pegada al borde superior: es un panel flotante con
+ * margen, radio y borde propios — ver PADDING_EXTERIOR/ALTURA/RADIO mas
+ * abajo. El bloque topbar + panel movil comparten un unico contenedor con
+ * radio y `overflow-hidden`, asi que al abrir el menu se sigue viendo como
+ * UNA sola pieza flotante, no dos rectangulos apilados.
  *
- * PESO
- * ----
- * Isla de cliente, pero minima: el fondo de la barra transiciona por CSS
- * (no por Motion) y el scrollspy usa IntersectionObserver nativo. Motion
- * solo interviene en el panel del menu.
+ * PAGINA ACTIVA
+ * -------------
+ * Una sola capsula (`motion.span` con `layoutId`) vive dentro del link
+ * activo. Al cambiar de ruta, React la desmonta de un link y la monta en
+ * otro; Framer Motion interpola posicion y ancho entre ambos puntos
+ * (proyeccion de layout compartido), sin que el codigo calcule ningun
+ * pixel a mano. `type: "tween"` fuerza una curva lineal en vez del spring
+ * por defecto: sin rebote, sin overshoot.
+ *
+ * El hover NUNCA mueve esta capsula: el hover es puramente CSS (cambio de
+ * color + un tinte de superficie mas debil que el de la capsula activa) y
+ * no toca el layoutId en absoluto.
  */
 
-/** Navegacion principal. Cuatro entradas, ordenadas por valor comercial:
- *  que hacemos -> como lo hacemos -> a quien se lo hemos hecho -> quienes
- *  somos.
+/** Estrategia de "pagina activa" (ver Sprint, punto 8):
  *
- *  DESTINOS TEMPORALES. Los nombres ya son los definitivos, pero apuntan a
- *  secciones que todavia no se han rediseñado:
- *    Sistema -> #proceso   (pasara a la seccion Ventas Inteligentes)
- *    Casos   -> #clientes  (pasara a la seccion Casos)
- *    Nosotros-> #socio     (pasara a la seccion Equipo)
- *  No se inventan anclas que no existan. */
-const LINKS = [
-  { label: "Servicios", href: "/#servicios", id: "servicios" },
-  { label: "Sistema", href: "/#proceso", id: "proceso" },
-  { label: "Casos", href: "/#clientes", id: "clientes" },
-  { label: "Nosotros", href: "/#socio", id: "socio" },
-] as const;
+ *   /               match EXACTO. Si en el futuro existen paginas de
+ *                    servicio bajo DOFI (/marketing-digital, etc., ver
+ *                    punto 29), NO deben marcar "DOFI" activo solo por
+ *                    vivir bajo la marca — se decide cuando existan.
+ *   /feniax/...      match por PREFIJO: cualquier pagina hija sigue
+ *   /el-socio/...    marcando activa a su seccion. Root de contenido,
+ *   /clientes/...    no root de marca: /clientes/taitico ya existe hoy
+ *   /contactanos/... y debe marcar "CLIENTES" activo.
+ */
+type NavLink = {
+  label: string;
+  href: string;
+  match: (pathname: string) => boolean;
+};
 
-/** Secciones vigiladas. Incluye #contacto aunque no sea un enlace: al
- *  llegar al formulario ninguna entrada debe quedar marcada como activa. */
-const SECCIONES = ["servicios", "proceso", "clientes", "socio", "contacto"];
+const esRuta = (base: string) => (pathname: string) =>
+  pathname === base || pathname.startsWith(`${base}/`);
 
-/** La barra pasa a solida despues de este scroll. 32px es suficiente para
- *  que no parpadee con el rebote de scroll y sigue dentro del rango del
- *  Design System (24-48). */
+const LINKS: NavLink[] = [
+  { label: "DOFI", href: "/", match: (p) => p === "/" },
+  { label: "FENIAX", href: "/feniax", match: esRuta("/feniax") },
+  { label: "EL SOCIO", href: "/el-socio", match: esRuta("/el-socio") },
+  { label: "CLIENTES", href: "/clientes", match: esRuta("/clientes") },
+  { label: "CONTÁCTANOS", href: "/contactanos", match: esRuta("/contactanos") },
+];
+
+/** La barra gana opacidad despues de este scroll (rango del sistema 24-48). */
 const UMBRAL_SOLIDO = 32;
 
 export function Nav() {
+  const pathname = usePathname();
   const [solido, setSolido] = useState(false);
   const [abierto, setAbierto] = useState(false);
-  const [activo, setActivo] = useState<string | null>(null);
   const reduce = useReducedMotion();
   const botonRef = useRef<HTMLButtonElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -85,43 +81,19 @@ export function Nav() {
     if (devolverFoco) botonRef.current?.focus();
   }, []);
 
+  // El menu no sobrevive a un cambio de ruta: sin esto, navegar por un
+  // enlace del panel en un click brusco podia dejar el estado "abierto"
+  // pegado en la pagina de destino antes de que el onClick lo cerrara.
+  useEffect(() => {
+    setAbierto(false);
+  }, [pathname]);
+
   // --- Fondo solido al bajar -------------------------------------------
   useEffect(() => {
     const alScroll = () => setSolido(window.scrollY > UMBRAL_SOLIDO);
     alScroll();
     window.addEventListener("scroll", alScroll, { passive: true });
     return () => window.removeEventListener("scroll", alScroll);
-  }, []);
-
-  // --- Scrollspy --------------------------------------------------------
-  // IntersectionObserver nativo, sin librerias ni umbrales de scrollY
-  // escritos a mano. La banda de deteccion va desde justo debajo de la
-  // barra hasta el 35% de la altura de la ventana: una seccion cuenta como
-  // activa cuando su contenido cruza el primer tercio de la pantalla, que
-  // es donde el ojo esta leyendo.
-  useEffect(() => {
-    const nodos = SECCIONES.map((id) => document.getElementById(id)).filter(
-      (n): n is HTMLElement => n !== null
-    );
-    if (nodos.length === 0) return;
-
-    const visibles = new Set<string>();
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visibles.add(e.target.id);
-          else visibles.delete(e.target.id);
-        }
-        // Si hay varias en la banda, gana la primera en orden del documento.
-        const siguiente = SECCIONES.find((id) => visibles.has(id)) ?? null;
-        setActivo(siguiente);
-      },
-      { rootMargin: "-72px 0px -65% 0px", threshold: 0 }
-    );
-
-    nodos.forEach((n) => observer.observe(n));
-    return () => observer.disconnect();
   }, []);
 
   // --- Escape cierra y devuelve el foco a la hamburguesa ----------------
@@ -145,10 +117,6 @@ export function Nav() {
   }, [abierto, cerrar]);
 
   // --- Bloqueo del scroll mientras el panel esta abierto -----------------
-  // Medido: el panel ocupa 378px de 844 (45% de la pantalla en un 390). No
-  // es una franja pequeña, asi que dejar el cuerpo desplazandose detras
-  // permitiria navegar por accidente a contenido tapado. Se guarda y se
-  // restaura el valor previo porque el body ya lleva overflow-x: clip.
   useEffect(() => {
     if (!abierto) return;
     const previo = document.body.style.overflow;
@@ -159,20 +127,10 @@ export function Nav() {
   }, [abierto]);
 
   // --- Contenido de fondo inerte mientras el panel esta abierto ----------
-  // PREFLIGHT NAVBAR: sin esto, tabular despues del ultimo elemento del
-  // panel llevaba el foco al Hero (y al resto de <main>/<footer>), que
-  // quedan detras con el scroll bloqueado: el usuario perdia el foco en
-  // contenido que no podia ver ni alcanzar.
-  //
-  // Se usa el atributo nativo `inert` en vez de una libreria de focus trap.
-  // inert hace las dos cosas que hacen falta a la vez —saca el subarbol del
-  // orden de tabulacion Y del arbol de accesibilidad— y es exactamente el
-  // comportamiento correcto para un contenido que queda tapado. Una trampa
-  // de foco solo resolveria el teclado y dejaria el fondo anunciable por el
-  // lector de pantalla.
-  //
-  // El <header> queda fuera a proposito: el panel y la hamburguesa tienen
-  // que seguir siendo alcanzables.
+  // Mismo mecanismo que el preflight de accesibilidad ya verificado: main y
+  // footer quedan fuera del arbol de foco Y del arbol de accesibilidad con
+  // el atributo nativo `inert` (sin libreria de focus trap). El <header>
+  // queda fuera a proposito: el panel y la hamburguesa siguen alcanzables.
   useEffect(() => {
     if (!abierto) return;
     const fondo = [
@@ -185,8 +143,6 @@ export function Nav() {
   }, [abierto]);
 
   // --- Al pasar a escritorio, cerrar -------------------------------------
-  // Si no, al girar el movil o ensanchar la ventana el panel se oculta por
-  // CSS (lg:hidden) pero el estado seguiria abierto y el scroll bloqueado.
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const alCambiar = () => {
@@ -198,19 +154,29 @@ export function Nav() {
   }, []);
 
   return (
-    <header ref={headerRef} className="fixed inset-x-0 top-0 z-50">
-      {/* El fondo transiciona por CSS y no por Motion: es un cambio de dos
-          colores, no necesita un motor de animacion detras. */}
-      <div
-        className={[
-          "border-b backdrop-blur-md transition-[background-color,border-color] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-          solido || abierto
-            ? "border-brand-lift/15 bg-surface-base/85"
-            : "border-transparent bg-transparent",
-        ].join(" ")}
-      >
-        <div className="px-5 sm:px-6 md:px-10 lg:px-12 xl:px-14">
-          <div className="mx-auto flex h-16 max-w-page items-center justify-between gap-6 lg:h-[68px]">
+    <header
+      ref={headerRef}
+      className="fixed inset-x-0 top-3 z-50 px-5 sm:px-6 md:top-4 md:px-10 lg:px-12 xl:px-14"
+    >
+      <div className="mx-auto max-w-page">
+        {/* Un unico contenedor con radio + overflow-hidden: la topbar y el
+            panel movil (cuando existe) se ven como UNA pieza flotante. */}
+        <div
+          className={[
+            "overflow-hidden rounded-[20px] border transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            // El panel abierto necesita mas opacidad que la barra sola: con
+            // 85% el H1 del Hero (u otro texto en negrita de la pagina que
+            // haya detras) se transparentaba, borroso, tras los links del
+            // medio del menu. 95% + blur mas fuerte lo resuelve sin que dev
+            // de ser "translucido premium" el resto del tiempo.
+            abierto
+              ? "border-brand-lift/20 bg-surface-base/95 backdrop-blur-xl"
+              : solido
+                ? "border-brand-lift/20 bg-surface-base/85 backdrop-blur-md"
+                : "border-brand-lift/10 bg-surface-base/45 backdrop-blur-md",
+          ].join(" ")}
+        >
+          <div className="flex h-16 items-center justify-between gap-4 px-4 md:h-[70px] md:px-6">
             <Link
               href="/"
               aria-label="DOFI Agencia Creativa, inicio"
@@ -221,34 +187,33 @@ export function Nav() {
 
             {/* ---------- Navegacion escritorio ---------- */}
             <nav aria-label="Navegación principal" className="hidden lg:block">
-              <ul className="flex items-center gap-8">
+              <ul className="flex items-center gap-1">
                 {LINKS.map((l) => {
-                  const esActivo = activo === l.id;
+                  const esActivo = l.match(pathname);
                   return (
-                    <li key={l.id}>
+                    <li key={l.href}>
                       <Link
                         href={l.href}
-                        aria-current={esActivo ? "true" : undefined}
+                        aria-current={esActivo ? "page" : undefined}
                         className={[
-                          "group relative inline-flex h-11 items-center font-sans text-[15px] transition-colors duration-200",
+                          "relative inline-flex h-10 items-center whitespace-nowrap rounded-full px-4 font-sans text-[15px] font-medium transition-colors duration-200",
                           esActivo
                             ? "text-fg-primary"
-                            : "text-fg-muted hover:text-fg-primary",
+                            : "text-fg-muted hover:bg-surface/40 hover:text-fg-primary",
                         ].join(" ")}
                       >
-                        {l.label}
-                        {/* Filete de 2px. El bug anterior era que este span
-                            usaba group-hover y el enlace no tenia la clase
-                            group: el efecto estaba escrito y muerto. */}
-                        <span
-                          aria-hidden="true"
-                          className={[
-                            "absolute bottom-1.5 left-0 h-0.5 rounded-full bg-accent transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                            esActivo
-                              ? "w-full opacity-100"
-                              : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50",
-                          ].join(" ")}
-                        />
+                        {esActivo && (
+                          <motion.span
+                            layoutId="nav-active-pill"
+                            className="absolute inset-0 rounded-full border border-brand-lift/25 bg-surface/80"
+                            transition={
+                              reduce
+                                ? { duration: 0 }
+                                : { type: "tween", duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+                            }
+                          />
+                        )}
+                        <span className="relative z-10">{l.label}</span>
                       </Link>
                     </li>
                   );
@@ -257,23 +222,31 @@ export function Nav() {
             </nav>
 
             {/* ---------- Acciones ---------- */}
-            {/* 12px entre el CTA y la hamburguesa: con 8 los dos objetivos
-                tactiles quedaban demasiado juntos y a 360 sobran 100px. */}
             <div className="flex shrink-0 items-center gap-3">
-              {/* CTA. Siempre visible, tambien en 360. Texto corto por
-                  debajo de sm y completo a partir de ahi. */}
+              {/* "Empecemos" es accion comercial; "CONTÁCTANOS" (arriba, en
+                  la navegacion) es orientacion. Ambos llevan a /contactanos
+                  pero coexisten: nunca se elimina uno por "redundante". Sin
+                  animacion magnetica ni escala — solo color y una flecha
+                  que se corre 4px. */}
               <Link
-                href="/#contacto"
-                className="group inline-flex h-11 items-center justify-center gap-1.5 rounded-full bg-accent px-4 font-display text-sm font-semibold text-fg-on-accent transition-colors duration-200 hover:bg-accent-lift active:scale-[0.98] sm:h-12 sm:gap-2 sm:px-6 sm:text-button"
+                href="/contactanos"
+                className="group hidden h-11 shrink-0 items-center gap-1.5 rounded-full bg-accent px-5 font-display text-button text-fg-on-accent transition-colors duration-200 hover:bg-accent-lift active:scale-[0.98] sm:inline-flex md:h-12"
               >
-                <span className="sm:hidden">Diagnóstico</span>
-                <span className="hidden sm:inline">Solicitar diagnóstico</span>
+                Empecemos
                 <ArrowRight
                   size={16}
                   weight="bold"
                   aria-hidden="true"
-                  className="hidden transition-transform duration-200 group-hover:translate-x-0.5 sm:block"
+                  className="transition-transform duration-200 group-hover:translate-x-1"
                 />
+              </Link>
+              {/* Version compacta sin flecha, solo <sm: a 360px el texto
+                  completo con flecha no dejaba aire con la hamburguesa. */}
+              <Link
+                href="/contactanos"
+                className="inline-flex h-11 shrink-0 items-center rounded-full bg-accent px-4 font-display text-sm font-semibold text-fg-on-accent transition-colors duration-200 hover:bg-accent-lift active:scale-[0.98] sm:hidden"
+              >
+                Empecemos
               </Link>
 
               <button
@@ -283,7 +256,7 @@ export function Nav() {
                 aria-expanded={abierto}
                 aria-controls="menu-principal"
                 aria-label={abierto ? "Cerrar menú" : "Abrir menú"}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-brand-lift/40 text-fg-primary transition-colors duration-200 hover:border-brand-lift/70 lg:hidden"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand-lift/40 text-fg-primary transition-colors duration-200 hover:border-brand-lift/70 lg:hidden"
               >
                 {abierto ? (
                   <X size={22} weight="bold" aria-hidden="true" />
@@ -293,92 +266,73 @@ export function Nav() {
               </button>
             </div>
           </div>
+
+          {/* ---------- Panel movil ----------
+              Full-width DEBAJO de la barra, no fullscreen: conserva el
+              contexto de la pagina detras y no obliga a un patron de
+              dialogo modal para algo que es, en esencia, un desplegable. */}
+          <AnimatePresence>
+            {abierto && (
+              <motion.div
+                id="menu-principal"
+                initial={reduce ? { opacity: 1 } : { opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? { opacity: 1 } : { opacity: 0, y: -12 }}
+                transition={{
+                  duration: reduce ? 0 : 0.32,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="lg:hidden"
+              >
+                <div className="border-t border-brand-lift/15 px-4 pb-5 pt-2 md:px-6">
+                  <nav aria-label="Navegación principal">
+                    <ul className="flex flex-col">
+                      {LINKS.map((l) => {
+                        const esActivo = l.match(pathname);
+                        return (
+                          <li key={l.href}>
+                            <Link
+                              href={l.href}
+                              aria-current={esActivo ? "page" : undefined}
+                              className={[
+                                "flex min-h-14 items-center gap-3 font-display text-[21px] font-semibold tracking-tight transition-colors duration-200",
+                                esActivo ? "text-fg-primary" : "text-fg-muted",
+                              ].join(" ")}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={[
+                                  "h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200",
+                                  esActivo ? "bg-accent" : "bg-transparent",
+                                ].join(" ")}
+                              />
+                              {l.label}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </nav>
+
+                  {/* Contorno, no relleno: la barra no desaparece al abrir
+                      el panel, asi que su CTA naranja solido sigue visible
+                      arriba. Dos rellenos naranja a la vez anulan la
+                      jerarquia. */}
+                  <div className="mt-4 border-t border-brand-lift/15 pt-5">
+                    <Link
+                      href="/contactanos"
+                      className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-full border border-brand-lift/45 px-6 font-display text-button text-fg-primary transition-colors duration-200 hover:border-accent/60 active:scale-[0.98]"
+                    >
+                      Empecemos
+                      <ArrowRight size={18} weight="bold" aria-hidden="true" className="text-accent" />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* ---------- Panel del menu ----------
-          Panel a ancho completo bajo la barra, NO superposicion a pantalla
-          completa: conserva el contexto de la pagina detras, no parece una
-          app y no obliga a bloquear el scroll del cuerpo. Mide ~330px de
-          844, asi que deja ver donde estaba el usuario. */}
-      <AnimatePresence>
-        {abierto && (
-          <motion.div
-            id="menu-principal"
-            initial={reduce ? { opacity: 1 } : { opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? { opacity: 1 } : { opacity: 0, y: -12 }}
-            transition={{
-              duration: reduce ? 0 : 0.32,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="border-b border-brand-lift/15 bg-surface-base/95 backdrop-blur-xl lg:hidden"
-          >
-            <div className="px-5 sm:px-6 md:px-10">
-              <div className="mx-auto max-w-page pb-6 pt-2">
-                <nav aria-label="Navegación principal">
-                  <ul className="flex flex-col">
-                    {LINKS.map((l) => {
-                      const esActivo = activo === l.id;
-                      return (
-                        <li key={l.id}>
-                          <Link
-                            href={l.href}
-                            onClick={() => cerrar()}
-                            aria-current={esActivo ? "true" : undefined}
-                            className={[
-                              "flex min-h-14 items-center gap-3 font-display text-[21px] font-semibold tracking-tight transition-colors duration-200",
-                              esActivo ? "text-fg-primary" : "text-fg-muted",
-                            ].join(" ")}
-                          >
-                            <span
-                              aria-hidden="true"
-                              className={[
-                                "h-1.5 w-1.5 shrink-0 rounded-full transition-colors duration-200",
-                                esActivo ? "bg-accent" : "bg-transparent",
-                              ].join(" ")}
-                            />
-                            {l.label}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </nav>
-
-                {/* CTA del panel: mismo destino, version explicita del
-                    texto (la barra dice solo "Diagnostico") pero en
-                    CONTORNO, no relleno.
-                    Motivo: la barra no desaparece al abrir el panel, asi
-                    que su CTA naranja sigue visible 40px mas arriba. Dos
-                    rellenos naranja a la vez anulan la jerarquia — lo dice
-                    el propio Design System: "dos CTA juntos deben verse
-                    distintos: uno relleno, otro contorno". Sigue siendo
-                    claramente distinto de los enlaces por su caja, su
-                    altura y el filete que lo separa. */}
-                <div className="mt-4 border-t border-brand-lift/15 pt-5">
-                  <Link
-                    href="/#contacto"
-                    onClick={() => cerrar()}
-                    className="inline-flex h-13 w-full items-center justify-center gap-2 rounded-full border border-brand-lift/45 px-6 font-display text-button text-fg-primary transition-colors duration-200 hover:border-accent/60 active:scale-[0.98]"
-                  >
-                    Solicitar diagnóstico
-                    <ArrowRight
-                      size={18}
-                      weight="bold"
-                      aria-hidden="true"
-                      className="text-accent"
-                    />
-                  </Link>
-                  <p className="mt-3 text-center font-sans text-sm text-fg-subtle">
-                    Respondemos en menos de 24 horas hábiles.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </header>
   );
 }
