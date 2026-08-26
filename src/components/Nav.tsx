@@ -156,7 +156,7 @@ export function Nav() {
   return (
     <header
       ref={headerRef}
-      className="fixed inset-x-0 top-3 z-50 px-5 sm:px-6 md:top-4 md:px-10 lg:px-12 xl:px-14"
+      className="fixed inset-x-0 top-2 z-50 px-5 sm:px-6 md:top-3 md:px-10 lg:px-12 xl:px-14"
     >
       <div className="mx-auto max-w-page">
         {/* Un unico contenedor con radio + overflow-hidden: la topbar y el
