@@ -7,12 +7,12 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   List,
   X,
+  FacebookLogo,
   InstagramLogo,
   TiktokLogo,
-  LinkedinLogo,
 } from "@phosphor-icons/react";
 import { Wordmark } from "./Wordmark";
-import { socialLinks, type SocialKey } from "@/config/company";
+import { headerSocialLinks, type HeaderSocialKey } from "@/config/company";
 
 /**
  * Header DOFI — arquitectura de 3 zonas sobre lienzo blanco, inspirada en
@@ -44,13 +44,16 @@ import { socialLinks, type SocialKey } from "@/config/company";
  * configuradas, ver abajo) el centrado del logo no se mueve ni un pixel
  * cuando aparezcan.
  *
- * REDES — SOLO LAS REALES YA CONFIGURADAS (spec §7-8, §35)
+ * REDES — SOLO FACEBOOK / INSTAGRAM / TIKTOK, SOLO LAS REALES (spec §1, §7-8, §35)
  * -----------------------------------------------------------------
- * Mismo origen de datos que el pie (`socialLinks` de `src/config/company.ts`,
- * ya filtra a las que tienen URL real por variable de entorno). Hoy ese
- * arreglo está VACÍO — ninguna red tiene `NEXT_PUBLIC_INSTAGRAM_URL` /
- * `_TIKTOK_URL` / `_LINKEDIN_URL` configurada — así que la zona izquierda se
- * renderiza vacía a propósito (nunca con URLs inventadas). El día que se
+ * `headerSocialLinks` de `src/config/company.ts` — mismo mecanismo que el
+ * pie (`socialLinks`, con LinkedIn incluido) pero una lista INDEPENDIENTE,
+ * recortada a propósito a estas 3 redes por pedido explícito ("Corrección
+ * Header redes sociales", §1) — el pie no cambia. Ya filtra a las que
+ * tienen URL real por variable de entorno. Hoy ese arreglo está VACÍO —
+ * ninguna red tiene `NEXT_PUBLIC_FACEBOOK_URL` / `_INSTAGRAM_URL` /
+ * `_TIKTOK_URL` configurada — así que la zona izquierda se renderiza vacía
+ * a propósito (nunca con URLs inventadas). El día que se
  * configure una variable, el icono aparece solo, sin tocar este archivo.
  *
  * FONDO — VIDRIO CLARO INTEGRADO, NO CÁPSULA (spec §15-17, §36-37)
@@ -74,11 +77,18 @@ import { socialLinks, type SocialKey } from "@/config/company";
  * WCAG), pasa con margen real.
  */
 
+/**
+ * SOLO Facebook / Instagram / TikTok en el header (Sprint "Corrección
+ * Header redes sociales", §1) — a proposito un subconjunto mas chico que
+ * `SocialKey` completo (que tambien incluye LinkedIn, usado por el pie).
+ * Sin LinkedIn ni ninguna otra red aca, ni por accidente: el tipo exige
+ * exactamente estas 3 claves, ni una mas.
+ */
 const ICONOS_SOCIAL = {
+  facebook: FacebookLogo,
   instagram: InstagramLogo,
   tiktok: TiktokLogo,
-  linkedin: LinkedinLogo,
-} satisfies Record<SocialKey, typeof InstagramLogo>;
+} satisfies Record<HeaderSocialKey, typeof InstagramLogo>;
 
 type NavLink = {
   label: string;
@@ -121,18 +131,16 @@ const LINKS: NavLink[] = [
 const UMBRAL_SOLIDO = 32;
 
 function RedesSociales({ className }: { className?: string }) {
-  // OJO: nunca "return null" aqui. Este componente es el PRIMER hijo directo
-  // del grid de 3 zonas (`1fr auto 1fr`) en la barra desktop — CSS Grid
-  // asigna columnas por HIJOS DEL DOM en orden, no por "huecos" logicos de
-  // JSX. Si este devuelve null (hoy: 0 redes configuradas), el grid queda
-  // con solo 2 hijos reales y el logo cae en la PRIMERA columna 1fr en vez
-  // de la columna `auto` central — se descentra por completo. Un <ul> vacio
-  // (sin <li>, sin anunciar nada a un lector de pantalla) conserva el hueco
-  // del grid sin regresar contenido visible. Verificado con Puppeteer: sin
-  // este fix el logo media -478px de diferencia contra el centro real.
+  // OJO: nunca "return null" aqui. El logo del header va centrado con
+  // `position: absolute`, pero las zonas de redes/nav siguen siendo hijos
+  // reales de un `flex flex-1` a cada lado — si este componente deja de
+  // devolver un nodo (hoy: 0 redes configuradas), esa columna deja de
+  // existir en el DOM y el reparto de espacio dejaria de ser simetrico. Un
+  // <ul> vacio (sin <li>, sin anunciar nada a un lector de pantalla)
+  // conserva el hueco sin mostrar contenido.
   return (
     <ul className={["flex items-center gap-2", className].filter(Boolean).join(" ")}>
-      {socialLinks.map(({ key, label, href }) => {
+      {headerSocialLinks.map(({ key, label, href }) => {
         const Icon = ICONOS_SOCIAL[key];
         return (
           <li key={key}>

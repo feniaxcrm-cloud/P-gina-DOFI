@@ -54,7 +54,7 @@ const ICONOS_SOCIAL = {
   instagram: InstagramLogo,
   tiktok: TiktokLogo,
   linkedin: LinkedinLogo,
-} satisfies Record<SocialKey, typeof InstagramLogo>;
+} satisfies Record<Extract<SocialKey, "instagram" | "tiktok" | "linkedin">, typeof InstagramLogo>;
 
 function ColTitle({ children }: { children: React.ReactNode }) {
   return (

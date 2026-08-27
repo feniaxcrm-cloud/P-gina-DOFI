@@ -53,6 +53,7 @@ const TELEFONO_VISIBLE = conDefecto(
 // asi que mientras no exista la URL verificada el icono NO se pinta
 // (ver Footer.tsx). Para activarlos, define las variables de entorno.
 const social = {
+  facebook: opcional(process.env.NEXT_PUBLIC_FACEBOOK_URL),
   instagram: opcional(process.env.NEXT_PUBLIC_INSTAGRAM_URL),
   tiktok: opcional(process.env.NEXT_PUBLIC_TIKTOK_URL),
   linkedin: opcional(process.env.NEXT_PUBLIC_LINKEDIN_URL),
@@ -121,12 +122,42 @@ export const company = {
 } as const;
 
 /** Redes efectivamente configuradas, en orden de presentacion. Las que no
- *  tienen URL real quedan fuera de la lista y no se renderizan. */
-export const socialLinks: { key: SocialKey; label: string; href: string }[] = (
+ *  tienen URL real quedan fuera de la lista y no se renderizan.
+ *
+ *  Usada hoy por Footer.tsx. Instagram + TikTok + LinkedIn — a proposito
+ *  distinta de `headerSocialLinks` (abajo): el pie y el header muestran
+ *  subconjuntos de redes diferentes por pedido explicito (Sprint
+ *  "Corrección Header redes sociales", §1), no por descuido. */
+export const socialLinks: {
+  key: Extract<SocialKey, "instagram" | "tiktok" | "linkedin">;
+  label: string;
+  href: string;
+}[] = (
   [
     { key: "instagram", label: "Instagram" },
     { key: "tiktok", label: "TikTok" },
     { key: "linkedin", label: "LinkedIn" },
+  ] as const
+).flatMap(({ key, label }) => {
+  const href = company.social[key];
+  return href ? [{ key, label, href }] : [];
+});
+
+/** Subconjunto de `SocialKey` que puede aparecer en el Header — le da a
+ *  `Nav.tsx` un tipo exacto de 3 miembros para su mapa de iconos, en vez del
+ *  union completo de 4 (que incluye "linkedin", inexistente en el header). */
+export type HeaderSocialKey = "facebook" | "instagram" | "tiktok";
+
+/** Igual mecanismo que `socialLinks`, pero solo para el Header — exactamente
+ *  Facebook / Instagram / TikTok, sin LinkedIn (spec §1: "eliminar cualquier
+ *  otra red... solo deben quedar Facebook, Instagram, TikTok"). El pie
+ *  sigue usando `socialLinks` sin cambios: son listas independientes a
+ *  proposito, para no alterar el pie al corregir el header. */
+export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: string }[] = (
+  [
+    { key: "facebook", label: "Facebook de DOFI" },
+    { key: "instagram", label: "Instagram de DOFI" },
+    { key: "tiktok", label: "TikTok de DOFI" },
   ] as const
 ).flatMap(({ key, label }) => {
   const href = company.social[key];
