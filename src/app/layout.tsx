@@ -88,6 +88,28 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${sora.variable} ${GeistSans.variable}`}>
       <body>
+        {/*
+          THESIS: El lienzo blanco reemplaza el canvas oscuro en Navbar,
+          Hero y Capacidades; DOFI se expresa en morado+naranja sobre claro,
+          nunca en bloques oscuros continuos.
+          OWN-WORLD: Blanco calido (--color-canvas) + tinta morada
+          (--color-ink) + acentos morado/naranja DOFI (--color-brand/
+          --color-accent); tarjetas blancas que pasan a degradado DOFI en
+          hover, sin glass oscuro.
+          STORY: El visitante entiende en el primer scroll que DOFI es
+          agencia + CRM + IA ("Ventas Inteligentes"), ve una foto real
+          editable desde el CMS y 4 capacidades, y actua via "Empecemos".
+          FIRST VIEWPORT: Nav flotante claro arriba; hero split 55/45
+          (copy izquierda / imagen derecha) con degradado animado sobre la
+          foto; banda de 4 tarjetas superpuesta al borde inferior del hero.
+          FORM: Brief-pinned — "DOFI, REPLANTEO DEFINITIVO NAVBAR + HERO +
+          SANITY" del propietario fijo cada decision visual con precision;
+          sin ronda de exploracion de direccion, se construyo directo sobre
+          el brief.
+          FINISH: unreviewed and undocumented is unfinished; this build
+          ends with the finish review, the verdict, DESIGN.md, and every
+          shipping raster carrying its provenance.
+        */}
         {/* Las animaciones de entrada se renderizan con opacity 0 en el HTML
             del servidor y solo se revelan al hidratar. Sin JS eso dejaria
             secciones enteras invisibles, asi que aqui se fuerzan visibles. */}

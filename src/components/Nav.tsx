@@ -8,20 +8,25 @@ import { List, X, ArrowRight } from "@phosphor-icons/react";
 import { Wordmark } from "./Wordmark";
 
 /**
- * Navbar DOFI V1 — flotante, multipagina, con capsula de pagina activa.
+ * Navbar DOFI — flotante, multipagina, con capsula de pagina activa.
  *
- * Reemplaza por completo al navbar anterior (de una sola pagina, con
- * scrollspy sobre anclas). DOFI pasa a ser un sitio multipagina: la fuente
- * de verdad de "donde estoy" ya no es que seccion cruza el centro de la
- * pantalla, es la RUTA (usePathname()).
+ * Sobre RUTA (usePathname()), no scrollspy: DOFI es un sitio multipagina,
+ * "donde estoy" lo decide la URL.
  *
  * FORMA
  * -----
- * Ya no es una barra pegada al borde superior: es un panel flotante con
- * margen, radio y borde propios — ver PADDING_EXTERIOR/ALTURA/RADIO mas
- * abajo. El bloque topbar + panel movil comparten un unico contenedor con
- * radio y `overflow-hidden`, asi que al abrir el menu se sigue viendo como
- * UNA sola pieza flotante, no dos rectangulos apilados.
+ * Panel flotante con margen, radio y borde propios (no pegado al borde
+ * superior). El bloque topbar + panel movil comparten un unico contenedor
+ * con radio y `overflow-hidden`, asi que al abrir el menu se sigue viendo
+ * como UNA sola pieza flotante, no dos rectangulos apilados.
+ *
+ * SUPERFICIE CLARA (Replanteo Navbar + Hero + Sanity, §6-10)
+ * ------------------------------------------------------------
+ * El nav paso de capsula oscura a vidrio claro: blanco calido translucido
+ * + blur sutil + borde morado de opacidad baja. Nunca un bloque oscuro
+ * pesado. El logo usa la variante recoloreada `tone="light"` (ver
+ * Wordmark.tsx) porque el asset original es blanco puro — invisible sobre
+ * esta superficie.
  *
  * PAGINA ACTIVA
  * -------------
@@ -30,7 +35,8 @@ import { Wordmark } from "./Wordmark";
  * otro; Framer Motion interpola posicion y ancho entre ambos puntos
  * (proyeccion de layout compartido), sin que el codigo calcule ningun
  * pixel a mano. `type: "tween"` fuerza una curva lineal en vez del spring
- * por defecto: sin rebote, sin overshoot.
+ * por defecto: sin rebote, sin overshoot. Sobre claro: fondo morado muy
+ * suave, texto morado profundo (spec §9) — nunca bloque oscuro.
  *
  * El hover NUNCA mueve esta capsula: el hover es puramente CSS (cambio de
  * color + un tinte de superficie mas debil que el de la capsula activa) y
@@ -164,16 +170,15 @@ export function Nav() {
         <div
           className={[
             "overflow-hidden rounded-[20px] border transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            // El panel abierto necesita mas opacidad que la barra sola: con
-            // 85% el H1 del Hero (u otro texto en negrita de la pagina que
-            // haya detras) se transparentaba, borroso, tras los links del
-            // medio del menu. 95% + blur mas fuerte lo resuelve sin que dev
-            // de ser "translucido premium" el resto del tiempo.
+            // Vidrio claro (spec §7): blanco calido translucido + blur sutil
+            // + borde morado de opacidad baja. El panel abierto y el estado
+            // "solido" (tras scroll) suben la opacidad para que el texto de
+            // la pagina detras nunca se transparente a traves del menu.
             abierto
-              ? "border-brand-lift/20 bg-surface-base/95 backdrop-blur-xl"
+              ? "border-brand/14 bg-canvas/96 backdrop-blur-xl"
               : solido
-                ? "border-brand-lift/20 bg-surface-base/85 backdrop-blur-md"
-                : "border-brand-lift/10 bg-surface-base/45 backdrop-blur-md",
+                ? "border-brand/14 bg-canvas/92 backdrop-blur-md"
+                : "border-brand/10 bg-canvas/80 backdrop-blur-md",
           ].join(" ")}
         >
           <div className="flex h-16 items-center justify-between gap-4 px-4 md:h-[70px] md:px-6">
@@ -182,7 +187,7 @@ export function Nav() {
               aria-label="DOFI Agencia Creativa, inicio"
               className="shrink-0 rounded-lg"
             >
-              <Wordmark size="sm" />
+              <Wordmark size="sm" tone="light" />
             </Link>
 
             {/* ---------- Navegacion escritorio ---------- */}
@@ -198,14 +203,14 @@ export function Nav() {
                         className={[
                           "relative inline-flex h-10 items-center whitespace-nowrap rounded-full px-5 font-sans text-[15px] font-medium transition-colors duration-200",
                           esActivo
-                            ? "text-fg-primary"
-                            : "text-fg-muted hover:bg-surface/40 hover:text-fg-primary",
+                            ? "text-pill-active-fg"
+                            : "text-ink-muted hover:bg-brand/6 hover:text-ink",
                         ].join(" ")}
                       >
                         {esActivo && (
                           <motion.span
                             layoutId="nav-active-pill"
-                            className="absolute inset-0 rounded-full border border-brand-lift/25 bg-surface/80"
+                            className="absolute inset-0 rounded-full border border-brand/15 bg-pill-active-bg"
                             transition={
                               reduce
                                 ? { duration: 0 }
@@ -256,7 +261,7 @@ export function Nav() {
                 aria-expanded={abierto}
                 aria-controls="menu-principal"
                 aria-label={abierto ? "Cerrar menú" : "Abrir menú"}
-                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand-lift/40 text-fg-primary transition-colors duration-200 hover:border-brand-lift/70 lg:hidden"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-brand/25 text-ink transition-colors duration-200 hover:border-brand/45 lg:hidden"
               >
                 {abierto ? (
                   <X size={22} weight="bold" aria-hidden="true" />
@@ -284,7 +289,7 @@ export function Nav() {
                 }}
                 className="lg:hidden"
               >
-                <div className="border-t border-brand-lift/15 px-4 pb-4 pt-2 md:px-6">
+                <div className="border-t border-brand/12 px-4 pb-4 pt-2 md:px-6">
                   {/* Solo los 5 links. El CTA "Empecemos" ya esta siempre
                       visible en la barra superior (no desaparece al abrir
                       el panel) — repetirlo aqui era un segundo CTA
@@ -300,7 +305,7 @@ export function Nav() {
                               aria-current={esActivo ? "page" : undefined}
                               className={[
                                 "flex min-h-14 items-center gap-3 font-display text-[21px] font-semibold tracking-tight transition-colors duration-200",
-                                esActivo ? "text-fg-primary" : "text-fg-muted",
+                                esActivo ? "text-ink" : "text-ink-muted",
                               ].join(" ")}
                             >
                               <span

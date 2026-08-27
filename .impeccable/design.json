@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-27T00:00:00.000Z",
+  "title": "Design System: DOFI Agencia Creativa",
+  "extensions": {
+    "colorMeta": {
+      "brand": { "role": "primary", "displayName": "DOFI Purple", "canonical": "#4B2A93", "tonalRamp": ["#160C2E", "#241548", "#332063", "#432C7D", "#4B2A93", "#6D4BC9", "#9B84D8", "#D4C9EF"] },
+      "brand-lift": { "role": "primary", "displayName": "DOFI Purple Lift", "canonical": "#6D4BC9", "tonalRamp": ["#1E1442", "#301F63", "#432C7D", "#553A96", "#6D4BC9", "#8E71D6", "#B4A0E6", "#DED4F5"] },
+      "accent": { "role": "secondary", "displayName": "DOFI Orange", "canonical": "#F47B20", "tonalRamp": ["#4A2004", "#7A3608", "#A9490B", "#D35E10", "#F47B20", "#FF9440", "#FFB877", "#FFDDB3"] },
+      "accent-lift": { "role": "secondary", "displayName": "DOFI Orange Lift", "canonical": "#FF9440", "tonalRamp": ["#552504", "#873C08", "#B8520B", "#E36F16", "#FF9440", "#FFAD66", "#FFC694", "#FFE3C4"] },
+      "fg-on-accent": { "role": "neutral", "displayName": "Ink on Accent", "canonical": "#1A0F3D", "tonalRamp": ["#0C071C", "#150C33", "#1A0F3D", "#241553", "#2E1B68", "#3C2887", "#5A46AC", "#8B7BC8"] },
+      "canvas": { "role": "neutral", "displayName": "Warm Canvas", "canonical": "#FDFBF7", "tonalRamp": ["#3A3630", "#5C554B", "#847A6B", "#AFA694", "#D6CFC1", "#EDE8DF", "#F6F1EA", "#FDFBF7"] },
+      "canvas-raised": { "role": "neutral", "displayName": "Canvas Raised", "canonical": "#F6F1EA", "tonalRamp": ["#38332B", "#59524646", "#7F7666", "#A99E8C", "#CFC6B7", "#E6DFD3", "#F1EBE0", "#F6F1EA"] },
+      "ink": { "role": "neutral", "displayName": "Deep Ink", "canonical": "#1A0F3D", "tonalRamp": ["#0C071C", "#150C33", "#1A0F3D", "#241553", "#2E1B68", "#3C2887", "#5A46AC", "#8B7BC8"] },
+      "ink-muted": { "role": "neutral", "displayName": "Muted Ink", "canonical": "#57516B", "tonalRamp": ["#211F29", "#332F42", "#454059", "#4E4861", "#57516B", "#75708A", "#9B96AE", "#C6C3D3"] },
+      "ink-subtle": { "role": "neutral", "displayName": "Subtle Ink", "canonical": "#6C6480", "tonalRamp": ["#282534", "#3C374C", "#514A66", "#5E5673", "#6C6480", "#8981A0", "#ACA6BC", "#D3CFDC"] },
+      "abyss": { "role": "neutral", "displayName": "Abyss", "canonical": "#120A26", "tonalRamp": ["#050307", "#0B0714", "#120A26", "#1A0F3D", "#241553", "#2E1B68", "#4B2A93", "#8B7BC8"] },
+      "deep": { "role": "neutral", "displayName": "Deep Surface", "canonical": "#1A0F3D", "tonalRamp": ["#0C071C", "#150C33", "#1A0F3D", "#241553", "#2E1B68", "#3C2887", "#5A46AC", "#8B7BC8"] },
+      "surface": { "role": "neutral", "displayName": "Card Surface", "canonical": "#241553", "tonalRamp": ["#0F0A1E", "#180F30", "#241553", "#2E1B68", "#3A237F", "#4B2A93", "#6D4BC9", "#9B84D8"] },
+      "surface-2": { "role": "neutral", "displayName": "Raised Surface", "canonical": "#2E1B68", "tonalRamp": ["#140D28", "#1F1440", "#2A1A5C", "#2E1B68", "#3C2380", "#4B2A93", "#7057B8", "#A392D6"] },
+      "foam": { "role": "neutral", "displayName": "Foam Text", "canonical": "#F4F0FE", "tonalRamp": ["#2B2740", "#443F60", "#5F5980", "#8B84A8", "#B8B2CC", "#DAD6E8", "#EDEAF7", "#F4F0FE"] },
+      "mist": { "role": "neutral", "displayName": "Mist Text", "canonical": "#B3A5D4", "tonalRamp": ["#231D34", "#392F53", "#4F4272", "#6B5B94", "#8878AE", "#A695C6", "#B3A5D4", "#D6CDE8"] },
+      "mist-dim": { "role": "neutral", "displayName": "Mist Dim Text", "canonical": "#948AB8", "tonalRamp": ["#1F1C2C", "#332E48", "#474064", "#5E5480", "#776C9A", "#948AB8", "#B3ACCE", "#D6D2E5"] },
+      "fog": { "role": "neutral", "displayName": "Fog Text", "canonical": "#cbd5e1", "tonalRamp": ["#20242C", "#333B48", "#475364", "#5C6B80", "#8797AC", "#AAB6C4", "#cbd5e1", "#E5EAF0"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Sora Display", "purpose": "H1, brand/eyebrow lines, buttons — self-hosted variable font, weights 300-800." },
+      "body": { "displayName": "Geist Sans Body", "purpose": "Paragraph copy on both surfaces." },
+      "label": { "displayName": "Eyebrow / Label", "purpose": "Uppercase 12px labels, e.g. the Hero's brand line beneath the H1." }
+    },
+    "shadows": [
+      { "name": "card-contact", "value": "0 1px 2px rgba(26,15,61,0.06)", "purpose": "Light-surface capability cards at rest; near-imperceptible, never directional." },
+      { "name": "cta-lift", "value": "0 8px 24px -14px rgba(244,123,32,0.5)", "purpose": "Ambient warm glow under an isolated orange CTA (MagneticCta)." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for nearly all state transitions and entrances across both surfaces." },
+      { "name": "hero-media-gradient-loop", "value": "14s linear infinite, animates background-position only", "purpose": "Animated tri-color gradient over the Hero photo; never moves the photo itself." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (Accent Pill)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one call-to-action fill on either surface. Used for 'Empecemos' in the nav and the Hero's primary CTA.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Empecemos<svg class=\"ds-btn-primary-icon\" viewBox=\"0 0 256 256\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"20\"><path d=\"M40 128h176M144 56l72 72-72 72\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; height: 52px; padding: 0 32px; border-radius: 9999px; background: #F47B20; color: #1A0F3D; font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; transition: background-color 200ms cubic-bezier(0.16,1,0.3,1), transform 200ms; } .ds-btn-primary:hover { background: #FF9440; } .ds-btn-primary:focus-visible { outline: 2px solid #F47B20; outline-offset: 3px; } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary-icon { transition: transform 200ms; } .ds-btn-primary:hover .ds-btn-primary-icon { transform: translateX(2px); }"
+    },
+    {
+      "name": "Ghost Button (Light Surface)",
+      "kind": "button",
+      "refersTo": "button-ghost-on-light",
+      "description": "Secondary CTA on the light Hero, always purple-bordered, never a second orange treatment.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Conoce lo que hacemos</a>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; height: 52px; padding: 0 28px; border-radius: 9999px; border: 1px solid rgba(75,42,147,0.25); color: #1A0F3D; font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; background: transparent; text-decoration: none; transition: border-color 200ms, background-color 200ms; } .ds-btn-ghost:hover { border-color: rgba(75,42,147,0.5); background: rgba(75,42,147,0.05); } .ds-btn-ghost:focus-visible { outline: 2px solid #F47B20; outline-offset: 3px; }"
+    },
+    {
+      "name": "Capability Card",
+      "kind": "card",
+      "refersTo": "capacidad-card",
+      "description": "Warm-white card that cross-fades to a purple-to-orange diagonal gradient on hover via a ::before layer; never moves, scales, or tilts.",
+      "html": "<a class=\"ds-cap-card\" href=\"#\"><div class=\"ds-cap-card-icon\"><svg viewBox=\"0 0 256 256\" width=\"24\" height=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"16\"><circle cx=\"128\" cy=\"128\" r=\"96\" stroke-linecap=\"round\"/></svg></div><h3 class=\"ds-cap-card-title\">Planificación Estratégica</h3><p class=\"ds-cap-card-desc\">Definimos objetivos, enfoque y ruta de acción.</p></a>",
+      "css": ".ds-cap-card { position: relative; isolation: isolate; display: flex; flex-direction: column; padding: 24px; border-radius: 20px; border: 1px solid rgba(75,42,147,0.1); background-color: #FDFBF7; box-shadow: 0 1px 2px rgba(26,15,61,0.06); text-decoration: none; transition: background-color 300ms cubic-bezier(0.16,1,0.3,1); } .ds-cap-card::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: linear-gradient(135deg, #4B2A93 0%, #6D4BC9 55%, #F47B20 100%); opacity: 0; transition: opacity 300ms cubic-bezier(0.16,1,0.3,1); } .ds-cap-card:hover::before, .ds-cap-card:focus-within::before { opacity: 1; } .ds-cap-card-icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; border: 1px solid rgba(75,42,147,0.2); background: rgba(75,42,147,0.08); color: #4B2A93; transition: color 300ms, background-color 300ms, border-color 300ms; } .ds-cap-card:hover .ds-cap-card-icon { color: #fff; background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); } .ds-cap-card-title { margin-top: 16px; font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: #1A0F3D; transition: color 300ms; } .ds-cap-card:hover .ds-cap-card-title { color: #fff; } .ds-cap-card-desc { margin-top: 8px; max-width: 34ch; font-size: 14px; line-height: 1.6; color: #57516B; transition: color 300ms; } .ds-cap-card:hover .ds-cap-card-desc { color: rgba(255,255,255,0.9); }"
+    },
+    {
+      "name": "Floating Nav",
+      "kind": "nav",
+      "refersTo": "nav-pill-active",
+      "description": "Glass-panel floating navbar on the warm-white surface, with a shared-layout active pill over the current route's link.",
+      "html": "<header class=\"ds-nav\"><nav class=\"ds-nav-links\"><a class=\"ds-nav-link ds-nav-link-active\">DOFI</a><a class=\"ds-nav-link\">FENIAX</a><a class=\"ds-nav-link\">EL SOCIO</a></nav></header>",
+      "css": ".ds-nav { display: inline-flex; padding: 8px; border-radius: 20px; border: 1px solid rgba(75,42,147,0.1); background: rgba(253,251,247,0.8); backdrop-filter: blur(8px); } .ds-nav-links { display: flex; align-items: center; gap: 4px; } .ds-nav-link { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 9999px; font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 500; color: #57516B; text-decoration: none; transition: color 200ms, background-color 200ms; } .ds-nav-link:hover { color: #1A0F3D; background: rgba(75,42,147,0.06); } .ds-nav-link-active { color: #4B2A93; background: rgba(75,42,147,0.1); border: 1px solid rgba(75,42,147,0.15); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Un Mar de Ideas, en dos mareas.",
+    "overview": "DOFI's shipped system is deliberately two surfaces, not one. The historical base — Services, Process, Manifesto, Tools, Socio, Contact, Footer, LogoWall, Clients — is a single locked dark atmosphere (Tema bloqueado: DARK, per its own globals.css header): deep purple abyss, one orange accent, no exceptions. Layered on top of that base, the front-of-house triplet (Navbar, Hero, Banda de capacidades) was rebuilt onto a warm-white canvas, so the visitor's first impression is light while the rest of the site stays in its original dark register. This split is a shipped, intentional migration boundary confirmed by the codebase's own comments, not an inconsistency to smooth over. Both surfaces share the same two brand hues — DOFI purple and DOFI orange — so the accent vocabulary never forks: only the roles of background and text invert between them. Motion across both surfaces is restrained and functional: entrance-only transforms (never opacity, to protect LCP on the H1), CSS-driven infinite float on hero text/CTA, and hover treatments that change color or opacity — never scale, tilt, or rotate a card. A prior cursor-tracking spotlight technique on the capability cards was removed outright and replaced with a plain chromatic hover; that removal is now a hard rule, not a lingering technique to revive.",
+    "keyCharacteristics": [
+      "Two coexisting surfaces (dark base, light front-of-house) sharing one accent vocabulary, never blended into a hybrid gray-brand palette.",
+      "Orange (#F47B20) is the only actionable accent on either surface; purple is structural/textual, never itself a call-to-action fill.",
+      "Pill-shaped interactive elements, 20px-radius cards, 12px-radius fields — one radius per role, not one radius for everything.",
+      "Hover changes surface color/opacity only; transform is reserved for scroll-entrance and ambient float.",
+      "Content-editable regions (Hero copy/image, capability cards) degrade to hardcoded fallbacks identical to what shipped before Sanity."
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Orange (--color-accent) is the only fill color a button or CTA ever takes, on either surface. Purple never fills an actionable element — it is structure, text, or a soft passive tint (nav-active pill, hover gradient), never a call-to-action background.", "section": "colors" },
+      { "name": "The Surface-Locked Ink Rule", "body": "--color-deep (#1A0F3D) is the single hex value that plays two roles: a dark surface on the site's base theme and the ink (text) color on the light front-of-house. This is intentional reuse, not two different tokens that happen to collide.", "section": "colors" },
+      { "name": "The Transform-Not-Opacity Rule", "body": "The Hero's H1 and CTA never animate via opacity on entrance — only transform: translateY(...), because the H1 is the LCP element and cannot render invisible.", "section": "typography" },
+      { "name": "The No-Hard-Shadow Rule", "body": "No component on either surface uses a hard-offset, unblurred shadow. Depth is conveyed through tonal layering (dark) or soft, low-opacity blur (light).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do treat orange (#F47B20/#FF9440) as the only fill color for any actionable button or CTA, on either surface.",
+      "Do keep the pill / 20px-card / 12px-field radius roles distinct — don't collapse them into one generic rounded-lg.",
+      "Do use tonal layering or soft (≤0 1px 2px, low-opacity) shadows for depth; never a hard, unblurred offset shadow.",
+      "Do animate card hover as a color/opacity cross-fade on a ::before layer, never as a transform.",
+      "Do keep light-surface borders as low-opacity brand tints (border-brand/10–/25), not neutral gray.",
+      "Do ship every CMS-driven region (Hero, capability cards) with a hardcoded fallback identical to the last-approved copy."
+    ],
+    "donts": [
+      "Don't blend the two surfaces into a single 'medium' palette. Dark sections stay on the locked dark tokens; only Navbar, Hero, and the capability band use the light tokens.",
+      "Don't reintroduce cursor-tracking spotlight/glow (--mouse-x/--mouse-y, radial mask following the pointer) on cards. It was built, then removed by explicit brief instruction.",
+      "Don't use purple as a button fill. It is structural and textual only.",
+      "Don't let a capability or Hero card gain transform on hover (scale, tilt, rotate, translate). Motion on hover is reserved for icon color and text color/opacity only."
+    ]
+  }
+}

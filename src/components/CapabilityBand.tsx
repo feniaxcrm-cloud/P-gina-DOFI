@@ -1,123 +1,98 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import { Compass, ChatCircle, VideoCamera, Calendar } from "@phosphor-icons/react";
+import type { Capacidad } from "@/lib/sanity";
 
 /**
- * Banda de capacidades — reemplaza a las 4 tarjetas sueltas del sprint de
- * motion anterior (HeroCards.tsx). Mismo copy exacto, mismo comportamiento
- * (aparecen una vez, después quedan físicamente estáticas, glow de borde
- * que sigue al cursor) pero reempaquetado como UN solo contenedor con
- * divisores internos — "banda", no 4 tarjetas separadas — para que lea
- * como la pieza superpuesta al Hero que pide la referencia, en superficie
- * `surface-raised` con borde lila, nunca tarjetas blancas.
+ * Banda de capacidades — 4 tarjetas editables desde Sanity (Replanteo
+ * Navbar + Hero + Sanity, §30-53).
+ *
+ * ICONOS: SELECTOR CONTROLADO, NO SVG ARBITRARIO (spec §35-37)
+ * -----------------------------------------------------------------
+ * Sanity solo guarda una clave de string (`icono`); este mapa la traduce a
+ * un componente Phosphor real. Ningun contenido de Sanity decide el SVG
+ * que se renderiza — asi el stroke, tamaño y familia quedan consistentes
+ * pase lo que pase en el Studio.
  */
-const CAPACIDADES = [
-  {
-    titulo: "Planificación Estratégica",
-    descripcion: "Definimos objetivos, enfoque y ruta de acción.",
-    Icono: Compass,
-  },
-  {
-    titulo: "Conversación",
-    descripcion: "Creamos interacción que genera confianza e interés.",
-    Icono: ChatCircle,
-  },
-  {
-    titulo: "Producción Audiovisual",
-    descripcion: "Producimos piezas visuales que captan atención.",
-    Icono: VideoCamera,
-  },
-  {
-    titulo: "Publicación de Contenido",
-    descripcion: "Publicamos con constancia, orden y propósito.",
-    Icono: Calendar,
-  },
-] as const;
+const ICONOS = {
+  strategy: Compass,
+  conversation: ChatCircle,
+  video: VideoCamera,
+  publishing: Calendar,
+} as const;
 
-/** Ver Hero DOFI V1 (sprint de motion anterior) para el detalle completo de
- *  la técnica: --mouse-x/--mouse-y se escriben directo sobre el nodo DOM
- *  en pointermove (sin setState), el glow es un pseudo-elemento CSS
- *  (.card-glow::before en globals.css) recortado a un anillo del grosor
- *  del borde. Sin cambios de técnica en este sprint, solo de empaquetado
- *  visual (banda unica con divisores en vez de 4 tarjetas con gap). */
-function useGlowSeguidor(ref: React.RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const alMover = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty("--mouse-x", `${e.clientX - r.left}px`);
-      el.style.setProperty("--mouse-y", `${e.clientY - r.top}px`);
-    };
-    el.addEventListener("pointermove", alMover);
-    return () => el.removeEventListener("pointermove", alMover);
-  }, [ref]);
-}
+/**
+ * HOVER — CAMBIO CROMATICO, NO GLOW DE CURSOR (spec §40-44)
+ * -----------------------------------------------------------------
+ * Reemplaza por completo la tecnica anterior (--mouse-x/--mouse-y +
+ * spotlight radial que seguia el puntero, ver globals.css). La tarjeta ya
+ * no necesita listeners de pointermove ni refs: es un simple hover CSS
+ * (`.capacidad-card` + `::before`, ver globals.css) que cross-fadea de
+ * blanco a degradado DOFI. CERO transform: la tarjeta nunca se mueve,
+ * inclina, rota ni escala (regla dura del sprint).
+ */
+function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
+  const Icono = ICONOS[icono];
 
-function Modulo({
-  titulo,
-  descripcion,
-  Icono,
-}: {
-  titulo: string;
-  descripcion: string;
-  Icono: typeof Compass;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  useGlowSeguidor(ref);
-
-  return (
-    <div ref={ref} className="card-glow relative p-6">
-      <div className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-brand-lift/25 bg-brand-lift/10">
-        <Icono size={32} weight="bold" aria-hidden="true" className="text-brand-lift" />
+  const contenido = (
+    <>
+      <div className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-brand/20 bg-brand/8 transition-colors duration-300 group-hover:border-white/30 group-hover:bg-white/15">
+        <Icono
+          size={32}
+          weight="bold"
+          aria-hidden="true"
+          className="text-brand transition-colors duration-300 group-hover:text-white"
+        />
       </div>
-      <h3 className="mt-4 font-display text-base font-bold tracking-tight text-fg-primary md:text-lg">
+      <h3 className="mt-4 font-display text-base font-bold tracking-tight text-ink transition-colors duration-300 group-hover:text-white md:text-lg">
         {titulo}
       </h3>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-fg-muted">
+      <p className="mt-2 max-w-[34ch] font-sans text-sm leading-relaxed text-ink-muted transition-colors duration-300 group-hover:text-white/90">
         {descripcion}
       </p>
-    </div>
+    </>
   );
+
+  const className =
+    "capacidad-card group relative flex flex-col rounded-[20px] border border-brand/10 p-6 shadow-[0_1px_2px_rgba(26,15,61,0.06)]";
+
+  // Semantica: solo se vuelve link/tarjeta interactiva si trae enlace real
+  // (spec §67). Sin enlace, no lleva cursor:pointer ni rol de boton.
+  if (enlace) {
+    return (
+      <Link href={enlace} className={className}>
+        {contenido}
+      </Link>
+    );
+  }
+  return <div className={className}>{contenido}</div>;
 }
 
-export function CapabilityBand() {
+export function CapabilityBand({ capacidades }: { capacidades: Capacidad[] }) {
   const reduce = useReducedMotion();
 
   return (
-    <motion.div
-      className="overflow-hidden rounded-[20px] border border-brand-lift/15 bg-surface-raised/95 backdrop-blur-sm"
-      initial="oculto"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.3 }}
-    >
-      {/* divide-x/divide-y de Tailwind ya inserta el borde SOLO entre
-          elementos (selector interno `& > * + *`), asi que alcanza con
-          declararlo una vez en el contenedor — no hace falta logica por
-          hijo para saltarse el primero/ultimo. */}
-      <div className="grid grid-cols-1 divide-y divide-brand-lift/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
-        {CAPACIDADES.map((c, i) => (
-          <motion.div
-            key={c.titulo}
-            variants={{
-              oculto: reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: {
-                  duration: reduce ? 0 : 0.55,
-                  delay: reduce ? 0 : i * 0.075,
-                  ease: [0.16, 1, 0.3, 1],
-                },
-              },
-            }}
-          >
-            <Modulo titulo={c.titulo} descripcion={c.descripcion} Icono={c.Icono} />
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {capacidades.map((c, i) => (
+        <motion.div
+          key={c.titulo}
+          initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+            transition: {
+              duration: reduce ? 0 : 0.55,
+              delay: reduce ? 0 : i * 0.075,
+              ease: [0.16, 1, 0.3, 1],
+            },
+          }}
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          <Tarjeta {...c} />
+        </motion.div>
+      ))}
+    </div>
   );
 }

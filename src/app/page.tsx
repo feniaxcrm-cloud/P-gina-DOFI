@@ -9,7 +9,7 @@ import { Manifesto } from "@/components/Manifesto";
 import { Process } from "@/components/Process";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
-import { getSeccionesPaginaInicio, type SeccionData } from "@/lib/sanity";
+import { getPaginaInicio, type SeccionData } from "@/lib/sanity";
 
 /**
  * Diccionario _type -> componente para las 3 secciones que traen su texto
@@ -79,7 +79,7 @@ const RENDERERS: Record<
  * documento en Sanity: su contenido sigue fijo en cada componente.
  */
 export default async function Home() {
-  const secciones = await getSeccionesPaginaInicio();
+  const { secciones, hero, capacidades } = await getPaginaInicio();
   const porTipo = (tipo: SeccionData["_type"]) =>
     secciones.find((s) => s._type === tipo);
 
@@ -91,7 +91,7 @@ export default async function Home() {
     <>
       <Nav />
       <main>
-        <Hero />
+        <Hero content={hero} capacidades={capacidades} />
 
         <LogoWall />
         <Clients />

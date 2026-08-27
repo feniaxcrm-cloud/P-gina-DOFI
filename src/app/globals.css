@@ -105,6 +105,37 @@
   --text-button: 0.9375rem;   /* 15px */
   --text-button--line-height: 1;
   --text-button--font-weight: 600;
+
+  /* ==========================================================
+     LIENZO CLARO — tokens preparatorios (light-first)
+     Ver DOFI — REPLANTEO DEFINITIVO NAVBAR + HERO + SANITY, §1 y §62-64.
+
+     El principio nuevo es "el blanco prevalece en todo el sitio", pero
+     este sprint NO migra el sitio entero (pedido explicito, §64): solo
+     Navbar + Hero + Banda de capacidades lo usan hoy. El resto de la
+     pagina sigue sobre los tokens oscuros de arriba sin ningun cambio.
+     Estos nombres existen para que la migracion progresiva futura tenga
+     donde enchufarse sin inventar tokens nuevos en el momento.
+
+     Los acentos NO se duplican: --color-brand/--color-brand-lift/
+     --color-accent/--color-accent-lift (arriba) son los mismos morado y
+     naranja DOFI sobre claro y sobre oscuro. Solo cambian los roles de
+     fondo y texto. */
+  --color-canvas: #FDFBF7;         /* blanco calido, base del lienzo */
+  --color-canvas-raised: #F6F1EA;  /* superficie clara ligeramente elevada */
+  --color-canvas-border: color-mix(in srgb, var(--color-brand) 14%, transparent);
+
+  /* Texto sobre claro. --color-deep (#1A0F3D) hace doble uso: ya es una
+     superficie oscura del tema dark, y funciona igual de bien como "tinta"
+     de marca sobre el lienzo claro — mismo morado profundo, otro rol. */
+  --color-ink: var(--color-deep);         /* 17,2:1 sobre --color-canvas (medido) */
+  --color-ink-muted: #57516B;             /* 7,3:1 sobre --color-canvas (medido) */
+  --color-ink-subtle: #6C6480;            /* 5,4:1 sobre --color-canvas (medido) */
+
+  /* Pildora activa del nav sobre claro: fondo morado muy suave, texto
+     morado profundo. Nunca bloque oscuro pesado (spec §9). */
+  --color-pill-active-bg: color-mix(in srgb, var(--color-brand) 10%, var(--color-canvas));
+  --color-pill-active-fg: var(--color-brand);
 }
 
 html {
@@ -157,56 +188,6 @@ body {
   opacity: 0.22;
   mix-blend-mode: soft-light;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-}
-
-/* Onda continua de las letras del hero.
-   El desfase negativo por letra (animation-delay) hace que la onda viaje a
-   traves de la palabra en vez de que todas suban a la vez. */
-@keyframes letter-wave {
-  0%,
-  100% {
-    transform: translate3d(0, 0.055em, 0);
-  }
-  50% {
-    transform: translate3d(0, -0.055em, 0);
-  }
-}
-
-/* Sin will-change a proposito: son ~13 letras y fijar la promocion a capa
-   deja 13 capas de composicion vivas todo el tiempo. El navegador ya acelera
-   una animacion de transform mientras se ejecuta. */
-.wave-letter {
-  animation: letter-wave 3.8s ease-in-out infinite;
-}
-
-/* Flotacion del logo del hero.
-   Comparte duracion y curva con letter-wave para que lea como el mismo
-   oleaje, pero con recorrido mayor y una inclinacion minima: es una pieza
-   sola, no una fila de letras, y necesita mas amplitud para percibirse. */
-@keyframes logo-float {
-  0%,
-  100% {
-    transform: translate3d(0, 1.4%, 0) rotate(-0.6deg);
-  }
-  50% {
-    transform: translate3d(0, -1.4%, 0) rotate(0.6deg);
-  }
-}
-
-.logo-float {
-  animation: logo-float 3.8s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .logo-float {
-    animation: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wave-letter {
-    animation: none;
-  }
 }
 
 /* Marquesina de una sola aparicion en la pagina (seccion manifiesto) */
@@ -395,52 +376,46 @@ body {
 }
 
 /* ============================================================
-   BANDA DE CAPACIDADES — glow de borde que sigue al cursor
+   TARJETAS DE CAPACIDADES — cambio cromatico en hover
    (ver src/components/CapabilityBand.tsx)
 
-   --mouse-x/--mouse-y se escriben por JS directo sobre el elemento (sin
-   pasar por React) en cada pointermove. El glow es un pseudo-elemento
-   posicionado con esas variables y recortado a un anillo del grosor del
-   borde: dos capas de mascara (una a partir del padding-box, otra del
-   border-box completo) combinadas con mask-composite:exclude dejan
-   visible solo la diferencia entre ambas, es decir, el borde. Por eso
-   NUNCA se ve como un box-shadow parejo alrededor de toda la tarjeta.
+   Reemplaza por completo al glow de borde que seguia al cursor (spec
+   "Replanteo definitivo Navbar + Hero + Sanity", §42: prohibido explicitamente
+   --mouse-x/--mouse-y, spotlight y mascara dinamica). El nuevo hover es
+   solo un cambio de superficie: blanca en reposo, degradado DOFI al pasar
+   el cursor. La tarjeta nunca se mueve, inclina, rota ni escala (§43) — la
+   unica transicion es de background-color/color, nunca de transform.
 
-   La tarjeta en si (el elemento con .card-glow) no lleva NINGUNA
-   transicion de transform: el glow cambia color/mascara/opacidad, nunca
-   mueve, inclina, rota ni escala la tarjeta — esa es la regla dura del
-   sprint. Solo se habilita el seguimiento con mouse/trackpad real
-   (hover:hover + pointer:fine); en touch el borde se queda en su estado
-   normal, sin intentar simular el dedo. */
-.card-glow {
-  --mouse-x: 50%;
-  --mouse-y: 50%;
+   El degradado va en un pseudo-elemento propio (no en el background de la
+   tarjeta) para poder cross-fadear su opacidad en vez de saltar entre dos
+   colores solidos: mas suave a 250-350ms sin tener que animar un gradiente
+   como si fuera un color plano. */
+.capacidad-card {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--color-canvas);
+  transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.card-glow::before {
+.capacidad-card::before {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: -1;
   border-radius: inherit;
-  padding: 1.5px;
-  background: radial-gradient(
-    220px circle at var(--mouse-x) var(--mouse-y),
-    color-mix(in srgb, var(--color-accent) 75%, var(--color-brand-lift)) 0%,
-    color-mix(in srgb, var(--color-brand-lift) 60%, transparent) 45%,
-    transparent 72%
+  background: linear-gradient(
+    135deg,
+    var(--color-brand) 0%,
+    var(--color-brand-lift) 55%,
+    var(--color-accent) 100%
   );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
   opacity: 0;
   transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card-glow:hover::before {
+  .capacidad-card:hover::before,
+  .capacidad-card:focus-within::before {
     opacity: 1;
   }
 }
@@ -531,5 +506,51 @@ body {
   .sss-pulso {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ============================================================
+   HERO — degradado animado sobre la imagen
+   (ver src/components/Hero.tsx, spec §20-25)
+
+   Capa unica, mas grande que su contenedor (200% de ancho), con 3 paradas
+   de color (blanco -> morado translucido -> naranja) repetidas en espejo
+   para que el bucle no tenga costura. Se anima SOLO background-position
+   (nunca object-position de la foto ni su transform), asi la fotografia
+   permanece perfectamente fija y solo la luz sobre ella se desplaza. 14s,
+   lineal, para que el reinicio sea imperceptible (pedido explicito: "dificil
+   notar donde reinicia", "no bounce", "no cambio abrupto").
+   ============================================================ */
+@keyframes hero-media-gradient {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: -100% 50%;
+  }
+}
+
+.hero-media-gradient {
+  /* repeating-linear-gradient con el mismo color en la primera y la ultima
+     parada (--color-canvas en 0% y 100%): el patron se vuelve
+     matematicamente periodico, asi que deslizar background-position por
+     cualquier cantidad SIEMPRE calza sin costura, sin tener que calcular
+     a mano el largo exacto del periodo. */
+  background-image: repeating-linear-gradient(
+    100deg,
+    var(--color-canvas) 0%,
+    color-mix(in srgb, var(--color-brand) 60%, transparent) 20%,
+    color-mix(in srgb, var(--color-accent) 42%, transparent) 32%,
+    transparent 50%,
+    var(--color-canvas) 100%
+  );
+  background-size: 220% 220%;
+  animation: hero-media-gradient 14s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-media-gradient {
+    animation: none;
+    background-position: 0% 50%;
   }
 }

@@ -412,6 +412,40 @@ export type SeccionData =
   | SeccionSocioData
   | SeccionCierreData;
 
+// --- Hero + Capacidades (Replanteo Navbar + Hero + Sanity) ----------------
+//
+// A diferencia de secciones[] (repetible, se busca por _type), Hero y
+// Capacidades son piezas UNICAS de la home: viven como campos propios de
+// paginaInicio (hero{...}, capacidades[]) en vez de un item mas del
+// arreglo polimorfico. Mismo documento, mismo patron de respaldo.
+
+export type HeroContent = {
+  titulo: string;
+  marca: string;
+  mensaje: string;
+  /** URL ya con ?w=.. — null si el Studio todavia no tiene imagen cargada. */
+  imagen: string | null;
+  imagenAlt: string;
+  /** Coordenadas 0-1 del hotspot de Sanity, para object-position en el
+   *  cliente (ver Hero.tsx). null si no hay imagen o no hay hotspot. */
+  hotspot: { x: number; y: number } | null;
+  ctaPrincipalTexto: string;
+  ctaPrincipalEnlace: string;
+  ctaSecundarioTexto: string;
+  ctaSecundarioEnlace: string;
+};
+
+/** Las 4 claves validas del selector controlado de icono (spec §35-37):
+ *  Sanity solo guarda el string, CapabilityBand.tsx lo mapea a Phosphor. */
+export type IconoCapacidad = "strategy" | "conversation" | "video" | "publishing";
+
+export type Capacidad = {
+  titulo: string;
+  descripcion: string;
+  icono: IconoCapacidad;
+  enlace: string | null;
+};
+
 // --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
 
 // Forma laxa a proposito: cada item siempre trae _type, pero el resto de
@@ -433,9 +467,32 @@ type SeccionRaw = {
   enlace?: string | null;
 };
 
+type HeroRaw = {
+  titulo: string | null;
+  marca: string | null;
+  mensaje: string | null;
+  imagen: string | null;
+  imagenAlt: string | null;
+  hotspot: { x: number; y: number } | null;
+  ctaPrincipalTexto: string | null;
+  ctaPrincipalEnlace: string | null;
+  ctaSecundarioTexto: string | null;
+  ctaSecundarioEnlace: string | null;
+} | null;
+
+type CapacidadRaw = {
+  titulo: string | null;
+  descripcion: string | null;
+  icono: string | null;
+  activa: boolean | null;
+  enlace: string | null;
+};
+
 type PaginaInicioRaw = {
   titulo: string | null;
   secciones: SeccionRaw[] | null;
+  hero: HeroRaw;
+  capacidades: CapacidadRaw[] | null;
 };
 
 const QUERY_PAGINA_INICIO = `*[_type == "paginaInicio"][0]{
@@ -446,6 +503,25 @@ const QUERY_PAGINA_INICIO = `*[_type == "paginaInicio"][0]{
     _type == "seccionSocio" => { nombre, descripcion, "foto": foto.asset->url },
     _type == "seccionPilares" => { titulo, listaHerramientas[]{ nombre, icono } },
     _type == "seccionCierre" => { titulo, textoBoton, enlace }
+  },
+  hero{
+    titulo,
+    marca,
+    mensaje,
+    "imagen": imagen.asset->url + "?w=1600&auto=format",
+    "imagenAlt": coalesce(imagen.alt, ""),
+    "hotspot": imagen.hotspot{ x, y },
+    ctaPrincipalTexto,
+    ctaPrincipalEnlace,
+    ctaSecundarioTexto,
+    ctaSecundarioEnlace
+  },
+  capacidades[]{
+    titulo,
+    descripcion,
+    icono,
+    activa,
+    enlace
   }
 }`;
 
@@ -497,6 +573,100 @@ const SECCIONES_FALLBACK: SeccionData[] = [
   },
 ];
 
+// --- Hero + Capacidades: fallback centralizado (spec §38/§70) -------------
+//
+// Mismo copy que ya estaba aprobado en el Hero (Sprint "Navbar + Hero
+// reframe") y las mismas 4 capacidades del sprint de motion anterior. Un
+// solo lugar de verdad: Hero.tsx y CapabilityBand.tsx nunca escriben estos
+// strings, solo pintan lo que reciben.
+
+export const HERO_FALLBACK: HeroContent = {
+  titulo: "Un Mar de Ideas",
+  marca: "DOFI Agencia Creativa",
+  mensaje: "Convertimos atención en Ventas Inteligentes",
+  imagen: null,
+  imagenAlt: "",
+  hotspot: null,
+  ctaPrincipalTexto: "Empecemos",
+  ctaPrincipalEnlace: "/contactanos",
+  ctaSecundarioTexto: "Conoce lo que hacemos",
+  ctaSecundarioEnlace: "/#servicios",
+};
+
+export const CAPACIDADES_FALLBACK: Capacidad[] = [
+  {
+    titulo: "Planificación Estratégica",
+    descripcion: "Definimos objetivos, enfoque y ruta de acción.",
+    icono: "strategy",
+    enlace: null,
+  },
+  {
+    titulo: "Conversación",
+    descripcion: "Creamos interacción que genera confianza e interés.",
+    icono: "conversation",
+    enlace: null,
+  },
+  {
+    titulo: "Producción Audiovisual",
+    descripcion: "Producimos piezas visuales que captan atención.",
+    icono: "video",
+    enlace: null,
+  },
+  {
+    titulo: "Publicación de Contenido",
+    descripcion: "Publicamos con constancia, orden y propósito.",
+    icono: "publishing",
+    enlace: null,
+  },
+];
+
+const ICONOS_VALIDOS = new Set<IconoCapacidad>([
+  "strategy",
+  "conversation",
+  "video",
+  "publishing",
+]);
+
+/** hero puede venir null (documento sin ese campo todavia), o con la
+ *  imagen sin cargar (imagen queda null, ver nota de la query GROQ arriba).
+ *  Si falta el titulo (el campo del que depende visualmente el diseño, spec
+ *  §55), se usa el respaldo completo — nunca un Hero a medio llenar. */
+function normalizarHero(raw: HeroRaw): HeroContent {
+  if (!raw || !raw.titulo) return HERO_FALLBACK;
+  return {
+    titulo: raw.titulo,
+    marca: raw.marca ?? HERO_FALLBACK.marca,
+    mensaje: raw.mensaje ?? HERO_FALLBACK.mensaje,
+    imagen: raw.imagen ?? null,
+    imagenAlt: raw.imagenAlt ?? "",
+    hotspot: raw.imagen && raw.hotspot ? raw.hotspot : null,
+    ctaPrincipalTexto: raw.ctaPrincipalTexto ?? HERO_FALLBACK.ctaPrincipalTexto,
+    ctaPrincipalEnlace: raw.ctaPrincipalEnlace ?? HERO_FALLBACK.ctaPrincipalEnlace,
+    ctaSecundarioTexto: raw.ctaSecundarioTexto ?? HERO_FALLBACK.ctaSecundarioTexto,
+    ctaSecundarioEnlace: raw.ctaSecundarioEnlace ?? HERO_FALLBACK.ctaSecundarioEnlace,
+  };
+}
+
+/** Descarta items sin titulo/descripcion/icono valido o marcados inactivos
+ *  (spec §32 "activar/desactivar"). Si no queda ninguna capacidad valida,
+ *  usa el respaldo completo — la banda nunca se muestra vacia. */
+function normalizarCapacidades(raw: CapacidadRaw[] | null): Capacidad[] {
+  const validas = (raw ?? [])
+    .filter((c) => c.activa !== false)
+    .filter(
+      (c): c is CapacidadRaw & { titulo: string; descripcion: string; icono: IconoCapacidad } =>
+        Boolean(c.titulo) && Boolean(c.descripcion) && ICONOS_VALIDOS.has(c.icono as IconoCapacidad)
+    )
+    .map((c) => ({
+      titulo: c.titulo,
+      descripcion: c.descripcion,
+      icono: c.icono,
+      enlace: c.enlace ?? null,
+    }));
+
+  return validas.length > 0 ? validas : CAPACIDADES_FALLBACK;
+}
+
 /** Valida un item crudo del arreglo y lo deja listo para pintar, o
  *  descarta lo que venga incompleto o de un tipo que todavia no tiene
  *  componente asignado (ver nota de seccionPilares mas arriba). */
@@ -547,15 +717,24 @@ function normalizarSeccion(raw: SeccionRaw): SeccionData | null {
 }
 
 /**
- * Trae y arma el arreglo final de secciones para la home. Si Sanity no
- * responde o el documento no existe, usa SECCIONES_FALLBACK completo. Si
- * responde pero le falta alguna seccion puntual, respeta el orden real de
- * lo que si vino bien formado y agrega al final el respaldo de lo que
- * falte, para que ninguna seccion desaparezca de la pagina mientras se
- * termina de cargar contenido en el Studio.
+ * Trae y arma TODO el contenido de paginaInicio en una sola consulta:
+ * secciones[] (Hacemos/Socio/Cierre, orden fijo en page.tsx — ver comentario
+ * ahi), mas hero{} y capacidades[] (Replanteo Navbar + Hero + Sanity).
+ *
+ * Si Sanity no responde o el documento no existe, todo cae a su respaldo
+ * (SECCIONES_FALLBACK / HERO_FALLBACK / CAPACIDADES_FALLBACK). Si responde
+ * pero falta una seccion puntual, respeta el orden real de lo que si vino
+ * bien formado y agrega al final el respaldo de lo que falte — ninguna
+ * seccion desaparece de la pagina mientras se termina de cargar contenido
+ * en el Studio.
  */
-export async function getSeccionesPaginaInicio(): Promise<SeccionData[]> {
+export async function getPaginaInicio(): Promise<{
+  secciones: SeccionData[];
+  hero: HeroContent;
+  capacidades: Capacidad[];
+}> {
   const doc = await sanityQuery<PaginaInicioRaw>(QUERY_PAGINA_INICIO);
+
   const crudo = doc?.secciones ?? [];
   const validas = crudo
     .map(normalizarSeccion)
@@ -566,5 +745,9 @@ export async function getSeccionesPaginaInicio(): Promise<SeccionData[]> {
     (s) => !tiposPresentes.has(s._type)
   );
 
-  return [...validas, ...faltantes];
+  return {
+    secciones: [...validas, ...faltantes],
+    hero: normalizarHero(doc?.hero ?? null),
+    capacidades: normalizarCapacidades(doc?.capacidades ?? null),
+  };
 }
