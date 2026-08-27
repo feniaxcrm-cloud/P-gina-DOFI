@@ -15,7 +15,7 @@ export function Manifesto() {
   return (
     <section
       aria-label="Eslogan de la agencia"
-      className="relative overflow-hidden bg-abyss py-16"
+      className="relative overflow-hidden bg-canvas py-16"
     >
       <div className="flex w-max tide-track">
         {strip.map((w, i) => (
@@ -23,7 +23,10 @@ export function Manifesto() {
             key={`${w}-${i}`}
             className="flex shrink-0 items-center font-display text-[13vw] font-extrabold leading-none tracking-tighter text-transparent lg:text-[7.5vw]"
             style={{
-              WebkitTextStroke: "1px rgba(255,255,255,0.3)",
+              // Trazo oscuro (antes blanco, invisible sobre el lienzo claro
+              // al que migro esta seccion en el sprint de Header).
+              WebkitTextStroke:
+                "1px color-mix(in srgb, var(--color-ink) 32%, transparent)",
             }}
           >
             {w}

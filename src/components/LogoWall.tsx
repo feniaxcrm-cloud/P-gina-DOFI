@@ -73,7 +73,7 @@ export async function LogoWall() {
   return (
     <section
       aria-labelledby="prueba-social"
-      className="relative border-t border-brand-lift/15 bg-surface-base py-8 md:py-10"
+      className="relative border-t border-brand/12 bg-canvas py-8 md:py-10"
     >
       {/* El texto respeta container.page y arranca en la misma linea
           vertical que el H1 del Hero (x=60 a 1440). La marquesina, en
@@ -81,22 +81,23 @@ export async function LogoWall() {
           romper el contenedor. */}
       <div className="px-5 sm:px-6 md:px-10 lg:px-12 xl:px-14">
         <div className="mx-auto max-w-page">
-          <p id="prueba-social" className="font-sans text-sm text-fg-subtle">
+          <p id="prueba-social" className="font-sans text-sm text-ink-subtle">
             Empresas que han confiado en nosotros
           </p>
         </div>
       </div>
 
       <div className="relative mt-6 md:mt-7">
-        {/* Desvanecido en los extremos, con surface.base (nunca negro) y
-            sin blur. Estrecho a proposito: no debe tapar un nombre entero. */}
+        {/* Desvanecido en los extremos, con --color-canvas (el lienzo real
+            de la seccion, migrada a claro en el sprint de Header) y sin
+            blur. Estrecho a proposito: no debe tapar un nombre entero. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-surface-base to-transparent md:w-20"
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-canvas to-transparent md:w-20"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-surface-base to-transparent md:w-20"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-canvas to-transparent md:w-20"
         />
 
         {/* wall-viewport recorta la tira; con movimiento reducido pasa a
@@ -131,7 +132,7 @@ export async function LogoWall() {
                       className="h-6 w-auto max-w-[120px] object-contain opacity-70 grayscale transition-[filter,opacity] duration-300 hover:opacity-100 hover:grayscale-0 md:h-7 md:max-w-[150px]"
                     />
                   ) : (
-                    <span className="whitespace-nowrap font-display text-sm font-semibold tracking-tight text-fg-muted md:text-[15px]">
+                    <span className="whitespace-nowrap font-display text-sm font-semibold tracking-tight text-ink-muted md:text-[15px]">
                       {c.name}
                     </span>
                   )}

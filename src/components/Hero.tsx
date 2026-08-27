@@ -54,7 +54,7 @@ export function Hero({
     : "50% 50%";
 
   return (
-    <section className="relative overflow-hidden bg-canvas pb-20 pt-[88px] md:pb-[84px] md:pt-[84px]">
+    <section className="relative overflow-hidden bg-canvas pb-20 pt-[80px] md:pb-[84px] lg:pt-[84px]">
       <div className="relative mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12 xl:px-14">
         <div className="grid grid-cols-1 items-center gap-10 py-6 lg:grid-cols-[55fr_45fr] lg:gap-14 lg:py-8">
           {/* ---------- Columna izquierda: copy ---------- */}

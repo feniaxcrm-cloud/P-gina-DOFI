@@ -2,8 +2,13 @@
 
 /* ============================================================
    DOFI Agencia Creativa - Sistema de diseño
-   Tema bloqueado: DARK (una sola atmosfera para toda la pagina).
-   Acento unico: naranja DOFI. Base: purpura profundo de marca.
+   Lienzo base: CLARO (--color-canvas). El blanco calido prevalece en el
+   sitio (Sprint "Header nuevo + lienzo blanco global", §2) — el morado y
+   el naranja DOFI son acentos, no fondo dominante. Algunas secciones
+   todavia pintan su propio fondo oscuro explicito a proposito (ver nota
+   junto a `html` mas abajo); no heredan del lienzo base, se migran en
+   sprints propios.
+   Acento unico: naranja DOFI. Marca: purpura profundo DOFI.
    Escala de radios: pill (interactivo) / 20px (tarjetas) / 12px (inputs)
    ============================================================ */
 
@@ -107,15 +112,16 @@
   --text-button--font-weight: 600;
 
   /* ==========================================================
-     LIENZO CLARO — tokens preparatorios (light-first)
-     Ver DOFI — REPLANTEO DEFINITIVO NAVBAR + HERO + SANITY, §1 y §62-64.
+     LIENZO CLARO — base del sitio (Sprint "Header nuevo + lienzo blanco
+     global", §2, §22-23)
 
-     El principio nuevo es "el blanco prevalece en todo el sitio", pero
-     este sprint NO migra el sitio entero (pedido explicito, §64): solo
-     Navbar + Hero + Banda de capacidades lo usan hoy. El resto de la
-     pagina sigue sobre los tokens oscuros de arriba sin ningun cambio.
-     Estos nombres existen para que la migracion progresiva futura tenga
-     donde enchufarse sin inventar tokens nuevos en el momento.
+     Antes estos tokens eran "preparatorios": solo los usaba el Hero, y
+     html/body seguian pintados en --color-abyss por debajo. Esa era la
+     causa real de que el sitio siguiera leyendose oscuro pese a tener un
+     Hero claro — el lienzo de fondo de TODA la pagina seguia siendo
+     morado profundo, y cualquier seccion sin fondo propio (o el espacio
+     entre secciones) heredaba ese oscuro. Ver mas abajo: html/body ahora
+     pintan --color-canvas, no --color-abyss.
 
      Los acentos NO se duplican: --color-brand/--color-brand-lift/
      --color-accent/--color-accent-lift (arriba) son los mismos morado y
@@ -131,17 +137,19 @@
   --color-ink: var(--color-deep);         /* 17,2:1 sobre --color-canvas (medido) */
   --color-ink-muted: #57516B;             /* 7,3:1 sobre --color-canvas (medido) */
   --color-ink-subtle: #6C6480;            /* 5,4:1 sobre --color-canvas (medido) */
-
-  /* Pildora activa del nav sobre claro: fondo morado muy suave, texto
-     morado profundo. Nunca bloque oscuro pesado (spec §9). */
-  --color-pill-active-bg: color-mix(in srgb, var(--color-brand) 10%, var(--color-canvas));
-  --color-pill-active-fg: var(--color-brand);
 }
 
+/* Secciones que TODAVIA esperan fondo oscuro propio (Hero, Header,
+   LogoWall, Manifiesto, Proceso y Herramientas ya migraron a --color-canvas
+   en este sprint; Servicios, Clientes, El Socio, Contacto, Footer y las
+   paginas internas quedan fuera de este sprint a proposito — spec §1, "NO
+   rediseñar todavia") siguen pintando SU PROPIO fondo oscuro explicito
+   (bg-abyss / bg-deep / gradiente propio), asi que no dependen de lo que
+   pinte html/body por debajo. Cambiar el lienzo base no las rompe. */
 html {
   scroll-behavior: smooth;
-  background-color: var(--color-abyss);
-  color-scheme: dark;
+  background-color: var(--color-canvas);
+  color-scheme: light;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -158,8 +166,8 @@ html {
 }
 
 body {
-  background-color: var(--color-abyss);
-  color: var(--color-foam);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   /* clip y no hidden: hidden convierte al body en contenedor de scroll y esa
@@ -260,9 +268,12 @@ body {
 }
 
 /* Herramientas: la marca vive en gris hasta que el cursor la despierta.
-   El color de cada una llega por la variable --brand del propio elemento. */
+   El color de cada una llega por la variable --brand del propio elemento.
+   ink-subtle (no mist): Tools.tsx migro a lienzo claro en este sprint —
+   mist es un lila CLARO pensado para texto sobre fondo oscuro, invisible
+   sobre --color-canvas. */
 .tool-mark {
-  color: var(--color-mist);
+  color: var(--color-ink-subtle);
 }
 
 .tool-cell:hover .tool-mark {

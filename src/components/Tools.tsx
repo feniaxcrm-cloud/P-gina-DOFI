@@ -74,8 +74,11 @@ const tools: Tool[] = [
     role: "Social",
     body: "Producción de contenido nativo de alto impacto y pauta estratégica para capturar al público más joven.",
     iconPath: siTiktok.path,
-    // El hex oficial es negro y desaparece sobre fondo oscuro
-    color: "#25F4EE",
+    // El hex oficial es negro. Antes se sustituia por un cian porque la
+    // tarjeta era oscura y el negro desaparecia; con la tarjeta migrada a
+    // lienzo claro en este sprint el negro real vuelve a funcionar y ya no
+    // hace falta el sustituto.
+    color: `#${siTiktok.hex}`,
     cell: "md:col-span-2",
   },
   {
@@ -114,13 +117,13 @@ function logoPropio(slug: string) {
 
 export function Tools() {
   return (
-    <section id="herramientas" className="relative bg-abyss py-32 md:py-48">
+    <section id="herramientas" className="relative bg-canvas py-32 md:py-48">
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
         <Reveal className="max-w-[36rem]">
-          <h2 className="font-display text-4xl font-extrabold leading-[1.02] tracking-tighter text-foam md:text-6xl">
+          <h2 className="font-display text-4xl font-extrabold leading-[1.02] tracking-tighter text-ink md:text-6xl">
             Con qué trabajamos
           </h2>
-          <p className="mt-6 font-sans text-lg leading-relaxed text-mist">
+          <p className="mt-6 font-sans text-lg leading-relaxed text-ink-muted">
             Las herramientas no son el trabajo, pero sí definen qué tan rápido
             se ejecuta y qué tan bien se mide.
           </p>
@@ -150,18 +153,26 @@ function ToolCell({ tool }: { tool: Tool }) {
   return (
     <article
       style={{ "--brand": tool.color } as React.CSSProperties}
-      className="tool-cell group flex h-full min-h-[13rem] flex-col justify-between gap-10 rounded-[20px] border border-brand-lift/25 bg-deep/40 p-7 transition-colors duration-500 hover:border-[color:var(--brand)]/50"
+      className="tool-cell group flex h-full min-h-[13rem] flex-col justify-between gap-10 rounded-[20px] border border-brand/15 bg-canvas-raised p-7 shadow-[0_1px_2px_rgba(26,15,61,0.06)] transition-colors duration-500 hover:border-[color:var(--brand)]/60"
     >
       <div
         className={`flex items-center ${hasGraphic ? "justify-between" : "justify-end"}`}
       >
         {propio ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={propio}
-            alt={tool.name}
-            className={`${markSize} w-auto max-w-[10rem] object-contain`}
-          />
+          // Los PNG propios (kommo.png, capcut.png) son marca blanca solida
+          // sobre transparente -- se subieron pensados para la tarjeta
+          // oscura anterior. Sobre el lienzo claro nuevo serian
+          // practicamente invisibles (verificado: blanco sobre --color-
+          // canvas-raised). Un chip oscuro propio los mantiene legibles sin
+          // tocar el archivo (spec §24: adaptar, no reemplazar el asset).
+          <span className="inline-flex items-center justify-center rounded-[14px] bg-ink px-3 py-2.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={propio}
+              alt={tool.name}
+              className={`${markSize} w-auto max-w-[8rem] object-contain`}
+            />
+          </span>
         ) : tool.iconPath ? (
           <svg
             viewBox="0 0 24 24"
@@ -172,7 +183,7 @@ function ToolCell({ tool }: { tool: Tool }) {
             <path d={tool.iconPath} fill="currentColor" />
           </svg>
         ) : null}
-        <span className="rounded-full border border-brand-lift/30 px-3 py-1 font-sans text-[11px] uppercase tracking-wider text-mist-dim">
+        <span className="rounded-full border border-brand/20 px-3 py-1 font-sans text-[11px] uppercase tracking-wider text-ink-subtle">
           {tool.role}
         </span>
       </div>
@@ -181,12 +192,12 @@ function ToolCell({ tool }: { tool: Tool }) {
         <h3
           className={`tool-mark font-display font-extrabold tracking-tight transition-colors duration-500 ${
             tool.feature ? "text-4xl" : "text-2xl"
-          } ${hasGraphic ? "!text-foam" : ""}`}
+          } ${hasGraphic ? "!text-ink" : ""}`}
         >
           {tool.name}
         </h3>
         <p
-          className={`mt-3 font-sans leading-relaxed text-mist ${
+          className={`mt-3 font-sans leading-relaxed text-ink-muted ${
             tool.feature ? "max-w-[38ch] text-base" : "text-sm"
           }`}
         >

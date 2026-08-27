@@ -33,7 +33,11 @@ const ASSETS = {
   full: { src: "/logo-dofi.png", w: 640, h: 654 },
 } as const;
 
-const HEIGHTS = { sm: 44, md: 76, lg: 120 } as const;
+// "nav": logo centrado del Header nuevo (Sprint "Header + lienzo blanco
+// global", §9) — 52px de alto da ~57px de ancho con este asset, dentro del
+// rango pedido (48-64px) con aire real alrededor. "sm" (44h -> 48w) se
+// mantiene para la barra compacta de mobile/tablet, que ya lo usaba.
+const HEIGHTS = { sm: 44, nav: 52, md: 76, lg: 120 } as const;
 
 export function Wordmark({
   size = "md",

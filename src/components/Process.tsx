@@ -48,10 +48,10 @@ export function Process() {
   return (
     <section
       id="proceso"
-      className="relative bg-[linear-gradient(180deg,#120A26_0%,#1A0F3D_100%)] py-28 md:py-36"
+      className="relative bg-[linear-gradient(180deg,var(--color-canvas)_0%,var(--color-canvas-raised)_100%)] py-28 md:py-36"
     >
       <div className="mx-auto max-w-[1400px] px-5 md:px-8">
-        <h2 className="max-w-[22ch] font-display text-4xl font-extrabold leading-[1.05] tracking-tighter text-foam md:text-5xl">
+        <h2 className="max-w-[22ch] font-display text-4xl font-extrabold leading-[1.05] tracking-tighter text-ink md:text-5xl">
           Cómo entra una marca al agua
         </h2>
 
@@ -91,11 +91,11 @@ export function Process() {
                     aria-hidden="true"
                     className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent md:h-2 md:w-2"
                   />
-                  <h3 className="font-display text-3xl font-extrabold tracking-tighter text-foam md:text-4xl">
+                  <h3 className="font-display text-3xl font-extrabold tracking-tighter text-ink md:text-4xl">
                     {s.verb}
                   </h3>
                 </div>
-                <p className="mt-3 max-w-[52ch] font-sans text-lg leading-relaxed text-mist">
+                <p className="mt-3 max-w-[52ch] font-sans text-lg leading-relaxed text-ink-muted">
                   {s.body}
                 </p>
               </motion.li>
