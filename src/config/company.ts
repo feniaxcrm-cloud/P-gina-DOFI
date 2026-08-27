@@ -49,9 +49,11 @@ const TELEFONO_VISIBLE = conDefecto(
 // --- Redes --------------------------------------------------------------
 // SIN valor por defecto A PROPOSITO. Antes apuntaban a instagram.com,
 // tiktok.com y linkedin.com — las portadas de las plataformas, no los
-// perfiles de DOFI. Un enlace que no lleva al perfil real resta credibilidad,
-// asi que mientras no exista la URL verificada el icono NO se pinta
-// (ver Footer.tsx). Para activarlos, define las variables de entorno.
+// perfiles de DOFI. Un enlace que no lleva al perfil real resta credibilidad.
+// El PIE (socialLinks) sigue ocultando el icono sin URL real. El HEADER
+// (headerSocialLinks, mas abajo) es la excepcion deliberada: pinta las 3
+// redes siempre, con o sin URL — ver "Corrección exacta del bloque social
+// del Header", §12. Para activar cualquiera, define su variable de entorno.
 const social = {
   facebook: opcional(process.env.NEXT_PUBLIC_FACEBOOK_URL),
   instagram: opcional(process.env.NEXT_PUBLIC_INSTAGRAM_URL),
@@ -148,18 +150,16 @@ export const socialLinks: {
  *  union completo de 4 (que incluye "linkedin", inexistente en el header). */
 export type HeaderSocialKey = "facebook" | "instagram" | "tiktok";
 
-/** Igual mecanismo que `socialLinks`, pero solo para el Header — exactamente
- *  Facebook / Instagram / TikTok, sin LinkedIn (spec §1: "eliminar cualquier
- *  otra red... solo deben quedar Facebook, Instagram, TikTok"). El pie
- *  sigue usando `socialLinks` sin cambios: son listas independientes a
- *  proposito, para no alterar el pie al corregir el header. */
-export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: string }[] = (
-  [
-    { key: "facebook", label: "Facebook de DOFI" },
-    { key: "instagram", label: "Instagram de DOFI" },
-    { key: "tiktok", label: "TikTok de DOFI" },
-  ] as const
-).flatMap(({ key, label }) => {
-  const href = company.social[key];
-  return href ? [{ key, label, href }] : [];
-});
+/** Igual origen que `socialLinks`, pero para el Header con una diferencia
+ *  deliberada: SIEMPRE trae los 3 items (Facebook / Instagram / TikTok, sin
+ *  LinkedIn), esten o no configurados. `socialLinks` (pie) oculta lo que no
+ *  tiene URL; el Header no puede — pedido explicito ("Corrección exacta del
+ *  bloque social del Header", §2 y §12): el bloque visual debe existir
+ *  siempre en el DOM, nunca vaciarse condicionalmente. `href: null` marca
+ *  las que todavia no tienen URL real; Nav.tsx las pinta igual de visibles,
+ *  pero SIN fingir un destino (nunca un href inventado o "#"). */
+export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: string | null }[] = [
+  { key: "facebook", label: "Facebook de DOFI", href: company.social.facebook ?? null },
+  { key: "instagram", label: "Instagram de DOFI", href: company.social.instagram ?? null },
+  { key: "tiktok", label: "TikTok de DOFI", href: company.social.tiktok ?? null },
+];

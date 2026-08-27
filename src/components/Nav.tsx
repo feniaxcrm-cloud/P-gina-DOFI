@@ -44,17 +44,21 @@ import { headerSocialLinks, type HeaderSocialKey } from "@/config/company";
  * configuradas, ver abajo) el centrado del logo no se mueve ni un pixel
  * cuando aparezcan.
  *
- * REDES — SOLO FACEBOOK / INSTAGRAM / TIKTOK, SOLO LAS REALES (spec §1, §7-8, §35)
+ * REDES — SIEMPRE VISIBLES, FACEBOOK / INSTAGRAM / TIKTOK (spec "Corrección
+ * exacta del bloque social del Header", §2, §12, §35)
  * -----------------------------------------------------------------
- * `headerSocialLinks` de `src/config/company.ts` — mismo mecanismo que el
- * pie (`socialLinks`, con LinkedIn incluido) pero una lista INDEPENDIENTE,
- * recortada a propósito a estas 3 redes por pedido explícito ("Corrección
- * Header redes sociales", §1) — el pie no cambia. Ya filtra a las que
- * tienen URL real por variable de entorno. Hoy ese arreglo está VACÍO —
- * ninguna red tiene `NEXT_PUBLIC_FACEBOOK_URL` / `_INSTAGRAM_URL` /
- * `_TIKTOK_URL` configurada — así que la zona izquierda se renderiza vacía
- * a propósito (nunca con URLs inventadas). El día que se
- * configure una variable, el icono aparece solo, sin tocar este archivo.
+ * `headerSocialLinks` de `src/config/company.ts` — mismo origen de datos
+ * que el pie (`socialLinks`, con LinkedIn incluido) pero una lista
+ * INDEPENDIENTE, recortada a propósito a estas 3 redes. A diferencia de la
+ * version anterior de este componente: el bloque ya NO se vacia
+ * condicionalmente cuando falta la URL real. Hoy ninguna de las 3 tiene
+ * `NEXT_PUBLIC_FACEBOOK_URL` / `_INSTAGRAM_URL` / `_TIKTOK_URL` configurada
+ * (confirmado tambien contra el Worker de Cloudflare en produccion — ningun
+ * env var esta cargado ahi todavia), asi que las 3 se pintan igual de
+ * visibles pero SIN href (ver RedesSociales() mas abajo): nunca se finge
+ * una URL. Es el BLOCKER real de este sprint — queda documentado en
+ * audit/header-social-exact/RESULTADOS.md. El dia que se configure una
+ * variable, ese icono se vuelve un link real solo, sin tocar este archivo.
  *
  * FONDO — VIDRIO CLARO INTEGRADO, NO CÁPSULA (spec §15-17, §36-37)
  * -----------------------------------------------------------------
@@ -130,29 +134,51 @@ const LINKS: NavLink[] = [
 /** La barra gana opacidad despues de este scroll (rango del sistema 24-48). */
 const UMBRAL_SOLIDO = 32;
 
+/** Boton cuadrado, identico este de un href real o del placeholder inerte
+ *  (ver mas abajo) — la corrección pide que se VEA terminado en cualquiera
+ *  de los dos casos. Hover: fondo morado DOFI + icono blanco (spec §6 —
+ *  antes usaba el naranja de acento, corregido: el naranja queda reservado
+ *  como acento puntual en otras piezas, no como color de hover de estos 3
+ *  botones). 300ms, cubic-bezier(0.16, 1, 0.3, 1) (spec §15). */
+const CLASE_BOTON_SOCIAL =
+  "flex h-11 w-11 items-center justify-center rounded-[10px] border border-brand/20 bg-white text-brand shadow-[0_1px_2px_rgba(26,15,61,0.06)] transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-brand hover:bg-brand hover:text-white";
+
 function RedesSociales({ className }: { className?: string }) {
-  // OJO: nunca "return null" aqui. El logo del header va centrado con
-  // `position: absolute`, pero las zonas de redes/nav siguen siendo hijos
-  // reales de un `flex flex-1` a cada lado — si este componente deja de
-  // devolver un nodo (hoy: 0 redes configuradas), esa columna deja de
-  // existir en el DOM y el reparto de espacio dejaria de ser simetrico. Un
-  // <ul> vacio (sin <li>, sin anunciar nada a un lector de pantalla)
-  // conserva el hueco sin mostrar contenido.
+  // Los 3 items SIEMPRE se pintan — headerSocialLinks ya no filtra por URL
+  // configurada (ver src/config/company.ts). Nunca "return null" ni un
+  // array vacio aqui: el bloque visual debe existir fisicamente en el DOM.
   return (
     <ul className={["flex items-center gap-2", className].filter(Boolean).join(" ")}>
       {headerSocialLinks.map(({ key, label, href }) => {
         const Icon = ICONOS_SOCIAL[key];
         return (
           <li key={key}>
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-brand/20 bg-white text-brand shadow-[0_1px_2px_rgba(26,15,61,0.06)] transition-colors duration-200 hover:border-accent hover:bg-accent hover:text-fg-on-accent"
-            >
-              <Icon size={17} weight="bold" aria-hidden="true" />
-            </a>
+            {href ? (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className={CLASE_BOTON_SOCIAL}
+              >
+                <Icon size={17} weight="bold" aria-hidden="true" />
+              </a>
+            ) : (
+              // BLOCKER: todavia no existe una URL real para esta red (ver
+              // el comentario de REDES mas arriba y el reporte de
+              // auditoria). Mismo boton, pixel a pixel, pero SIN <a href>:
+              // un enlace sin destino real es peor que no tener enlace —
+              // nunca "#", nunca una URL inventada. aria-hidden porque no
+              // hay ninguna accion que ofrecerle a un lector de pantalla
+              // todavia; deja de estarlo en cuanto se configure la URL.
+              <span
+                aria-hidden="true"
+                title={`${label} — URL pendiente de configurar`}
+                className={CLASE_BOTON_SOCIAL}
+              >
+                <Icon size={17} weight="bold" aria-hidden="true" />
+              </span>
+            )}
           </li>
         );
       })}
@@ -411,9 +437,13 @@ export function Nav() {
                   </ul>
                 </nav>
 
-                {/* Redes al final del panel (spec §20-21). Puede no
-                    renderizar nada hoy — ver RedesSociales(). */}
+                {/* Redes al final del panel, con etiqueta "Síguenos" (spec
+                    §18). Mismo componente que la barra desktop — 3 botones
+                    siempre visibles, ver RedesSociales(). */}
                 <div className="mt-6 border-t border-brand/10 pt-6">
+                  <p className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.14em] text-ink-subtle">
+                    Síguenos
+                  </p>
                   <RedesSociales />
                 </div>
               </div>
