@@ -508,7 +508,11 @@ const QUERY_PAGINA_INICIO = `*[_type == "paginaInicio"][0]{
     titulo,
     marca,
     mensaje,
-    "imagen": imagen.asset->url + "?w=1600&auto=format",
+    // 2400 (antes 1600): "Corrección Hero final" hace que la imagen pase de
+    // ocupar ~45vw (columna derecha) a llenar todo el contenedor del Hero
+    // (hasta 1320px de ancho real) -- 1600 se quedaba corto para pantallas
+    // retina a ese tamaño mayor.
+    "imagen": imagen.asset->url + "?w=2400&auto=format",
     "imagenAlt": coalesce(imagen.alt, ""),
     "hotspot": imagen.hotspot{ x, y },
     ctaPrincipalTexto,
@@ -587,10 +591,16 @@ export const HERO_FALLBACK: HeroContent = {
   imagen: null,
   imagenAlt: "",
   hotspot: null,
-  ctaPrincipalTexto: "Empecemos",
+  // CTA actualizados en "Corrección Hero final" (spec §16-19). El principal
+  // sigue yendo a /contactanos (ruta real, ya existia); el secundario pasa
+  // de un ancla a #servicios a /clientes -- es la ruta real de portafolio/
+  // casos que ya existe en el proyecto (se inspecciono src/app/ antes de
+  // escribir esta ruta, no hay /casos ni /portfolio; no se inventa una
+  // pagina nueva solo para este boton).
+  ctaPrincipalTexto: "Quiero Mejorar mis Ventas",
   ctaPrincipalEnlace: "/contactanos",
-  ctaSecundarioTexto: "Conoce lo que hacemos",
-  ctaSecundarioEnlace: "/#servicios",
+  ctaSecundarioTexto: "Mira Nuestro Trabajo",
+  ctaSecundarioEnlace: "/clientes",
 };
 
 export const CAPACIDADES_FALLBACK: Capacidad[] = [

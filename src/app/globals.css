@@ -521,47 +521,94 @@ body {
 }
 
 /* ============================================================
-   HERO — degradado animado sobre la imagen
-   (ver src/components/Hero.tsx, spec §20-25)
+   HERO — scrim de legibilidad + overlays geometricos animados
+   (ver src/components/Hero.tsx, "Correccion Hero final", spec §10-25)
 
-   Capa unica, mas grande que su contenedor (200% de ancho), con 3 paradas
-   de color (blanco -> morado translucido -> naranja) repetidas en espejo
-   para que el bucle no tenga costura. Se anima SOLO background-position
-   (nunca object-position de la foto ni su transform), asi la fotografia
-   permanece perfectamente fija y solo la luz sobre ella se desplaza. 14s,
-   lineal, para que el reinicio sea imperceptible (pedido explicito: "dificil
-   notar donde reinicia", "no bounce", "no cambio abrupto").
+   Reemplaza por completo al degradado en barrido (.hero-media-gradient,
+   una sola franja de luz corriendo en diagonal) del sprint anterior: ese
+   era "unicamente un gradient", exactamente lo que este sprint pide NO
+   hacer. Ahora son dos capas independientes:
+
+   1. .hero-scrim — FIJO, nunca animado. Oscurece la mitad izquierda de la
+      imagen (zona del copy) y se aclara hacia la derecha, para que el
+      texto siga siendo legible sin depender de que la foto que llegue
+      desde Sanity tenga contraste propio (spec §22).
+
+   2. .hero-shape-1/2/3 — paneles diagonales reales via clip-path polygon
+      (no rectangulos, no un gradient plano — spec §10), en morado/lila/
+      naranja DOFI a muy baja opacidad. Cada uno anima SOLO `transform`
+      (translate + rotate + scale, nunca layout ni el propio clip-path):
+      "compositor-friendly" de verdad, sin recalcular la forma en cada
+      fotograma. 11-16s, ease-in-out, `alternate` — va y vuelve sobre si
+      mismo, asi el loop no necesita contenido duplicado (no es un tile)
+      y el "reinicio" es literalmente el punto de partida, imperceptible.
+      La fotografia de abajo (Hero.tsx) nunca lleva animacion propia.
    ============================================================ */
-@keyframes hero-media-gradient {
+.hero-scrim {
+  background-image: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--color-ink) 80%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 52%, transparent) 26%,
+    color-mix(in srgb, var(--color-brand) 30%, transparent) 46%,
+    transparent 68%
+  );
+}
+
+@keyframes hero-shape-drift-1 {
   from {
-    background-position: 0% 50%;
+    transform: translate3d(0, 0, 0) rotate(-3deg) scale(1);
   }
   to {
-    background-position: -100% 50%;
+    transform: translate3d(18px, -10px, 0) rotate(-1.5deg) scale(1.03);
+  }
+}
+@keyframes hero-shape-drift-2 {
+  from {
+    transform: translate3d(0, 0, 0) rotate(4deg) scale(1);
+  }
+  to {
+    transform: translate3d(-16px, 12px, 0) rotate(2deg) scale(1.02);
+  }
+}
+@keyframes hero-shape-drift-3 {
+  from {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  to {
+    transform: translate3d(10px, -14px, 0) rotate(3deg) scale(1.04);
   }
 }
 
-.hero-media-gradient {
-  /* repeating-linear-gradient con el mismo color en la primera y la ultima
-     parada (--color-canvas en 0% y 100%): el patron se vuelve
-     matematicamente periodico, asi que deslizar background-position por
-     cualquier cantidad SIEMPRE calza sin costura, sin tener que calcular
-     a mano el largo exacto del periodo. */
-  background-image: repeating-linear-gradient(
-    100deg,
-    var(--color-canvas) 0%,
-    color-mix(in srgb, var(--color-brand) 60%, transparent) 20%,
-    color-mix(in srgb, var(--color-accent) 42%, transparent) 32%,
-    transparent 50%,
-    var(--color-canvas) 100%
+.hero-shape {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* Panel grande, desde la esquina superior izquierda — el que mas aporta a
+   "proteger" el area del copy, ademas del scrim fijo. */
+.hero-shape-1 {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-brand) 55%, transparent),
+    color-mix(in srgb, var(--color-brand-lift) 28%, transparent)
   );
-  background-size: 220% 220%;
-  animation: hero-media-gradient 14s linear infinite;
+  clip-path: polygon(0% 0%, 56% 0%, 36% 100%, 0% 100%);
+  animation: hero-shape-drift-1 13s ease-in-out infinite alternate;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-media-gradient {
-    animation: none;
-    background-position: 0% 50%;
-  }
+/* Franja diagonal secundaria, lila, cruzando hacia la derecha. */
+.hero-shape-2 {
+  background: color-mix(in srgb, var(--color-brand-lift) 20%, transparent);
+  clip-path: polygon(28% 0%, 100% 0%, 100% 40%, 44% 100%, 18% 100%);
+  animation: hero-shape-drift-2 16s ease-in-out infinite alternate;
+}
+
+/* Acento naranja muy pequeño y muy tenue (spec §11: "naranja unicamente
+   como acento muy pequeño si aporta") — un solo triangulo chico, nunca un
+   bloque. */
+.hero-shape-3 {
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  clip-path: polygon(70% 28%, 90% 20%, 96% 52%, 80% 62%);
+  animation: hero-shape-drift-3 11s ease-in-out infinite alternate;
 }

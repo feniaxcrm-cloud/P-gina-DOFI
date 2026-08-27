@@ -98,10 +98,13 @@ export default function RootLayout({
           hover, sin glass oscuro.
           STORY: El visitante entiende en el primer scroll que DOFI es
           agencia + CRM + IA ("Ventas Inteligentes"), ve una foto real
-          editable desde el CMS y 4 capacidades, y actua via "Empecemos".
-          FIRST VIEWPORT: Nav flotante claro arriba; hero split 55/45
-          (copy izquierda / imagen derecha) con degradado animado sobre la
-          foto; banda de 4 tarjetas superpuesta al borde inferior del hero.
+          editable desde el CMS integrada en todo el Hero, y actua via
+          "Quiero Mejorar mis Ventas" (o explora el trabajo real primero).
+          FIRST VIEWPORT (actualizado en "Correccion Hero final"): Header
+          claro arriba; Hero de composicion unica -- imagen a pantalla
+          completa con overlays geometricos morados animados, copy a la
+          izquierda por delante; banda de 4 tarjetas superpuesta al borde
+          inferior del hero.
           FORM: Brief-pinned — "DOFI, REPLANTEO DEFINITIVO NAVBAR + HERO +
           SANITY" del propietario fijo cada decision visual con precision;
           sin ronda de exploracion de direccion, se construyo directo sobre
