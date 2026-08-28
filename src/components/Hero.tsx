@@ -6,7 +6,27 @@ import type { HeroContent, Capacidad } from "@/lib/sanity";
 
 /**
  * Hero DOFI — composición única integrada, imagen editable desde Sanity.
- * (Sprint "Corrección Hero final".)
+ * (Sprint "Corrección Hero final"; ancho corregido en "Corrección del Hero +
+ * actualización de tarjetas".)
+ *
+ * ANCHO COMPLETO — LA CAUSA REAL DEL VACÍO LATERAL
+ * -----------------------------------------------------------------
+ * El Hero anterior ENVOLVÍA la capa visual (imagen + scrim + overlays)
+ * dentro del mismo `<div className="... mx-auto max-w-page px-5 ...">` que
+ * contiene el copy — el mismo contenedor angosto y con padding que usa el
+ * resto del sitio. Aunque la imagen ya no tenía su propia tarjeta bordeada
+ * (Sprint anterior), seguía topando contra ese `max-w-page` (1320px) más el
+ * padding lateral, así que a partir de ~1400px de viewport aparecían franjas
+ * blancas a los lados — exactamente el problema reportado.
+ *
+ * La corrección usa la técnica estándar "full-bleed dentro de un contenedor
+ * centrado": `md:left-1/2 md:w-screen md:-translate-x-1/2` saca la capa
+ * visual del ancho del contenedor SIN moverla de lugar (queda relativa al
+ * viewport, no al padded div) y SIN tocar su alto (`md:inset-y-0` conserva
+ * el alto que ya definía `md:min-h-[460px] lg:min-h-[520px]` en el wrapper
+ * padre). El copy y la banda de capacidades NO se tocan: siguen dentro del
+ * `max-w-page` con el mismo padding del resto del sitio (spec §4: "el copy
+ * puede mantenerse dentro de un ancho controlado").
  *
  * REEMPLAZA EL SPLIT ANTERIOR (texto | caja de imagen)
  * -----------------------------------------------------------------
@@ -151,14 +171,22 @@ export function Hero({
             </div>
           </div>
 
-          {/* ---------- Imagen: bloque contenido en mobile, fondo integrado desde md: ---------- */}
-          <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[20px] md:absolute md:inset-0 md:mt-0 md:aspect-auto md:rounded-none">
+          {/* ---------- Imagen: bloque contenido en mobile, full-bleed desde md: ----------
+              md:left-1/2 + md:w-screen + md:-translate-x-1/2 es la tecnica
+              estandar de "full-bleed dentro de un contenedor centrado": sale
+              del ancho del `max-w-page` padre sin salir de su alto
+              (md:inset-y-0 conserva el alto que ya fijaba el wrapper padre
+              via md:min-h-[460px] lg:min-h-[520px]). Funciona sin importar
+              que ancestro sea el "positioned container" porque left-1/2 se
+              resuelve sobre un arbol centrado con mx-auto — su centro YA
+              coincide con el centro real del viewport. */}
+          <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[20px] md:absolute md:inset-y-0 md:left-1/2 md:mt-0 md:aspect-auto md:w-screen md:-translate-x-1/2 md:rounded-none">
             {content.imagen ? (
               <Image
                 src={content.imagen}
                 alt={content.imagenAlt}
                 fill
-                sizes="(min-width: 768px) 1320px, 100vw"
+                sizes="100vw"
                 priority
                 className="object-cover"
                 style={{ objectPosition }}

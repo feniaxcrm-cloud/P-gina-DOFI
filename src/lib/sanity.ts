@@ -435,9 +435,11 @@ export type HeroContent = {
   ctaSecundarioEnlace: string;
 };
 
-/** Las 4 claves validas del selector controlado de icono (spec §35-37):
- *  Sanity solo guarda el string, CapabilityBand.tsx lo mapea a Phosphor. */
-export type IconoCapacidad = "strategy" | "conversation" | "video" | "publishing";
+/** Las 4 claves validas del selector controlado de icono (spec §35-37 del
+ *  sprint original; contenido reemplazado en "Corrección del Hero +
+ *  actualización de tarjetas" §15-16). Sanity solo guarda el string,
+ *  CapabilityBand.tsx lo mapea a Phosphor. */
+export type IconoCapacidad = "social" | "ads" | "growth" | "rescue";
 
 export type Capacidad = {
   titulo: string;
@@ -603,38 +605,41 @@ export const HERO_FALLBACK: HeroContent = {
   ctaSecundarioEnlace: "/clientes",
 };
 
+/** Contenido reemplazado en "Corrección del Hero + actualización de
+ *  tarjetas" §13-14 — los 4 titulos y microdescripciones son los que pidio
+ *  el propietario, textuales. */
 export const CAPACIDADES_FALLBACK: Capacidad[] = [
   {
-    titulo: "Planificación Estratégica",
-    descripcion: "Definimos objetivos, enfoque y ruta de acción.",
-    icono: "strategy",
+    titulo: "Redes Sociales",
+    descripcion: "Contenido estratégico para conectar, crecer y vender.",
+    icono: "social",
     enlace: null,
   },
   {
-    titulo: "Conversación",
-    descripcion: "Creamos interacción que genera confianza e interés.",
-    icono: "conversation",
+    titulo: "Pauta en TikTok y Meta",
+    descripcion: "Campañas enfocadas en alcance, tráfico y conversión.",
+    icono: "ads",
     enlace: null,
   },
   {
-    titulo: "Producción Audiovisual",
-    descripcion: "Producimos piezas visuales que captan atención.",
-    icono: "video",
+    titulo: "+3M Vendidos en Redes",
+    descripcion: "Resultados reales impulsados por estrategia y ejecución.",
+    icono: "growth",
     enlace: null,
   },
   {
-    titulo: "Publicación de Contenido",
-    descripcion: "Publicamos con constancia, orden y propósito.",
-    icono: "publishing",
+    titulo: "Rescatando Emprendedores",
+    descripcion: "Impulsamos negocios con dirección, visibilidad y ventas.",
+    icono: "rescue",
     enlace: null,
   },
 ];
 
 const ICONOS_VALIDOS = new Set<IconoCapacidad>([
-  "strategy",
-  "conversation",
-  "video",
-  "publishing",
+  "social",
+  "ads",
+  "growth",
+  "rescue",
 ]);
 
 /** hero puede venir null (documento sin ese campo todavia), o con la

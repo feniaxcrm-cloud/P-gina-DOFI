@@ -6,6 +6,13 @@ import { defineType, defineField } from "sanity";
  * icono Phosphor real (src/components/CapabilityBand.tsx) — evita subir un
  * SVG arbitrario o mezclar estilos de icono (ver DOFI — Replanteo Navbar +
  * Hero + Sanity, §35-37).
+ *
+ * Las 4 claves se reemplazaron en "Corrección del Hero + actualización de
+ * tarjetas" (§13-16): las anteriores (estrategia/conversación/video/
+ * publicación) ya no tienen tarjeta que las use. Si un documento viejo en
+ * Sanity todavia guarda una clave anterior, normalizarCapacidades()
+ * (src/lib/sanity.ts) la descarta sin romper la pagina — cae al respaldo,
+ * nunca a un icono roto.
  */
 export const capacidad = defineType({
   name: "capacidad",
@@ -33,10 +40,10 @@ export const capacidad = defineType({
       description: "Define qué ícono se dibuja. No es un archivo: es una clave fija.",
       options: {
         list: [
-          { title: "Brújula — planificación / estrategia", value: "strategy" },
-          { title: "Chat — conversación", value: "conversation" },
-          { title: "Cámara de video — producción audiovisual", value: "video" },
-          { title: "Calendario — publicación de contenido", value: "publishing" },
+          { title: "Compartir en red — redes sociales", value: "social" },
+          { title: "Megáfono — pauta / campañas pagadas", value: "ads" },
+          { title: "Gráfico ascendente — resultados / ventas", value: "growth" },
+          { title: "Salvavidas — acompañamiento a emprendedores", value: "rescue" },
         ],
         layout: "radio",
       },

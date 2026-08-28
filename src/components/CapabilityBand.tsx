@@ -2,25 +2,32 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { Compass, ChatCircle, VideoCamera, Calendar } from "@phosphor-icons/react";
+import { ShareNetwork, Megaphone, ChartLineUp, Lifebuoy } from "@phosphor-icons/react";
 import type { Capacidad } from "@/lib/sanity";
 
 /**
  * Banda de capacidades — 4 tarjetas editables desde Sanity (Replanteo
- * Navbar + Hero + Sanity, §30-53).
+ * Navbar + Hero + Sanity, §30-53). Contenido e iconos reemplazados en
+ * "Corrección del Hero + actualización de tarjetas" §13-17.
  *
- * ICONOS: SELECTOR CONTROLADO, NO SVG ARBITRARIO (spec §35-37)
+ * ICONOS: SELECTOR CONTROLADO, NO SVG ARBITRARIO (spec §35-37 del sprint
+ * original; eleccion de icono por tarjeta en el §15-16 de este sprint)
  * -----------------------------------------------------------------
  * Sanity solo guarda una clave de string (`icono`); este mapa la traduce a
  * un componente Phosphor real. Ningun contenido de Sanity decide el SVG
  * que se renderiza — asi el stroke, tamaño y familia quedan consistentes
- * pase lo que pase en el Studio.
+ * pase lo que pase en el Studio. Misma familia/peso que antes (weight
+ * "bold", 32px) — solo cambia que icono representa cada tarjeta:
+ *   social  (Redes Sociales)          -> ShareNetwork
+ *   ads     (Pauta en TikTok y Meta)  -> Megaphone
+ *   growth  (+3M Vendidos en Redes)   -> ChartLineUp
+ *   rescue  (Rescatando Emprendedores)-> Lifebuoy
  */
 const ICONOS = {
-  strategy: Compass,
-  conversation: ChatCircle,
-  video: VideoCamera,
-  publishing: Calendar,
+  social: ShareNetwork,
+  ads: Megaphone,
+  growth: ChartLineUp,
+  rescue: Lifebuoy,
 } as const;
 
 /**
