@@ -45,7 +45,7 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
 
   const contenido = (
     <>
-      <div className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-brand/20 bg-brand/8 transition-colors duration-300 group-hover:border-white/30 group-hover:bg-white/15">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-brand/20 bg-brand/8 transition-colors duration-300 group-hover:border-white/30 group-hover:bg-white/15">
         <Icono
           size={32}
           weight="bold"
@@ -53,7 +53,13 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
           className="text-brand transition-colors duration-300 group-hover:text-white"
         />
       </div>
-      <h3 className="mt-4 font-display text-base font-bold tracking-tight text-ink transition-colors duration-300 group-hover:text-white md:text-lg">
+      {/* min-h-[2lh]: reserva el alto de 2 lineas de titulo SIEMPRE, tenga
+          una o dos ("Rescatando Emprendedores" es la unica que envuelve
+          hoy) -- asi las 4 descripciones arrancan a la misma altura sin
+          importar cuantas lineas ocupe cada titulo (spec §31-34). `lh` es
+          una unidad CSS real (line-height del propio elemento): se adapta
+          sola al leading que termine aplicando, no es un pixelaje a mano. */}
+      <h3 className="mt-4 min-h-[2lh] font-display text-base font-bold leading-snug tracking-tight text-ink transition-colors duration-300 group-hover:text-white md:text-lg">
         {titulo}
       </h3>
       <p className="mt-2 max-w-[34ch] font-sans text-sm leading-relaxed text-ink-muted transition-colors duration-300 group-hover:text-white/90">
@@ -63,7 +69,7 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
   );
 
   const className =
-    "capacidad-card group relative flex flex-col rounded-[20px] border border-brand/10 p-6 shadow-[0_1px_2px_rgba(26,15,61,0.06)]";
+    "capacidad-card group relative flex h-full flex-col rounded-[20px] border border-brand/10 p-6 shadow-[0_1px_2px_rgba(26,15,61,0.06)]";
 
   // Semantica: solo se vuelve link/tarjeta interactiva si trae enlace real
   // (spec §67). Sin enlace, no lleva cursor:pointer ni rol de boton.

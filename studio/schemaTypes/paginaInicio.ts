@@ -9,6 +9,14 @@ import { defineType, defineField } from "sanity";
  * ese campo NO se agrega acá todavía — está fuera del alcance de este
  * sprint y agregarlo a ciegas sin definir su editor en el Studio dejaría un
  * campo a medio terminar. Ver el reporte de auditoría para el detalle.
+ *
+ * LA IMAGEN DEL HERO YA NO VIVE ACÁ (Sprint "Implementación final del Hero +
+ * Sanity + Cards", §5-9): se movió a su propio documento singleton `hero`
+ * (ver hero.ts), con su propio lugar en el menú del Studio, para que
+ * cambiar la fotografía sea una acción de un solo paso y no un campo más
+ * entre título/marca/mensaje/CTA. Este objeto `hero` solo conserva el
+ * texto y los botones — src/lib/sanity.ts combina ambos documentos en un
+ * solo HeroContent para el frontend.
  */
 export const paginaInicio = defineType({
   name: "paginaInicio",
@@ -52,27 +60,10 @@ export const paginaInicio = defineType({
           description: 'Ej. "Convertimos atención en Ventas Inteligentes".',
         }),
         defineField({
-          name: "imagen",
-          title: "Imagen principal",
-          type: "image",
-          description:
-            "Ocupa la mitad derecha del Hero. Elegí el punto focal (hotspot) sobre el sujeto: la web recorta distinto según el tamaño de pantalla y respeta ese punto.",
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Texto alternativo",
-              type: "string",
-              description: "Describe la imagen para lectores de pantalla y SEO.",
-            }),
-          ],
-          validation: (Rule) => Rule.required(),
-        }),
-        defineField({
           name: "ctaPrincipalTexto",
           title: "Texto del botón principal",
           type: "string",
-          description: 'Ej. "Empecemos".',
+          description: 'Ej. "Quiero Mejorar mis Ventas".',
         }),
         defineField({
           name: "ctaPrincipalEnlace",
@@ -84,7 +75,7 @@ export const paginaInicio = defineType({
           name: "ctaSecundarioTexto",
           title: "Texto del botón secundario",
           type: "string",
-          description: 'Ej. "Conoce lo que hacemos".',
+          description: 'Ej. "Mira Nuestro Trabajo".',
         }),
         defineField({
           name: "ctaSecundarioEnlace",

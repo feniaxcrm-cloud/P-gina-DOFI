@@ -415,9 +415,12 @@ export type SeccionData =
 // --- Hero + Capacidades (Replanteo Navbar + Hero + Sanity) ----------------
 //
 // A diferencia de secciones[] (repetible, se busca por _type), Hero y
-// Capacidades son piezas UNICAS de la home: viven como campos propios de
-// paginaInicio (hero{...}, capacidades[]) en vez de un item mas del
-// arreglo polimorfico. Mismo documento, mismo patron de respaldo.
+// Capacidades son piezas UNICAS de la home. El texto/CTA del Hero y las
+// capacidades viven como campos propios de paginaInicio (hero{...},
+// capacidades[]); la IMAGEN del Hero vive en su propio documento singleton
+// `hero` desde "Implementación final del Hero + Sanity + Cards" (spec
+// §5-9) — ver HeroDocRaw y normalizarHero() mas abajo. Mismo patron de
+// respaldo en ambos casos.
 
 export type HeroContent = {
   titulo: string;
@@ -473,13 +476,19 @@ type HeroRaw = {
   titulo: string | null;
   marca: string | null;
   mensaje: string | null;
-  imagen: string | null;
-  imagenAlt: string | null;
-  hotspot: { x: number; y: number } | null;
   ctaPrincipalTexto: string | null;
   ctaPrincipalEnlace: string | null;
   ctaSecundarioTexto: string | null;
   ctaSecundarioEnlace: string | null;
+} | null;
+
+/** El documento singleton `hero` (ver studio/schemaTypes/hero.ts) — solo la
+ *  fotografía, separada del texto/CTA de paginaInicio.hero desde
+ *  "Implementación final del Hero + Sanity + Cards" (spec §5-9). */
+type HeroDocRaw = {
+  imagen: string | null;
+  imagenAlt: string | null;
+  hotspot: { x: number; y: number } | null;
 } | null;
 
 type CapacidadRaw = {
@@ -497,37 +506,46 @@ type PaginaInicioRaw = {
   capacidades: CapacidadRaw[] | null;
 };
 
-const QUERY_PAGINA_INICIO = `*[_type == "paginaInicio"][0]{
-  titulo,
-  secciones[]{
-    _type,
-    _type == "seccionHacemos" => { titulo, subtitulo, tarjetas[]{ titulo, descripcion } },
-    _type == "seccionSocio" => { nombre, descripcion, "foto": foto.asset->url },
-    _type == "seccionPilares" => { titulo, listaHerramientas[]{ nombre, icono } },
-    _type == "seccionCierre" => { titulo, textoBoton, enlace }
-  },
-  hero{
+/** Un solo fetch trae DOS documentos independientes: `paginaInicio`
+ *  (texto/CTA del Hero + secciones + capacidades) y `hero` (solo la
+ *  fotografía, documento propio — ver HeroDocRaw). GROQ permite construir
+ *  un objeto raíz con ambas consultas en una sola llamada a la Query API,
+ *  asi que sigue siendo un unico round-trip de red, no dos. */
+const QUERY_PAGINA_INICIO = `{
+  "pagina": *[_type == "paginaInicio"][0]{
     titulo,
-    marca,
-    mensaje,
+    secciones[]{
+      _type,
+      _type == "seccionHacemos" => { titulo, subtitulo, tarjetas[]{ titulo, descripcion } },
+      _type == "seccionSocio" => { nombre, descripcion, "foto": foto.asset->url },
+      _type == "seccionPilares" => { titulo, listaHerramientas[]{ nombre, icono } },
+      _type == "seccionCierre" => { titulo, textoBoton, enlace }
+    },
+    hero{
+      titulo,
+      marca,
+      mensaje,
+      ctaPrincipalTexto,
+      ctaPrincipalEnlace,
+      ctaSecundarioTexto,
+      ctaSecundarioEnlace
+    },
+    capacidades[]{
+      titulo,
+      descripcion,
+      icono,
+      activa,
+      enlace
+    }
+  },
+  "heroDoc": *[_type == "hero"][0]{
     // 2400 (antes 1600): "Corrección Hero final" hace que la imagen pase de
     // ocupar ~45vw (columna derecha) a llenar todo el contenedor del Hero
     // (hasta 1320px de ancho real) -- 1600 se quedaba corto para pantallas
     // retina a ese tamaño mayor.
-    "imagen": imagen.asset->url + "?w=2400&auto=format",
-    "imagenAlt": coalesce(imagen.alt, ""),
-    "hotspot": imagen.hotspot{ x, y },
-    ctaPrincipalTexto,
-    ctaPrincipalEnlace,
-    ctaSecundarioTexto,
-    ctaSecundarioEnlace
-  },
-  capacidades[]{
-    titulo,
-    descripcion,
-    icono,
-    activa,
-    enlace
+    "imagen": heroImage.asset->url + "?w=2400&auto=format",
+    "imagenAlt": coalesce(heroImageAlt, ""),
+    "hotspot": heroImage.hotspot{ x, y }
   }
 }`;
 
@@ -642,19 +660,33 @@ const ICONOS_VALIDOS = new Set<IconoCapacidad>([
   "rescue",
 ]);
 
-/** hero puede venir null (documento sin ese campo todavia), o con la
- *  imagen sin cargar (imagen queda null, ver nota de la query GROQ arriba).
- *  Si falta el titulo (el campo del que depende visualmente el diseño, spec
- *  §55), se usa el respaldo completo — nunca un Hero a medio llenar. */
-function normalizarHero(raw: HeroRaw): HeroContent {
-  if (!raw || !raw.titulo) return HERO_FALLBACK;
+/** `hero` (texto/CTA, de paginaInicio) y `heroDoc` (imagen, del documento
+ *  singleton `hero` — ver studio/schemaTypes/hero.ts) llegan de DOS
+ *  documentos independientes; esta funcion los combina en un solo
+ *  HeroContent para el frontend, que nunca necesita saber que son fuentes
+ *  separadas.
+ *
+ *  `hero` puede venir null (paginaInicio sin ese campo todavia). Si falta
+ *  el titulo (el campo del que depende visualmente el diseño, spec §55),
+ *  se usa el respaldo completo de texto/CTA — nunca un Hero a medio
+ *  llenar. La imagen es independiente de esa decision: `heroDoc` puede
+ *  faltar (documento `hero` no creado todavia) o venir sin asset cargado
+ *  (imagen queda null) sin que eso afecte al texto en absoluto. */
+function normalizarHero(raw: HeroRaw, heroDoc: HeroDocRaw): HeroContent {
+  const imagen = heroDoc?.imagen ?? null;
+  const imagenAlt = heroDoc?.imagenAlt ?? "";
+  const hotspot = imagen && heroDoc?.hotspot ? heroDoc.hotspot : null;
+
+  if (!raw || !raw.titulo) {
+    return { ...HERO_FALLBACK, imagen, imagenAlt, hotspot };
+  }
   return {
     titulo: raw.titulo,
     marca: raw.marca ?? HERO_FALLBACK.marca,
     mensaje: raw.mensaje ?? HERO_FALLBACK.mensaje,
-    imagen: raw.imagen ?? null,
-    imagenAlt: raw.imagenAlt ?? "",
-    hotspot: raw.imagen && raw.hotspot ? raw.hotspot : null,
+    imagen,
+    imagenAlt,
+    hotspot,
     ctaPrincipalTexto: raw.ctaPrincipalTexto ?? HERO_FALLBACK.ctaPrincipalTexto,
     ctaPrincipalEnlace: raw.ctaPrincipalEnlace ?? HERO_FALLBACK.ctaPrincipalEnlace,
     ctaSecundarioTexto: raw.ctaSecundarioTexto ?? HERO_FALLBACK.ctaSecundarioTexto,
@@ -748,9 +780,12 @@ export async function getPaginaInicio(): Promise<{
   hero: HeroContent;
   capacidades: Capacidad[];
 }> {
-  const doc = await sanityQuery<PaginaInicioRaw>(QUERY_PAGINA_INICIO);
+  const respuesta = await sanityQuery<{ pagina: PaginaInicioRaw | null; heroDoc: HeroDocRaw }>(
+    QUERY_PAGINA_INICIO
+  );
+  const pagina = respuesta?.pagina ?? null;
 
-  const crudo = doc?.secciones ?? [];
+  const crudo = pagina?.secciones ?? [];
   const validas = crudo
     .map(normalizarSeccion)
     .filter((s): s is SeccionData => s !== null);
@@ -762,7 +797,7 @@ export async function getPaginaInicio(): Promise<{
 
   return {
     secciones: [...validas, ...faltantes],
-    hero: normalizarHero(doc?.hero ?? null),
-    capacidades: normalizarCapacidades(doc?.capacidades ?? null),
+    hero: normalizarHero(pagina?.hero ?? null, respuesta?.heroDoc ?? null),
+    capacidades: normalizarCapacidades(pagina?.capacidades ?? null),
   };
 }
