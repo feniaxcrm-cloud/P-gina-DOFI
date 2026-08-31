@@ -387,47 +387,71 @@ body {
 }
 
 /* ============================================================
-   TARJETAS DE CAPACIDADES — cambio cromatico en hover
+   TARJETAS DE CAPACIDADES — borde iluminado que sigue el cursor
    (ver src/components/CapabilityBand.tsx)
 
-   Reemplaza por completo al glow de borde que seguia al cursor (spec
-   "Replanteo definitivo Navbar + Hero + Sanity", §42: prohibido explicitamente
-   --mouse-x/--mouse-y, spotlight y mascara dinamica). El nuevo hover es
-   solo un cambio de superficie: blanca en reposo, degradado DOFI al pasar
-   el cursor. La tarjeta nunca se mueve, inclina, rota ni escala (§43) — la
-   unica transicion es de background-color/color, nunca de transform.
+   Sprint "Nueva animacion hover para las 4 cards": reemplaza por completo
+   el cambio cromatico de toda la superficie (version anterior) por un
+   glow que se ve UNICAMENTE en el perimetro de la tarjeta y sigue la
+   posicion real del cursor. La tarjeta nunca se mueve, inclina, rota ni
+   escala -- lo unico que se anima es este pseudo-elemento de borde.
+   Fondo, texto e icono se quedan en su estado normal siempre.
 
-   El degradado va en un pseudo-elemento propio (no en el background de la
-   tarjeta) para poder cross-fadear su opacidad en vez de saltar entre dos
-   colores solidos: mas suave a 250-350ms sin tener que animar un gradiente
-   como si fuera un color plano. */
+   Tecnica (deliberadamente NO un radial-gradient suelto haciendo de
+   spotlight interior -- eso es exactamente lo que este sprint pidio
+   evitar): el pseudo-elemento pinta un radial-gradient centrado en
+   --mouse-x/--mouse-y sobre TODA la tarjeta, pero un mask de dos capas en
+   content-box/padding-box + mask-composite:exclude recorta ese gradiente
+   a un anillo del grosor de `padding` -- el interior queda 100%
+   transparente pase lo que pase con el gradiente. `filter: blur()` sobre
+   el propio anillo da el halo exterior sutil pedido, sin necesitar una
+   segunda capa.
+
+   --mouse-x/--mouse-y las actualiza JS directo sobre el elemento
+   (`el.style.setProperty`, ver CapabilityBand.tsx) sin setState de React
+   y sin adjuntar el listener en touch (pointer:fine/hover:hover gatea
+   ademas la aparicion via CSS abajo). Con reduced-motion se elimina el
+   pseudo-elemento entero: la tarjeta queda siempre en su estado limpio. */
 .capacidad-card {
   position: relative;
   isolation: isolate;
-  background-color: var(--color-canvas);
-  transition: background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  --mouse-x: 50%;
+  --mouse-y: 50%;
 }
 
 .capacidad-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: -1;
   border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    var(--color-brand) 0%,
-    var(--color-brand-lift) 55%,
-    var(--color-accent) 100%
+  padding: 1.5px;
+  background: radial-gradient(
+    240px circle at var(--mouse-x) var(--mouse-y),
+    color-mix(in srgb, white 35%, var(--color-accent-lift)) 0%,
+    var(--color-accent) 32%,
+    var(--color-brand-lift) 64%,
+    transparent 82%
   );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: blur(1px);
   opacity: 0;
-  transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .capacidad-card:hover::before,
   .capacidad-card:focus-within::before {
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capacidad-card::before {
+    display: none;
   }
 }
 
