@@ -18,6 +18,19 @@
   // dashboard de Cloudflare, no en este archivo. Ver README.
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat"],
+  // Van aca (versionadas en git) y no solo en el dashboard de Cloudflare
+  // porque cada deploy nuevo (disparado por un push a main) usa ESTE
+  // archivo como fuente de verdad y borra cualquier variable que no este
+  // declarada aca -- por eso habia que volver a cargarlas a mano despues
+  // de cada deploy. No son secretas (solo identifican el proyecto/dataset
+  // de Sanity, sin dar permiso de escritura), asi que es seguro tenerlas
+  // en texto plano. SANITY_REVALIDATE_SECRET SI es secreta: esa sigue
+  // yendo aparte, como Secret en el dashboard (o `wrangler secret put`),
+  // nunca en este archivo.
+  "vars": {
+    "SANITY_PROJECT_ID": "59r5krzd",
+    "SANITY_DATASET": "production"
+  },
   "assets": {
     "binding": "ASSETS",
     "directory": ".open-next/assets"
