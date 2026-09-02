@@ -9,10 +9,12 @@ export const metadata: Metadata = {
 
 /**
  * El formulario real (Contact.tsx, conectado a /api/contacto y a Sanity)
- * sigue viviendo en la home como seccion #contacto — no se toca en este
- * sprint (punto 30). Esta ruta es solo el destino de "CONTÁCTANOS" y
- * "Empecemos" en el Navbar; moverle el formulario de verdad es trabajo del
- * sprint de paginas internas.
+ * vivía en la home como sección #contacto. Sprint "Retirar secciones entre
+ * Sección 4 y el Footer": Contact.tsx dejó de pintarse en la home (sigue
+ * existiendo el componente y sus datos en Sanity, solo no se renderiza ahí
+ * por ahora) — el ancla #contacto ya no tiene destino en "/". Esta ruta es
+ * solo el destino de "CONTÁCTANOS" y "Empecemos" en el Navbar; moverle el
+ * formulario de verdad es trabajo del sprint de páginas internas.
  */
 export default function ContactanosPage() {
   return (
