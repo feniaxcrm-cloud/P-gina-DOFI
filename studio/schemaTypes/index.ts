@@ -7,6 +7,7 @@ import { resultado } from "./objects/resultado";
 import { testimonio } from "./objects/testimonio";
 import { redesSociales } from "./objects/redesSociales";
 import { capacidad } from "./objects/capacidad";
+import { seccionContenido } from "./objects/seccionContenido";
 
 export const schemaTypes = [
   cuenta,
@@ -18,4 +19,5 @@ export const schemaTypes = [
   testimonio,
   redesSociales,
   capacidad,
+  seccionContenido,
 ];

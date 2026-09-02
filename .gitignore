@@ -17,3 +17,7 @@ cloudflare-env.d.ts
 
 # preview local del logo (scripts/preview-logo.mjs)
 logo-preview.png
+
+# log local de assets subidos por scripts/test-content-sections-sanity.mjs
+# (para poder borrarlos en "limpiar"); nunca contiene nada mas que ids.
+scripts/.test-content-sections-assets.json

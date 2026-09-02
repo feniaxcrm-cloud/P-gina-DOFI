@@ -451,6 +451,30 @@ export type Capacidad = {
   enlace: string | null;
 };
 
+// --- Secciones de contenido (Sprint "Crear 4 secciones de contenido debajo
+// del Hero") -----------------------------------------------------------
+//
+// Bloques texto+imagen debajo de las tarjetas del Hero. Mismo patron que
+// Capacidad arriba: viven como campo propio de paginaInicio
+// ("seccionesContenido[]", ver studio/schemaTypes/objects/seccionContenido.ts),
+// el ORDEN del arreglo en Sanity es el 01/02/03/04 de la pagina, y el lado
+// (texto/imagen) NUNCA se guarda en Sanity -- lo calcula el frontend segun
+// la posicion (ver alternarIzquierda() en ContentSection.tsx).
+
+export type SeccionContenido = {
+  titulo: string;
+  descripcion: string;
+  /** URL ya con ?w=.. — null si la seccion todavia no tiene imagen cargada
+   *  en Sanity (documento incompleto/migracion a medias). */
+  imagen: string | null;
+  imagenAlt: string;
+  /** Coordenadas 0-1 del hotspot de Sanity, para object-position en el
+   *  cliente (mismo mecanismo que el Hero). null si no hay imagen o hotspot. */
+  hotspot: { x: number; y: number } | null;
+  ctaTexto: string;
+  ctaEnlace: string;
+};
+
 // --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
 
 // Forma laxa a proposito: cada item siempre trae _type, pero el resto de
@@ -499,11 +523,22 @@ type CapacidadRaw = {
   enlace: string | null;
 };
 
+type SeccionContenidoRaw = {
+  titulo: string | null;
+  descripcion: string | null;
+  imagen: string | null;
+  imagenAlt: string | null;
+  hotspot: { x: number; y: number } | null;
+  ctaTexto: string | null;
+  ctaEnlace: string | null;
+};
+
 type PaginaInicioRaw = {
   titulo: string | null;
   secciones: SeccionRaw[] | null;
   hero: HeroRaw;
   capacidades: CapacidadRaw[] | null;
+  seccionesContenido: SeccionContenidoRaw[] | null;
 };
 
 /** Un solo fetch trae DOS documentos independientes: `paginaInicio`
@@ -536,6 +571,15 @@ const QUERY_PAGINA_INICIO = `{
       icono,
       activa,
       enlace
+    },
+    seccionesContenido[]{
+      titulo,
+      descripcion,
+      "imagen": imagen.asset->url + "?w=1400&auto=format",
+      "imagenAlt": coalesce(imagenAlt, ""),
+      "hotspot": imagen.hotspot{ x, y },
+      ctaTexto,
+      ctaEnlace
     }
   },
   "heroDoc": *[_type == "hero"][0]{
@@ -653,6 +697,24 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
   },
 ];
 
+/** Respaldo de las 4 secciones de contenido, a proposito con texto
+ *  placeholder (spec §6: "NO inventar mensajes de venta definitivos en
+ *  este sprint" -- este es el mismo ejemplo textual que pidio el brief,
+ *  no una redaccion comercial real). El CTA de las 4 apunta a
+ *  /contactanos (ruta real que ya existe, mismo criterio que HERO_FALLBACK
+ *  mas arriba) hasta que cada seccion tenga su propio destino definido. Sin
+ *  imagen: cada ContentSection pinta su propia atmosfera de respaldo, igual
+ *  que el Hero sin foto. */
+const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) => ({
+  titulo: `Sección 0${n}`,
+  descripcion: "Contenido de esta sección...",
+  imagen: null,
+  imagenAlt: "",
+  hotspot: null,
+  ctaTexto: "Conocer más",
+  ctaEnlace: "/contactanos",
+}));
+
 const ICONOS_VALIDOS = new Set<IconoCapacidad>([
   "social",
   "ads",
@@ -712,6 +774,31 @@ function normalizarCapacidades(raw: CapacidadRaw[] | null): Capacidad[] {
     }));
 
   return validas.length > 0 ? validas : CAPACIDADES_FALLBACK;
+}
+
+/** Descarta items sin titulo/descripcion/CTA (texto+enlace) — esos 4 campos
+ *  son el minimo para que el bloque tenga sentido en pantalla. La imagen
+ *  es la unica excepcion: puede faltar (Sanity todavia no la tiene
+ *  cargada) sin que se descarte el item entero, igual que el Hero. Si no
+ *  queda ninguna seccion valida, se usan las 4 de respaldo completas —
+ *  nunca menos de 4 ni un hueco a medio llenar. */
+function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): SeccionContenido[] {
+  const validas = (raw ?? [])
+    .filter(
+      (s): s is SeccionContenidoRaw & { titulo: string; descripcion: string; ctaTexto: string; ctaEnlace: string } =>
+        Boolean(s.titulo && s.descripcion && s.ctaTexto && s.ctaEnlace)
+    )
+    .map((s) => ({
+      titulo: s.titulo,
+      descripcion: s.descripcion,
+      imagen: s.imagen ?? null,
+      imagenAlt: s.imagenAlt ?? "",
+      hotspot: s.imagen && s.hotspot ? s.hotspot : null,
+      ctaTexto: s.ctaTexto,
+      ctaEnlace: s.ctaEnlace,
+    }));
+
+  return validas.length > 0 ? validas : SECCIONES_CONTENIDO_FALLBACK;
 }
 
 /** Valida un item crudo del arreglo y lo deja listo para pintar, o
@@ -779,6 +866,7 @@ export async function getPaginaInicio(): Promise<{
   secciones: SeccionData[];
   hero: HeroContent;
   capacidades: Capacidad[];
+  seccionesContenido: SeccionContenido[];
 }> {
   const respuesta = await sanityQuery<{ pagina: PaginaInicioRaw | null; heroDoc: HeroDocRaw }>(
     QUERY_PAGINA_INICIO
@@ -799,5 +887,6 @@ export async function getPaginaInicio(): Promise<{
     secciones: [...validas, ...faltantes],
     hero: normalizarHero(pagina?.hero ?? null, respuesta?.heroDoc ?? null),
     capacidades: normalizarCapacidades(pagina?.capacidades ?? null),
+    seccionesContenido: normalizarSeccionesContenido(pagina?.seccionesContenido ?? null),
   };
 }

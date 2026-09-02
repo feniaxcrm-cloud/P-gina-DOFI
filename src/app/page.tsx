@@ -1,5 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
+import { ContentSection } from "@/components/ContentSection";
 import { LogoWall } from "@/components/LogoWall";
 import { Services } from "@/components/Services";
 import { Socio } from "@/components/Socio";
@@ -53,7 +54,13 @@ const RENDERERS: Record<
  * ORDEN FIJO pedido explicitamente (ya no es "el orden que traiga
  * secciones[] de Sanity", como era antes de este cambio):
  *
- *   1. Hero              - introduccion
+ *   1. Hero              - introduccion (incluye las 4 tarjetas de capacidades)
+ *   1.5 ContentSection x4 - secciones de contenido (Sprint "Crear 4
+ *                          secciones de contenido debajo del Hero"),
+ *                          inmediatamente debajo de las tarjetas, antes de
+ *                          LogoWall. Alternancia texto/imagen e index de
+ *                          fondo salen de la posicion en el arreglo (ver
+ *                          ContentSection.tsx) -- nunca de un campo manual.
  *   2. LogoWall + Clients - clientes con los que ya trabajamos
  *   3. Services (seccionHacemos) - servicios
  *   4. Process           - procesos
@@ -79,7 +86,7 @@ const RENDERERS: Record<
  * documento en Sanity: su contenido sigue fijo en cada componente.
  */
 export default async function Home() {
-  const { secciones, hero, capacidades } = await getPaginaInicio();
+  const { secciones, hero, capacidades, seccionesContenido } = await getPaginaInicio();
   const porTipo = (tipo: SeccionData["_type"]) =>
     secciones.find((s) => s._type === tipo);
 
@@ -92,6 +99,10 @@ export default async function Home() {
       <Nav />
       <main>
         <Hero content={hero} capacidades={capacidades} />
+
+        {seccionesContenido.map((seccion, i) => (
+          <ContentSection key={seccion.titulo} {...seccion} index={i} />
+        ))}
 
         <LogoWall />
         <Clients />
