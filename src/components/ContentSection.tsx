@@ -5,124 +5,73 @@ import { Reveal } from "./Reveal";
 import type { SeccionContenido } from "@/lib/sanity";
 
 /**
- * Fondo de cada una de las 4 secciones, en este orden fijo (pedido
- * explicito: 01 naranja, 02 blanco, 03 morado, 04 naranja -- spec "Cambiar
- * colores de las secciones"). Ya NO alterna solo segun el indice como en
- * el sprint anterior (canvas/canvas-raised): ahora son 4 tonos concretos,
- * uno por posicion.
+ * Una de las 4 "Secciones de contenido" debajo de las tarjetas del Hero.
+ * Arquitectura unica y reutilizable — page.tsx la pinta 4 veces via
+ * `seccionesContenido.map(...)`, nunca 4 componentes/archivos separados.
  *
- * Los tonos de texto/CTA de cada fila estan calculados para pasar
- * contraste AA sobre SU fondo especifico, no reutilizados a ciegas:
- *   - accent (naranja, #F47B20): texto oscuro. `ink` sobre accent mide
- *     6.53:1 (es el mismo par que ya usa --color-fg-on-accent en
- *     globals.css); `ink/80` para el cuerpo mide 4.87:1 (AA). `ink-muted`
- *     por si solo NO pasa sobre accent (2.76:1) -- por eso el cuerpo usa
- *     ink al 80% de opacidad en vez de ese token.
- *   - canvas (blanco): igual que antes, `ink`/`ink-muted` (17.2:1 / 7.3:1,
- *     ya medidos en globals.css).
- *   - brand (morado, #4B2A93): texto claro, mismo par que ya usa el Hero
- *     sobre su scrim morado (`foam`/`foam/90`) -- foam mide 9.13:1, foam/90
- *     mide 7.70:1 sobre brand.
- * (Valores calculados con la formula de luminancia relativa de WCAG, no
- * estimados a ojo.)
- */
-type Tono = {
-  fondo: string;
-  titulo: string;
-  cuerpo: string;
-  cta: string;
-  /** El respaldo "sin imagen todavia" (ver ContentImage) necesita
-   *  contrastar con CUALQUIERA de los 2 tipos de fondo posibles: claro
-   *  (naranja/morado, ambos saturados) o canvas (blanco). Un solo tono de
-   *  respaldo no sirve para los dos -- ver `esFondoSaturado` abajo. */
-  esFondoSaturado: boolean;
-};
-
-const TONOS: Tono[] = [
-  // 01 — naranja DOFI
-  {
-    fondo: "bg-accent",
-    titulo: "text-ink",
-    cuerpo: "text-ink/80",
-    cta: "border-ink/30 text-ink hover:border-ink/55 hover:bg-ink/10",
-    esFondoSaturado: true,
-  },
-  // 02 — blanco
-  {
-    fondo: "bg-canvas",
-    titulo: "text-ink",
-    cuerpo: "text-ink-muted",
-    cta: "border-brand/25 text-ink hover:border-brand/50 hover:bg-brand/5",
-    esFondoSaturado: false,
-  },
-  // 03 — morado DOFI
-  {
-    fondo: "bg-brand",
-    titulo: "text-foam",
-    cuerpo: "text-foam/90",
-    cta: "border-white/35 text-foam hover:border-white/60 hover:bg-white/10",
-    esFondoSaturado: true,
-  },
-  // 04 — naranja DOFI
-  {
-    fondo: "bg-accent",
-    titulo: "text-ink",
-    cuerpo: "text-ink/80",
-    cta: "border-ink/30 text-ink hover:border-ink/55 hover:bg-ink/10",
-    esFondoSaturado: true,
-  },
-];
-
-/**
- * Una de las 4 "Secciones de contenido" debajo de las tarjetas del Hero
- * (Sprint "Crear 4 secciones de contenido debajo del Hero"). Arquitectura
- * unica y reutilizable — page.tsx la pinta 4 veces via
- * `seccionesContenido.map(...)`, nunca 4 componentes/archivos separados
- * (spec §14/§36).
+ * Sprint "Mejorar diseño visual de las 4 secciones de contenido": mismo
+ * dato, misma logica de alternancia y misma integracion con Sanity que
+ * antes (no se toco nada de eso) — lo que cambia es la PRESENTACION:
+ * jerarquia tipografica (eyebrow/titulo/descripcion/CTA), un CTA solido
+ * mucho mas grande y centrado respecto al bloque de texto, imagenes con
+ * mas presencia y un tratamiento sutil, y una entrada animada con stagger
+ * + direccion (la imagen entra desde el lado en el que va a quedar).
  *
- * ALTERNANCIA DE LADO — SOLO EN EL FRONTEND (spec §5/§10)
+ * FONDO — VUELVE A SER BLANCO (revierte el sprint de colores fuertes)
  * -----------------------------------------------------------------
- * El lado (texto/imagen) no es un dato de Sanity: se calcula acá con
- * `index % 2` sobre la posicion real del item en el arreglo
- * `seccionesContenido[]` (el orden que ya define 01/02/03/04 en el
- * Studio). Par -> texto a la izquierda; impar -> imagen a la izquierda.
- * El FONDO ya no sale de ese mismo calculo (ver TONOS arriba): son 4
- * colores fijos pedidos explicitamente, no una alternancia automatica.
+ * El sprint anterior probo fondos solidos naranja/blanco/morado/naranja
+ * por seccion. Este sprint pide explicitamente volver a un lienzo
+ * predominantemente blanco: alterna entre `bg-canvas` y el nuevo
+ * `bg-canvas-lilac` (color-mix al 4% de marca sobre canvas, ver
+ * globals.css) — una variacion CASI imperceptible, no un bloque de color.
  *
- * ORDEN EN EL DOM VS. ORDEN VISUAL
+ * ALTERNANCIA DE LADO — SIN CAMBIOS (spec §3: "no cambiar esta logica")
  * -----------------------------------------------------------------
- * El markup SIEMPRE va imagen -> texto. En mobile (sin `lg:`) eso ya da
- * exactamente la composicion pedida (spec §22: imagen, titulo,
- * descripcion, CTA, la MISMA en las 4 secciones — no se intenta preservar
- * la alternancia en una sola columna, no tendria sentido "izquierda/
- * derecha" apiladas). Desde `lg:` cada columna recibe `lg:order-1` o
- * `lg:order-2` segun `textoIzquierda`, reordenando puramente por CSS sin
- * tocar el DOM — mismo patron que ya usa el Hero para su imagen
- * full-bleed.
+ * `index % 2` sobre la posicion real en `seccionesContenido[]` decide el
+ * lado: par -> texto a la izquierda; impar -> imagen a la izquierda.
+ * Markup en el DOM siempre imagen -> texto (da el orden mobile correcto
+ * sin duplicar la imagen); el reordenamiento visual en desktop es
+ * `lg:order-*`, puramente CSS.
  *
- * CTA — INTERNO VS. EXTERNO (spec §13-14)
+ * JERARQUIA DE TEXTO Y STAGGER (spec §6-9, §17-18)
  * -----------------------------------------------------------------
- * Si `ctaEnlace` empieza con "http://"/"https://" se trata como externo:
- * `<a target="_blank" rel="noopener noreferrer">`, la pagina de DOFI
- * nunca se navega fuera. Cualquier otra cosa (ruta interna tipo
- * "/contactanos", o un ancla "#seccion") usa `next/link` para la
- * navegacion interna normal del proyecto.
+ * Eyebrow (numero de seccion + linea naranja) -> titulo -> descripcion ->
+ * CTA, cada uno en su propio <Reveal> con delay creciente (0/0.1/0.2/0.3s)
+ * en vez de un unico Reveal envolviendo todo el bloque — asi cada pieza
+ * aparece en su momento, no todas a la vez. La imagen usa el mismo
+ * <Reveal> pero con `x` distinto de 0 (extendido en Reveal.tsx, ver ese
+ * archivo): entra desde la derecha si va a quedar a la derecha, desde la
+ * izquierda si va a quedar a la izquierda (spec §19-20).
  *
- * IMAGEN — HOTSPOT + RESPALDO SIN IMAGEN (mismo mecanismo que el Hero)
+ * CTA — SOLIDO NARANJA, GRANDE, CENTRADO (spec §10-13, §27, §33)
  * -----------------------------------------------------------------
- * `object-position` calculado en el cliente desde el hotspot {x,y} de
- * Sanity. Si `imagen` es null (documento incompleto), se pinta la misma
- * atmosfera de manchas de luz que ya usa el Hero como respaldo — nunca una
- * caja gris (spec §16, "no usar una caja gris como placeholder
- * definitivo").
+ * Mismo lenguaje visual que el CTA principal del Hero (bg-accent +
+ * text-fg-on-accent + hover:bg-accent-lift + la misma sombra tintada que
+ * ya usa MagneticCta para su variante primaria) en vez del boton-pildora
+ * con borde que tenia antes. `flex justify-center` en un wrapper propio
+ * lo centra respecto al ancho del bloque de texto (que sigue alineado a
+ * la izquierda) — no centra toda la seccion.
  *
- * REVEAL — REUTILIZA <Reveal>, NO UNA ANIMACION NUEVA (spec §19-21)
+ * INTERNO VS. EXTERNO — SIN CAMBIOS (spec §30-31)
  * -----------------------------------------------------------------
- * Mismo componente que ya usan Tools/Socio/Services: opacity 0->1 +
- * translateY 24->0, una sola vez al entrar en viewport, respeta
- * prefers-reduced-motion solo (ver Reveal.tsx). Texto e imagen son dos
- * islas de Reveal separadas con un leve stagger para que no lleguen
- * pegadas.
+ * Mismo mecanismo que antes: `ctaEnlace` que empieza con "http(s)://" es
+ * externo (`target="_blank" rel="noopener noreferrer"`), cualquier otra
+ * cosa usa `next/link`.
+ *
+ * IMAGEN — HOVER SUTIL + VELO DE MARCA (spec §14-16)
+ * -----------------------------------------------------------------
+ * `group-hover:scale-[1.02]` SOLO en la imagen interna (el contenedor con
+ * `overflow-hidden` no se mueve ni cambia de tamaño), 600ms con la misma
+ * curva de easing que ya usa ClientCard para su propio hover de foto.
+ * Envuelto en `motion-safe:` para que reduced-motion lo desactive del
+ * todo (spec §34), no solo lo acorte. Un degradado de marca casi
+ * imperceptible (`from-brand/12`) y un glow naranja muy sutil detras de
+ * una esquina son el "tratamiento visual" pedido — nunca tapan la foto.
+ *
+ * PERFORMANCE (spec §35)
+ * -----------------------------------------------------------------
+ * Todo lo animado es `transform`/`opacity` (Framer Motion x/y, CSS scale):
+ * nunca width/height/margin/padding/top/left. Cero layout shift.
  */
 export function ContentSection({
   titulo,
@@ -135,78 +84,101 @@ export function ContentSection({
   index,
 }: SeccionContenido & { index: number }) {
   const textoIzquierda = index % 2 === 0;
+  const fondoLila = index % 2 === 1;
   const esExterno = /^https?:\/\//i.test(ctaEnlace);
-  const tono = TONOS[index % TONOS.length];
-  const ctaClassName = `group inline-flex h-[52px] items-center justify-center gap-2 rounded-full border px-7 font-display text-button transition-colors duration-200 ${tono.cta}`;
+  // Imagen a la derecha -> entra desde la derecha (x positivo, se asienta
+  // en 0). Imagen a la izquierda -> entra desde la izquierda (x negativo).
+  const imagenX = textoIzquierda ? 28 : -28;
+
+  const cta = esExterno ? (
+    <a href={ctaEnlace} target="_blank" rel="noopener noreferrer" className={CTA_CLASSNAME}>
+      {ctaTexto}
+      <ArrowRight size={20} weight="bold" aria-hidden="true" className={CTA_ICON_CLASSNAME} />
+    </a>
+  ) : (
+    <Link href={ctaEnlace} className={CTA_CLASSNAME}>
+      {ctaTexto}
+      <ArrowRight size={20} weight="bold" aria-hidden="true" className={CTA_ICON_CLASSNAME} />
+    </Link>
+  );
 
   return (
-    <section className={`relative py-20 md:py-28 ${tono.fondo}`}>
-      <div className="mx-auto max-w-[1400px] px-5 md:px-8">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          {/* ---------- Imagen: primera en el DOM (orden mobile fijo) ---------- */}
-          <Reveal
-            delay={0.05}
-            className={textoIzquierda ? "lg:order-2" : "lg:order-1"}
-          >
-            <ContentImage
-              imagen={imagen}
-              imagenAlt={imagenAlt}
-              hotspot={hotspot}
-              titulo={titulo}
-              esFondoSaturado={tono.esFondoSaturado}
-            />
-          </Reveal>
+    // overflow-hidden (mismo patron que ya usa Hero.tsx para sus propios
+    // overlays animados): la imagen entra con un translateX inicial (ver
+    // Reveal x={imagenX} mas abajo) que, ANTES de que la seccion entre en
+    // viewport, geometricamente se sale un poco del contenedor -- un
+    // navegador real cuenta ese overshoot (aunque sea opacity:0) para
+    // scrollWidth. Confirmado con Puppeteer: sin este overflow-hidden
+    // habia scroll horizontal real en mobile y en 1024px, causado por esto
+    // y no por ningun otro elemento (se investigo elemento por elemento,
+    // no se asumio).
+    <section className={`relative overflow-hidden py-24 md:py-36 ${fondoLila ? "bg-canvas-lilac" : "bg-canvas"}`}>
+      <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12 xl:px-14">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          {/* ---------- Imagen: primera en el DOM (orden mobile fijo) ----------
+              min-w-0 en los dos items del grid (spec §35, sin overflow): sin
+              esto, un titulo largo real (spec §32, contenido real de Sanity,
+              no el placeholder corto de antes) fuerza la columna a crecer
+              mas alla del viewport -- es el bug clasico de "grid blowout"
+              (los items de grid tienen min-width:auto por defecto, que no
+              respeta el minmax(0,1fr) de la propia pista). Medido con
+              Puppeteer en 1024/390/360px antes de este fix: 77px/20px/20px
+              de overflow horizontal real, no una suposicion. */}
+          <div className={`min-w-0 ${textoIzquierda ? "lg:order-2" : "lg:order-1"}`}>
+            <Reveal x={imagenX} y={20} delay={0.05}>
+              <ContentImage imagen={imagen} imagenAlt={imagenAlt} hotspot={hotspot} titulo={titulo} />
+            </Reveal>
+          </div>
 
           {/* ---------- Texto ---------- */}
-          <Reveal className={textoIzquierda ? "lg:order-1" : "lg:order-2"}>
+          <div className={`min-w-0 ${textoIzquierda ? "lg:order-1" : "lg:order-2"}`}>
             <div className="max-w-[38rem]">
-              <h2 className={`font-display text-3xl font-extrabold leading-[1.05] tracking-tight md:text-5xl ${tono.titulo}`}>
-                {titulo}
-              </h2>
-              <p className={`mt-5 max-w-[46ch] font-sans text-lg leading-relaxed ${tono.cuerpo}`}>
-                {descripcion}
-              </p>
-              <div className="mt-8">
-                {esExterno ? (
-                  <a href={ctaEnlace} target="_blank" rel="noopener noreferrer" className={ctaClassName}>
-                    {ctaTexto}
-                    <ArrowRight
-                      size={18}
-                      weight="bold"
-                      aria-hidden="true"
-                      className="transition-transform duration-200 group-hover:translate-x-0.5"
-                    />
-                  </a>
-                ) : (
-                  <Link href={ctaEnlace} className={ctaClassName}>
-                    {ctaTexto}
-                    <ArrowRight
-                      size={18}
-                      weight="bold"
-                      aria-hidden="true"
-                      className="transition-transform duration-200 group-hover:translate-x-0.5"
-                    />
-                  </Link>
-                )}
-              </div>
+              <Reveal y={20} delay={0}>
+                <div className="flex items-center gap-4">
+                  <span className="font-display text-sm font-bold tracking-[0.3em] text-accent">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span aria-hidden="true" className="h-px w-12 bg-accent/60" />
+                </div>
+              </Reveal>
+
+              <Reveal y={20} delay={0.1}>
+                <h2 className="mt-5 font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-ink md:text-6xl">
+                  {titulo}
+                </h2>
+              </Reveal>
+
+              <Reveal y={20} delay={0.2}>
+                <p className="mt-6 max-w-[46ch] font-sans text-lg leading-relaxed text-ink-muted">
+                  {descripcion}
+                </p>
+              </Reveal>
+
+              <Reveal y={20} delay={0.3}>
+                <div className="mt-10 flex justify-center">{cta}</div>
+              </Reveal>
             </div>
-          </Reveal>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+// `transition` (no `transition-all`): el subconjunto por defecto de
+// Tailwind cubre color/background-color/transform/box-shadow -- exactamente
+// lo que cambia en hover -- y deja afuera width/height/margin/padding/
+// top/left a proposito (spec §35, nunca animar esas propiedades).
+const CTA_CLASSNAME =
+  "group relative inline-flex h-16 items-center justify-center gap-2.5 rounded-full bg-accent px-10 font-display text-base font-semibold text-fg-on-accent shadow-[0_8px_24px_-14px_rgba(244,123,32,0.5)] transition duration-300 hover:-translate-y-0.5 hover:bg-accent-lift active:translate-y-0 active:scale-[0.98]";
+const CTA_ICON_CLASSNAME = "transition-transform duration-300 group-hover:translate-x-1";
+
 function ContentImage({
   imagen,
   imagenAlt,
   hotspot,
   titulo,
-  esFondoSaturado,
-}: Pick<SeccionContenido, "imagen" | "imagenAlt" | "hotspot"> & {
-  titulo: string;
-  esFondoSaturado: boolean;
-}) {
+}: Pick<SeccionContenido, "imagen" | "imagenAlt" | "hotspot"> & { titulo: string }) {
   // Mismo mecanismo que el Hero: object-position calculado en el cliente
   // desde el hotspot {x,y} de Sanity (0-1), sin instalar @sanity/image-url.
   const objectPosition = hotspot
@@ -214,36 +186,51 @@ function ContentImage({
     : "50% 50%";
 
   return (
-    <div className="relative aspect-[4/3] overflow-hidden rounded-[20px]">
-      {imagen ? (
-        <Image
-          src={imagen}
-          alt={imagenAlt || titulo}
-          fill
-          sizes="(min-width: 1024px) 45vw, 100vw"
-          loading="lazy"
-          className="object-cover"
-          style={{ objectPosition }}
+    <div className="group relative">
+      {/* overflow-hidden en este mismo div (no solo en un envoltorio
+          decorativo separado): el micro-glow de abajo vive DENTRO de este
+          contenedor a proposito, para que sea fisicamente imposible que
+          desborde la pagina sin importar el offset -- se intento
+          -right-6 y -right-3 por fuera de este contenedor (spec §24) y
+          los dos causaban overflow horizontal real, medido con Puppeteer
+          en mobile (20px) y en 1024px (77px, combinado con otro bug ya
+          corregido, min-w-0 en los items del grid mas abajo). Metiendolo
+          adentro del overflow-hidden se acaba la categoria entera de bug. */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[20px]">
+        {/* Micro glow decorativo (spec §24): sutil, detras de la foto,
+            recortado por el overflow-hidden del contenedor -- nunca puede
+            empujar el ancho de la pagina. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-accent/25 blur-2xl"
         />
-      ) : esFondoSaturado ? (
-        // Sin imagen todavia, sobre un fondo de seccion saturado (naranja o
-        // morado, spec "Cambiar colores de las secciones"): un respaldo
-        // oscuro/purpura como el de mas abajo se volveria casi invisible
-        // contra esos mismos colores. Este usa un velo blanco translucido
-        // en su lugar -- mismo principio (nunca una caja gris, spec §16),
-        // adaptado a que ahora el fondo puede ser saturado.
-        <div aria-hidden="true" className="absolute inset-0 border border-white/25 bg-white/10">
-          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/15 blur-[80px]" />
-          <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-white/10 blur-[90px]" />
-        </div>
-      ) : (
-        // Sin imagen todavia, sobre la seccion blanca: misma atmosfera de
-        // respaldo que el Hero, nunca una caja gris (spec §16).
-        <div aria-hidden="true" className="absolute inset-0 border border-brand/10 bg-brand/5">
-          <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/12 blur-[80px]" />
-          <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-accent/10 blur-[90px]" />
-        </div>
-      )}
+        {imagen ? (
+          <>
+            <Image
+              src={imagen}
+              alt={imagenAlt || titulo}
+              fill
+              sizes="(min-width: 1024px) 45vw, 100vw"
+              loading="lazy"
+              className="object-cover motion-safe:transition-transform motion-safe:duration-[650ms] motion-safe:ease-[cubic-bezier(0.16,1,0.3,1)] motion-safe:group-hover:scale-[1.02]"
+              style={{ objectPosition }}
+            />
+            {/* Velo de marca casi imperceptible (spec §15): nunca tapa la
+                foto, solo la integra a la identidad DOFI. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand/12 via-transparent to-transparent"
+            />
+          </>
+        ) : (
+          // Sin imagen todavia en Sanity: atmosfera de respaldo (nunca una
+          // caja gris), sobre el lienzo blanco/lila de estas secciones.
+          <div aria-hidden="true" className="absolute inset-0 border border-brand/10 bg-brand/5">
+            <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/12 blur-[80px]" />
+            <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-accent/10 blur-[90px]" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

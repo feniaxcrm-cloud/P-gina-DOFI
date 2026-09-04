@@ -130,6 +130,12 @@
   --color-canvas: #FDFBF7;         /* blanco calido, base del lienzo */
   --color-canvas-raised: #F6F1EA;  /* superficie clara ligeramente elevada */
   --color-canvas-border: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  /* Lila extremadamente sutil (Sprint "Mejorar diseño visual de las 4
+     secciones de contenido", §22-23): variacion de fondo casi imperceptible
+     para romper la monotonia entre secciones sin salir del lienzo blanco
+     ("el lienzo general debe seguir siendo blanco"). 4% de marca sobre
+     canvas -- deliberadamente MUCHO mas sutil que canvas-raised. */
+  --color-canvas-lilac: color-mix(in srgb, var(--color-brand) 4%, var(--color-canvas));
 
   /* Texto sobre claro. --color-deep (#1A0F3D) hace doble uso: ya es una
      superficie oscura del tema dark, y funciona igual de bien como "tinta"
@@ -162,6 +168,21 @@ html {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+
+  /* Respaldo para <Reveal> (src/components/Reveal.tsx). Esta regla existe
+     porque el hook useReducedMotion() de motion/react NO es confiable para
+     esto: usa useState() con el valor leido en SSR (donde "window" no
+     existe, siempre false) y no se re-evalua de forma reactiva -- intentar
+     ramificar el arbol (motion.div vs. div plano) segun ese valor genera
+     un mismatch de hidratacion real (confirmado con Puppeteer: el
+     elemento seguia con opacity:0 mucho despues de cargar, con el media
+     query ya en true). Esta regla CSS, en cambio, la evalua el navegador
+     directamente sobre el motion.div (siempre el mismo arbol en servidor
+     y cliente) -- sin pasar por React en absoluto. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
