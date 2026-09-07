@@ -462,15 +462,23 @@ export type Capacidad = {
 // la posicion (ver alternarIzquierda() en ContentSection.tsx).
 
 export type SeccionContenido = {
+  /** Siguen viniendo de Sanity y siguen siendo la fuente del contenido,
+   *  pero desde el sprint "CTA debajo de la imagen con texto" el frontend
+   *  ya no los pinta: el mensaje vive dentro de la imagen con texto. */
   titulo: string;
   descripcion: string;
-  /** URL ya con ?w=.. — null si la seccion todavia no tiene imagen cargada
-   *  en Sanity (documento incompleto/migracion a medias). */
+  /** IMAGEN CON TEXTO (la principal, la que lleva el mensaje adentro). URL
+   *  ya con ?w=.. — null si la seccion todavia no la tiene cargada. */
   imagen: string | null;
   imagenAlt: string;
   /** Coordenadas 0-1 del hotspot de Sanity, para object-position en el
    *  cliente (mismo mecanismo que el Hero). null si no hay imagen o hotspot. */
   hotspot: { x: number; y: number } | null;
+  /** IMAGEN NORMAL (la foto de apoyo, en la otra columna). Opcional en el
+   *  Studio, asi que aca es null hasta que se cargue. */
+  imagenSecundaria: string | null;
+  imagenSecundariaAlt: string;
+  hotspotSecundaria: { x: number; y: number } | null;
   ctaTexto: string;
   ctaEnlace: string;
 };
@@ -529,6 +537,9 @@ type SeccionContenidoRaw = {
   imagen: string | null;
   imagenAlt: string | null;
   hotspot: { x: number; y: number } | null;
+  imagenSecundaria: string | null;
+  imagenSecundariaAlt: string | null;
+  hotspotSecundaria: { x: number; y: number } | null;
   ctaTexto: string | null;
   ctaEnlace: string | null;
 };
@@ -578,6 +589,9 @@ const QUERY_PAGINA_INICIO = `{
       "imagen": imagen.asset->url + "?w=1400&auto=format",
       "imagenAlt": coalesce(imagenAlt, ""),
       "hotspot": imagen.hotspot{ x, y },
+      "imagenSecundaria": imagenSecundaria.asset->url + "?w=1400&auto=format",
+      "imagenSecundariaAlt": coalesce(imagenSecundariaAlt, ""),
+      "hotspotSecundaria": imagenSecundaria.hotspot{ x, y },
       ctaTexto,
       ctaEnlace
     }
@@ -711,6 +725,9 @@ const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) =>
   imagen: null,
   imagenAlt: "",
   hotspot: null,
+  imagenSecundaria: null,
+  imagenSecundariaAlt: "",
+  hotspotSecundaria: null,
   ctaTexto: "Conocer más",
   ctaEnlace: "/contactanos",
 }));
@@ -794,6 +811,10 @@ function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): Seccio
       imagen: s.imagen ?? null,
       imagenAlt: s.imagenAlt ?? "",
       hotspot: s.imagen && s.hotspot ? s.hotspot : null,
+      imagenSecundaria: s.imagenSecundaria ?? null,
+      imagenSecundariaAlt: s.imagenSecundariaAlt ?? "",
+      hotspotSecundaria:
+        s.imagenSecundaria && s.hotspotSecundaria ? s.hotspotSecundaria : null,
       ctaTexto: s.ctaTexto,
       ctaEnlace: s.ctaEnlace,
     }));
