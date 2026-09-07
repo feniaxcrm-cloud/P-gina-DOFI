@@ -67,3 +67,38 @@ export function Reveal({
     </motion.div>
   );
 }
+
+/**
+ * Subrayado que se dibuja de izquierda a derecha al entrar en pantalla, una
+ * sola vez (Sprint "Corrección de fondos + contraste + diseño tipográfico",
+ * §17: "underline que aparece ... una sola vez al entrar").
+ *
+ * Va dentro de la palabra destacada del título (que debe ser `relative`),
+ * no es un componente suelto. Anima `scaleX` desde un origen izquierdo:
+ * transform puro, sin tocar width/layout.
+ *
+ * Lleva `data-reveal` como el resto: con reduced-motion, la regla de
+ * globals.css lo fuerza a `transform: none`, o sea scaleX(1) -- el
+ * subrayado aparece dibujado entero de una, sin animacion. Es exactamente
+ * el comportamiento que se quiere (mostrar el resultado final, no
+ * esconderlo).
+ */
+export function SubrayadoReveal({
+  className = "",
+  delay = 0,
+}: {
+  className?: string;
+  delay?: number;
+}) {
+  return (
+    <motion.span
+      data-reveal="true"
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-x-0 -bottom-1 h-[3px] origin-left rounded-full ${className}`}
+      initial={{ scaleX: 0 }}
+      whileInView={{ scaleX: 1 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
+    />
+  );
+}
