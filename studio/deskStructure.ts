@@ -43,17 +43,17 @@ export const deskStructure: StructureResolver = (S) =>
       // (Sprint "no encuentro donde editar las secciones"): el campo vive
       // como pestaña DENTRO del formulario de Página de inicio, y esa
       // pestaña no era lo bastante visible. Con esta entrada, al hacer
-      // click ya se ve el titulo "Secciones de contenido" tanto en el menu
-      // como en la pestaña arriba del formulario -- mismo lugar, doble
-      // puerta de entrada.
+      // click ya se ve el titulo "Banners" tanto en el menu como en la
+      // pestaña arriba del formulario -- mismo lugar, doble puerta de
+      // entrada.
       S.listItem()
-        .title("Secciones de contenido")
+        .title("Banners")
         .schemaType("paginaInicio")
         .child(
           S.document()
             .schemaType("paginaInicio")
             .documentId(ID_PAGINA_INICIO)
-            .title("Secciones de contenido")
+            .title("Banners")
         ),
       S.divider(),
       S.listItem()

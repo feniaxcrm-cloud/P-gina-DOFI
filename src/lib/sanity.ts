@@ -459,28 +459,23 @@ export type Capacidad = {
 // ("seccionesContenido[]", ver studio/schemaTypes/objects/seccionContenido.ts),
 // el ORDEN del arreglo en Sanity es el 01/02/03/04 de la pagina, y el lado
 // (texto/imagen) NUNCA se guarda en Sanity -- lo calcula el frontend segun
-// la posicion (ver alternarIzquierda() en ContentSection.tsx).
+// Sprint "Banners full-width": cada item es UNA imagen a todo el ancho
+// (ver ContentBanner.tsx). Ya no hay texto, columnas ni CTA en HTML.
 
 export type SeccionContenido = {
-  /** Siguen viniendo de Sanity y siguen siendo la fuente del contenido,
-   *  pero desde el sprint "CTA debajo de la imagen con texto" el frontend
-   *  ya no los pinta: el mensaje vive dentro de la imagen con texto. */
-  titulo: string;
-  descripcion: string;
-  /** IMAGEN CON TEXTO (la principal, la que lleva el mensaje adentro). URL
-   *  ya con ?w=.. — null si la seccion todavia no la tiene cargada. */
-  imagen: string | null;
-  imagenAlt: string;
+  /** Clave estable del item dentro del arreglo de Sanity, usada como key de
+   *  React (antes se usaba el titulo, que ya no existe). Se llama "id" y no
+   *  "key" a proposito: "key" es una prop reservada de React y chocaba al
+   *  hacer spread del objeto. */
+  id: string;
+  /** La pieza grafica completa del banner, a todo el ancho. URL ya con
+   *  ?w=.. — null si el banner todavia no tiene imagen cargada. */
+  backgroundImage: string | null;
+  backgroundImageAlt: string;
   /** Coordenadas 0-1 del hotspot de Sanity, para object-position en el
-   *  cliente (mismo mecanismo que el Hero). null si no hay imagen o hotspot. */
+   *  cliente (mismo mecanismo que el Hero). Clave aca: el banner recorta la
+   *  imagen a lo ancho, y el hotspot decide que parte queda visible. */
   hotspot: { x: number; y: number } | null;
-  /** IMAGEN NORMAL (la foto de apoyo, en la otra columna). Opcional en el
-   *  Studio, asi que aca es null hasta que se cargue. */
-  imagenSecundaria: string | null;
-  imagenSecundariaAlt: string;
-  hotspotSecundaria: { x: number; y: number } | null;
-  ctaTexto: string;
-  ctaEnlace: string;
 };
 
 // --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
@@ -532,16 +527,10 @@ type CapacidadRaw = {
 };
 
 type SeccionContenidoRaw = {
-  titulo: string | null;
-  descripcion: string | null;
-  imagen: string | null;
-  imagenAlt: string | null;
+  id: string | null;
+  backgroundImage: string | null;
+  backgroundImageAlt: string | null;
   hotspot: { x: number; y: number } | null;
-  imagenSecundaria: string | null;
-  imagenSecundariaAlt: string | null;
-  hotspotSecundaria: { x: number; y: number } | null;
-  ctaTexto: string | null;
-  ctaEnlace: string | null;
 };
 
 type PaginaInicioRaw = {
@@ -584,16 +573,13 @@ const QUERY_PAGINA_INICIO = `{
       enlace
     },
     seccionesContenido[]{
-      titulo,
-      descripcion,
-      "imagen": imagen.asset->url + "?w=1400&auto=format",
-      "imagenAlt": coalesce(imagenAlt, ""),
-      "hotspot": imagen.hotspot{ x, y },
-      "imagenSecundaria": imagenSecundaria.asset->url + "?w=1400&auto=format",
-      "imagenSecundariaAlt": coalesce(imagenSecundariaAlt, ""),
-      "hotspotSecundaria": imagenSecundaria.hotspot{ x, y },
-      ctaTexto,
-      ctaEnlace
+      "id": _key,
+      // 2400 (no 1400 como cuando era una tarjeta): el banner ocupa el
+      // ancho completo del viewport, asi que necesita bastante mas
+      // resolucion para no verse blando en pantallas grandes/retina.
+      "backgroundImage": backgroundImage.asset->url + "?w=2400&auto=format",
+      "backgroundImageAlt": coalesce(backgroundImageAlt, ""),
+      "hotspot": backgroundImage.hotspot{ x, y }
     }
   },
   "heroDoc": *[_type == "hero"][0]{
@@ -711,25 +697,16 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
   },
 ];
 
-/** Respaldo de las 4 secciones de contenido, a proposito con texto
- *  placeholder (spec §6: "NO inventar mensajes de venta definitivos en
- *  este sprint" -- este es el mismo ejemplo textual que pidio el brief,
- *  no una redaccion comercial real). El CTA de las 4 apunta a
- *  /contactanos (ruta real que ya existe, mismo criterio que HERO_FALLBACK
- *  mas arriba) hasta que cada seccion tenga su propio destino definido. Sin
- *  imagen: cada ContentSection pinta su propia atmosfera de respaldo, igual
- *  que el Hero sin foto. */
+/** Respaldo de los 4 banners: sin imagen, para que la home conserve su
+ *  estructura (4 bloques) aunque Sanity no responda o el documento este
+ *  vacio. Cada ContentBanner pinta su propia atmosfera en ese caso, igual
+ *  que el Hero sin foto -- nunca un hueco roto. No hay texto ni CTA que
+ *  respaldar: el banner es solo la imagen. */
 const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) => ({
-  titulo: `Sección 0${n}`,
-  descripcion: "Contenido de esta sección...",
-  imagen: null,
-  imagenAlt: "",
+  id: `banner-respaldo-${n}`,
+  backgroundImage: null,
+  backgroundImageAlt: "",
   hotspot: null,
-  imagenSecundaria: null,
-  imagenSecundariaAlt: "",
-  hotspotSecundaria: null,
-  ctaTexto: "Conocer más",
-  ctaEnlace: "/contactanos",
 }));
 
 const ICONOS_VALIDOS = new Set<IconoCapacidad>([
@@ -793,33 +770,22 @@ function normalizarCapacidades(raw: CapacidadRaw[] | null): Capacidad[] {
   return validas.length > 0 ? validas : CAPACIDADES_FALLBACK;
 }
 
-/** Descarta items sin titulo/descripcion/CTA (texto+enlace) — esos 4 campos
- *  son el minimo para que el bloque tenga sentido en pantalla. La imagen
- *  es la unica excepcion: puede faltar (Sanity todavia no la tiene
- *  cargada) sin que se descarte el item entero, igual que el Hero. Si no
- *  queda ninguna seccion valida, se usan las 4 de respaldo completas —
- *  nunca menos de 4 ni un hueco a medio llenar. */
+/** El banner es solo su imagen, asi que un item sin imagen no tiene nada
+ *  que mostrar y se descarta. Si no queda ninguno valido, se usan los 4 de
+ *  respaldo — la home nunca pierde su estructura de 4 bloques. */
 function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): SeccionContenido[] {
-  const validas = (raw ?? [])
-    .filter(
-      (s): s is SeccionContenidoRaw & { titulo: string; descripcion: string; ctaTexto: string; ctaEnlace: string } =>
-        Boolean(s.titulo && s.descripcion && s.ctaTexto && s.ctaEnlace)
+  const validos = (raw ?? [])
+    .filter((s): s is SeccionContenidoRaw & { backgroundImage: string } =>
+      Boolean(s.backgroundImage)
     )
-    .map((s) => ({
-      titulo: s.titulo,
-      descripcion: s.descripcion,
-      imagen: s.imagen ?? null,
-      imagenAlt: s.imagenAlt ?? "",
-      hotspot: s.imagen && s.hotspot ? s.hotspot : null,
-      imagenSecundaria: s.imagenSecundaria ?? null,
-      imagenSecundariaAlt: s.imagenSecundariaAlt ?? "",
-      hotspotSecundaria:
-        s.imagenSecundaria && s.hotspotSecundaria ? s.hotspotSecundaria : null,
-      ctaTexto: s.ctaTexto,
-      ctaEnlace: s.ctaEnlace,
+    .map((s, i) => ({
+      id: s.id ?? `banner-${i}`,
+      backgroundImage: s.backgroundImage,
+      backgroundImageAlt: s.backgroundImageAlt ?? "",
+      hotspot: s.hotspot ?? null,
     }));
 
-  return validas.length > 0 ? validas : SECCIONES_CONTENIDO_FALLBACK;
+  return validos.length > 0 ? validos : SECCIONES_CONTENIDO_FALLBACK;
 }
 
 /** Valida un item crudo del arreglo y lo deja listo para pintar, o

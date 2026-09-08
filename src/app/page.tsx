@@ -1,6 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { ContentSection } from "@/components/ContentSection";
+import { ContentBanner } from "@/components/ContentBanner";
 import { Footer } from "@/components/Footer";
 import { getPaginaInicio } from "@/lib/sanity";
 
@@ -10,9 +10,11 @@ import { getPaginaInicio } from "@/lib/sanity";
  * ORDEN FIJO pedido explicitamente:
  *
  *   1. Hero              - introduccion (incluye las 4 tarjetas de capacidades)
- *   2. ContentSection x4  - secciones de contenido (Sprint "Crear 4 secciones
- *                          de contenido debajo del Hero"), inmediatamente
- *                          debajo de las tarjetas.
+ *   2. ContentBanner x4  - los 4 banners full-width (Sprint "Banners
+ *                          full-width"), inmediatamente debajo de las
+ *                          tarjetas. Cada uno es una sola imagen de Sanity
+ *                          a todo el ancho: la pieza grafica ES el diseño,
+ *                          no hay texto ni botones en HTML.
  *   3. Footer
  *
  * Sprint "Retirar secciones entre Sección 4 y el Footer": LogoWall, Clients,
@@ -40,8 +42,8 @@ export default async function Home() {
       <main>
         <Hero content={hero} capacidades={capacidades} />
 
-        {seccionesContenido.map((seccion, i) => (
-          <ContentSection key={seccion.titulo} {...seccion} index={i} />
+        {seccionesContenido.map((banner) => (
+          <ContentBanner key={banner.id} {...banner} />
         ))}
       </main>
       <Footer />

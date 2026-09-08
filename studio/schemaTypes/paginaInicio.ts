@@ -18,13 +18,12 @@ import { defineType, defineField } from "sanity";
  * texto y los botones — src/lib/sanity.ts combina ambos documentos en un
  * solo HeroContent para el frontend.
  *
- * SECCIONES DE CONTENIDO (Sprint "Crear 4 secciones de contenido debajo del
- * Hero"): los bloques texto+imagen que aparecen debajo de las 4 tarjetas
- * del Hero. Reutiliza este mismo documento en vez de crear una segunda
- * estructura de Home -- ver seccionContenido.ts para los campos de cada
- * bloque. El orden del arreglo (arrastrar para reordenar) ES el 01/02/03/04
- * de la pagina; el lado texto/imagen no se elige acá, lo calcula el
- * frontend solo (par/impar).
+ * BANNERS (Sprint "Banners full-width"): los 4 bloques que van debajo de las
+ * tarjetas del Hero. Cada uno es UNA SOLA IMAGEN a todo el ancho del
+ * viewport -- ver seccionContenido.ts. El campo sigue llamandose
+ * "seccionesContenido" a proposito: renombrarlo dejaria huerfanos los 4
+ * items ya publicados. El orden del arreglo (arrastrar para reordenar) ES
+ * el 01/02/03/04 de la pagina.
  */
 export const paginaInicio = defineType({
   name: "paginaInicio",
@@ -33,7 +32,7 @@ export const paginaInicio = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "capacidades", title: "Capacidades" },
-    { name: "seccionesContenido", title: "Secciones de contenido" },
+    { name: "seccionesContenido", title: "Banners" },
   ],
   fields: [
     defineField({
@@ -104,11 +103,11 @@ export const paginaInicio = defineType({
     }),
     defineField({
       name: "seccionesContenido",
-      title: "Secciones de contenido",
+      title: "Banners",
       type: "array",
       group: "seccionesContenido",
       description:
-        "Los bloques de texto + imagen debajo de las 4 tarjetas del Hero, en este mismo orden (el primer ítem es la Sección 01, el que sigue abajo en la página). Arrastrá para reordenar. El lado (texto/imagen) alterna solo, no se elige acá.",
+        "Los 4 banners full-width debajo de las tarjetas del Hero, en este mismo orden (el primero es el Banner 01, el que sigue más abajo en la página). Arrastrá para reordenar. Cada banner es una sola imagen a todo el ancho: el mensaje va dentro de la pieza gráfica.",
       of: [{ type: "seccionContenido" }],
     }),
   ],

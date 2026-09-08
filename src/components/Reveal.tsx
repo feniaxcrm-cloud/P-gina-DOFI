@@ -12,16 +12,12 @@ import { motion } from "motion/react";
  * Motivo de la animacion: ordena la lectura por bloques al hacer scroll.
  * Se ejecuta una sola vez por elemento, no en cada pasada.
  *
- * `x`/`y` (Sprint "Mejorar diseño visual de las 4 secciones de contenido",
- * §17-20): desplazamiento inicial configurable -- por defecto `y: 24, x: 0`,
- * IDENTICO al comportamiento de siempre, asi que ningun llamador existente
- * (Tools/Socio/Services/etc.) cambia. `ContentSection.tsx` es el unico que
- * pasa `x` distinto de 0, para que la imagen entre desde el lado que le
- * corresponde segun la alternancia.
+ * `y`: desplazamiento vertical inicial, 24px por defecto -- identico al
+ * comportamiento de siempre, asi que ningun llamador existente cambia.
+ * `ContentBanner.tsx` pasa 20 para una entrada un poco mas corta.
  *
- * FIX DE ACCESIBILIDAD (mismo sprint, bug preexistente, no introducido por
- * el sprint de las 4 secciones -- el fix beneficia tambien a Tools/Socio/
- * Services, que ya usaban <Reveal>):
+ * FIX DE ACCESIBILIDAD (bug preexistente de este componente, beneficia a
+ * todos sus usuarios: Tools/Socio/Clients/ContentBanner):
  * -----------------------------------------------------------------
  * `useReducedMotion()` de motion/react usa `useState(prefersReducedMotion
  * .current)` (valor plano, no un initializer perezoso) y ese modulo
@@ -45,21 +41,19 @@ export function Reveal({
   children,
   delay = 0,
   className,
-  x = 0,
   y = 24,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
-  x?: number;
   y?: number;
 }) {
   return (
     <motion.div
       data-reveal="true"
       className={className}
-      initial={{ opacity: 0, x, y }}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.75, delay, ease: [0.16, 1, 0.3, 1] }}
     >
