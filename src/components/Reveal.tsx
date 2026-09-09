@@ -42,11 +42,15 @@ export function Reveal({
   delay = 0,
   className,
   y = 24,
+  duration = 0.75,
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
   y?: number;
+  /** Duracion en segundos. 0,75 por defecto -- el valor de siempre, asi que
+   *  ningun llamador existente cambia. El CTA de los banners pasa 0,6. */
+  duration?: number;
 }) {
   return (
     <motion.div
@@ -55,7 +59,7 @@ export function Reveal({
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
-      transition={{ duration: 0.75, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>

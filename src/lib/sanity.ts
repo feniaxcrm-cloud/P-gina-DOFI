@@ -462,6 +462,37 @@ export type Capacidad = {
 // Sprint "Banners full-width": cada item es UNA imagen a todo el ancho
 // (ver ContentBanner.tsx). Ya no hay texto, columnas ni CTA en HTML.
 
+/** Los 5 pasos horizontales y 3 verticales del selector de Sanity (ver
+ *  studio/schemaTypes/objects/posicionCta.ts). El frontend los traduce a
+ *  coordenadas CSS en ContentBanner.tsx. */
+export type PosicionHorizontalCta =
+  | "izquierda"
+  | "centro-izquierda"
+  | "centro"
+  | "centro-derecha"
+  | "derecha";
+
+export type PosicionVerticalCta = "arriba" | "centro" | "abajo";
+
+export type PosicionCta = {
+  horizontal: PosicionHorizontalCta;
+  vertical: PosicionVerticalCta;
+};
+
+/** El boton que va ENCIMA del banner (Sprint "CTA sobre los banners"). No
+ *  forma parte de la imagen: texto, enlace y posicion se editan en Sanity
+ *  sin volver a exportar la pieza grafica. */
+export type CtaBanner = {
+  texto: string;
+  enlace: string;
+  /** true si `enlace` es una direccion completa (https://, mailto:, tel:) y
+   *  por lo tanto tiene que abrirse en una pestaña nueva. Se resuelve aca y
+   *  no en el componente para que la decision viva junto al dato. */
+  esExterno: boolean;
+  desktop: PosicionCta;
+  mobile: PosicionCta;
+};
+
 export type SeccionContenido = {
   /** Clave estable del item dentro del arreglo de Sanity, usada como key de
    *  React (antes se usaba el titulo, que ya no existe). Se llama "id" y no
@@ -476,6 +507,9 @@ export type SeccionContenido = {
    *  cliente (mismo mecanismo que el Hero). Clave aca: el banner recorta la
    *  imagen a lo ancho, y el hotspot decide que parte queda visible. */
   hotspot: { x: number; y: number } | null;
+  /** null cuando el banner no tiene texto o enlace cargados: en ese caso se
+   *  pinta la imagen sola, sin boton (no un boton vacio). */
+  cta: CtaBanner | null;
 };
 
 // --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
@@ -526,11 +560,17 @@ type CapacidadRaw = {
   enlace: string | null;
 };
 
+type PosicionCtaRaw = { horizontal: string | null; vertical: string | null } | null;
+
 type SeccionContenidoRaw = {
   id: string | null;
   backgroundImage: string | null;
   backgroundImageAlt: string | null;
   hotspot: { x: number; y: number } | null;
+  ctaTexto: string | null;
+  ctaEnlace: string | null;
+  ctaPosicionDesktop: PosicionCtaRaw;
+  ctaPosicionMobile: PosicionCtaRaw;
 };
 
 type PaginaInicioRaw = {
@@ -579,7 +619,11 @@ const QUERY_PAGINA_INICIO = `{
       // resolucion para no verse blando en pantallas grandes/retina.
       "backgroundImage": backgroundImage.asset->url + "?w=2400&auto=format",
       "backgroundImageAlt": coalesce(backgroundImageAlt, ""),
-      "hotspot": backgroundImage.hotspot{ x, y }
+      "hotspot": backgroundImage.hotspot{ x, y },
+      ctaTexto,
+      ctaEnlace,
+      ctaPosicionDesktop{ horizontal, vertical },
+      ctaPosicionMobile{ horizontal, vertical }
     }
   },
   "heroDoc": *[_type == "hero"][0]{
@@ -700,14 +744,60 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
 /** Respaldo de los 4 banners: sin imagen, para que la home conserve su
  *  estructura (4 bloques) aunque Sanity no responda o el documento este
  *  vacio. Cada ContentBanner pinta su propia atmosfera en ese caso, igual
- *  que el Hero sin foto -- nunca un hueco roto. No hay texto ni CTA que
- *  respaldar: el banner es solo la imagen. */
+ *  que el Hero sin foto -- nunca un hueco roto. Tampoco lleva CTA: un boton
+ *  flotando sobre un bloque sin imagen no comunica nada. */
 const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) => ({
   id: `banner-respaldo-${n}`,
   backgroundImage: null,
   backgroundImageAlt: "",
   hotspot: null,
+  cta: null,
 }));
+
+const POSICIONES_H = new Set<PosicionHorizontalCta>([
+  "izquierda",
+  "centro-izquierda",
+  "centro",
+  "centro-derecha",
+  "derecha",
+]);
+const POSICIONES_V = new Set<PosicionVerticalCta>(["arriba", "centro", "abajo"]);
+
+/** Si el Studio todavia no tiene posicion elegida (o llega un valor que este
+ *  codigo no conoce), el boton cae abajo y al centro: la ubicacion mas
+ *  predecible y la que menos suele tapar en una pieza apaisada. */
+const POSICION_CTA_POR_DEFECTO: PosicionCta = { horizontal: "centro", vertical: "abajo" };
+
+function normalizarPosicionCta(raw: PosicionCtaRaw): PosicionCta {
+  const horizontal = raw?.horizontal as PosicionHorizontalCta | undefined;
+  const vertical = raw?.vertical as PosicionVerticalCta | undefined;
+  return {
+    horizontal:
+      horizontal && POSICIONES_H.has(horizontal)
+        ? horizontal
+        : POSICION_CTA_POR_DEFECTO.horizontal,
+    vertical:
+      vertical && POSICIONES_V.has(vertical) ? vertical : POSICION_CTA_POR_DEFECTO.vertical,
+  };
+}
+
+/** Un CTA sin texto o sin enlace no es un CTA a medias: es ningun CTA. Se
+ *  devuelve null y el banner se pinta como imagen sola. */
+function normalizarCtaBanner(raw: SeccionContenidoRaw): CtaBanner | null {
+  const texto = raw.ctaTexto?.trim();
+  const enlace = raw.ctaEnlace?.trim();
+  if (!texto || !enlace) return null;
+
+  return {
+    texto,
+    enlace,
+    // Una ruta interna empieza con "/". Todo lo demas (https://, mailto:,
+    // tel:) sale del sitio y se abre en pestaña nueva -- ver §14 del pedido.
+    esExterno: !enlace.startsWith("/"),
+    desktop: normalizarPosicionCta(raw.ctaPosicionDesktop),
+    mobile: normalizarPosicionCta(raw.ctaPosicionMobile),
+  };
+}
 
 const ICONOS_VALIDOS = new Set<IconoCapacidad>([
   "social",
@@ -783,6 +873,7 @@ function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): Seccio
       backgroundImage: s.backgroundImage,
       backgroundImageAlt: s.backgroundImageAlt ?? "",
       hotspot: s.hotspot ?? null,
+      cta: normalizarCtaBanner(s),
     }));
 
   return validos.length > 0 ? validos : SECCIONES_CONTENIDO_FALLBACK;

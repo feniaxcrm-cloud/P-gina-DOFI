@@ -202,6 +202,82 @@ body {
   border-radius: 4px;
 }
 
+/* ============================================================
+   CTA de los 4 banners de la home (src/components/ContentBanner.tsx)
+
+   POR QUE VIVE EN CSS Y NO EN CLASES DE TAILWIND
+   ------------------------------------------------------------
+   Cada banner tiene DOS posiciones distintas (una para mobile y otra
+   para desktop) que se eligen desde Sanity, asi que las coordenadas
+   son datos, no clases: llegan como variables inline desde el
+   componente. Una media query las intercambia. La alternativa habria
+   sido pintar el boton dos veces (uno oculto por breakpoint), pero eso
+   duplica el enlace en el DOM: dos veces el mismo destino para
+   lectores de pantalla y para los buscadores.
+
+   El corte va en 768px a proposito: es donde el banner pasa de 440 a
+   520px de alto y el recorte lateral de la imagen deja de ser
+   agresivo, o sea donde de verdad cambia que zona de la pieza queda
+   libre.
+   ============================================================ */
+.banner-cta {
+  position: absolute;
+  left: var(--cta-left);
+  top: var(--cta-top);
+  translate: var(--cta-tx) var(--cta-ty);
+
+  /* width: max-content NO es decorativo, arregla un bug medido.
+     Un elemento absoluto sin ancho declarado se encoge hasta lo que queda
+     entre su `left` y el borde derecho del contenedor. Con el anclaje
+     "derecha" (left: 94%) eso son 86px de 1440: el boton se partia en dos
+     lineas y quedaba de 170x109 en vez de 333x60 -- el `translate: -100%`
+     lo recoloca DESPUES, cuando el ancho ya se decidio. Pasaba lo mismo con
+     "centro-derecha" (left: 67%) por debajo de ~1000px de ancho.
+     Con max-content el boton se mide por su contenido y recien ahi el
+     max-width del 88% lo limita si el texto de Sanity fuera larguisimo. */
+  width: max-content;
+}
+
+/* Telefonos angostos: los dos anclajes intermedios no entran, y no es
+   opinion sino geometria. Un boton centrado en el 33% empieza en
+   (0,33·ancho - mitad del boton); para que ese borde no cruce el margen del
+   6% hace falta un contenedor de ~1,85 veces el ancho del boton. Con el
+   boton de 288px de mobile eso son ~533px, o sea mas que cualquier
+   telefono: medido, el CTA se salia 15px por la izquierda en los banners 01
+   y 03, y 15px por la derecha en el 04, y el overflow-hidden lo cortaba.
+   Por debajo de 560px cada intermedio cae al borde mas cercano, que es la
+   zona segura mas parecida a lo que eligio el editor. De 560px para arriba
+   ya entra y se respeta el valor tal cual. */
+@media (max-width: 559px) {
+  .banner-cta[data-cta-h="centro-izquierda"] {
+    left: 6%;
+    translate: 0% var(--cta-ty);
+  }
+  .banner-cta[data-cta-h="centro-derecha"] {
+    left: 94%;
+    translate: -100% var(--cta-ty);
+  }
+}
+
+@media (min-width: 768px) {
+  .banner-cta {
+    left: var(--cta-left-md);
+    top: var(--cta-top-md);
+    translate: var(--cta-tx-md) var(--cta-ty-md);
+  }
+}
+
+/* El foco global es un contorno naranja: sobre un boton naranja no se ve.
+   Aca se cambia por blanco con un halo oscuro alrededor, que se distingue
+   sobre los cuatro fondos (naranja, blanco, azul casi negro y morado). */
+.banner-cta-boton:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 6px rgba(18, 10, 38, 0.55),
+    0 10px 30px -8px rgba(244, 123, 32, 0.55);
+}
+
 /* Grano: capa fija, sin repintados durante el scroll */
 .grain-layer {
   position: fixed;
