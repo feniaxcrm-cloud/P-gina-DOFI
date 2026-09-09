@@ -101,12 +101,26 @@ export const company = {
     region: "Azuay",
     country: "Ecuador",
     countryCode: "EC",
-    /** Direccion de calle. PENDIENTE de confirmar por el propietario; hasta
-     *  entonces se omite en vez de inventarse. */
-    address: opcional(process.env.NEXT_PUBLIC_COMPANY_ADDRESS),
+    /** Direccion de calle, confirmada por el propietario. Antes quedaba
+     *  vacia a proposito ("pendiente de confirmar") para no inventarla. */
+    address: conDefecto(
+      process.env.NEXT_PUBLIC_COMPANY_ADDRESS,
+      "Padre Aguirre y Rafael María Arízaga"
+    ),
+    /** Enlace corto de Google Maps al local. Lo usa la mini tarjeta de mapa
+     *  del pie; es el que entrego el propietario, no uno construido a mano
+     *  a partir de coordenadas. */
+    mapsUrl: conDefecto(
+      process.env.NEXT_PUBLIC_COMPANY_MAPS_URL,
+      "https://maps.app.goo.gl/QxAWAwctM2cGfo598"
+    ),
     /** "Cuenca, Ecuador" */
     get label() {
       return `${this.city}, ${this.country}`;
+    },
+    /** "Padre Aguirre y Rafael María Arízaga, Cuenca - Ecuador" */
+    get fullLabel() {
+      return `${this.address}, ${this.city} - ${this.country}`;
     },
   },
 

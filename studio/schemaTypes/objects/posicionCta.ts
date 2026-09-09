@@ -60,5 +60,23 @@ export const posicionCta = defineType({
       initialValue: "abajo",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "desplazamientoX",
+      title: "Ajuste fino horizontal (%)",
+      type: "number",
+      initialValue: 0,
+      description:
+        "Corrimiento sobre la posición elegida, en % del ancho del banner. Negativo = hacia la izquierda. Dejalo en 0 salvo que necesites afinar; sirve para los ajustes chicos que los pasos del desplegable no alcanzan.",
+      validation: (Rule) => Rule.min(-30).max(30),
+    }),
+    defineField({
+      name: "desplazamientoY",
+      title: "Ajuste fino vertical (%)",
+      type: "number",
+      initialValue: 0,
+      description:
+        "Corrimiento sobre la posición elegida, en % del alto del banner. Negativo = hacia arriba.",
+      validation: (Rule) => Rule.min(-30).max(30),
+    }),
   ],
 });

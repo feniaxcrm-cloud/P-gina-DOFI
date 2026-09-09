@@ -58,8 +58,9 @@ const CTAS = [
     // el naranja desaparece. El morado DOFI es el maximo contraste posible
     // contra ese naranja sin salirse de la marca.
     ctaColor: "morado",
-    // Debajo del subrayado de "SÍ VENDEN".
-    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro" },
+    // Debajo del subrayado de "SÍ VENDEN", bajado un poco mas: el ancla
+    // "centro" lo dejaba pegado al titular.
+    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro", desplazamientoY: 9 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
@@ -67,8 +68,10 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/trafico-ads",
     ctaColor: "naranja",
-    // Ya estaba justo debajo de "VENTAS INTELIGENTES": la posicion no cambia.
-    ctaPosicionDesktop: { horizontal: "derecha", vertical: "centro" },
+    // Centrado bajo el bloque "PAUTA INTELIGENTE = / VENTAS / INTELIGENTES"
+    // (su eje visual cae en el 81% del ancho) y separado de el, para que se
+    // lea como el boton de ESE texto y no como algo suelto.
+    ctaPosicionDesktop: { horizontal: "derecha", vertical: "centro", desplazamientoY: 6 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
@@ -76,10 +79,12 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/chatbots-crm",
     ctaColor: "naranja",
-    // Debajo de "CLIENTES FELICES". Esa banda es la fila de iconos de
-    // herramientas: el boton se apoya sobre parte de ellos, que es el precio
-    // de ponerlo bajo el titulo en esta pieza.
-    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro" },
+    // Mas abajo y mas a la derecha, como se pidio -- pero bastante mas de
+    // "un poco": entre el 50% y el 85% de altura no hay un solo hueco donde
+    // entre el boton, es todo el diagrama de herramientas (WhatsApp, GHL,
+    // TikTok, n8n...). El primer espacio libre real esta por debajo de esa
+    // constelacion, y ahi va.
+    ctaPosicionDesktop: { horizontal: "centro-izquierda", vertical: "abajo" },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
@@ -87,10 +92,11 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/asesorias",
     ctaColor: "naranja",
-    // Misma banda que "debajo de ASESORÍAS UNO", pero corrido al morado
-    // libre de la derecha: justo debajo de esa chapa esta la cara de la
-    // persona, y taparla no era una opcion.
-    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "centro-arriba" },
+    // Arriba a la derecha. La pieza de este banner CAMBIO (ahora trae el
+    // titulo "RESCATANDO EMPRENDEDORES" en el lado derecho, donde antes
+    // habia morado vacio): subir el boton lo saca de encima de ese titulo y
+    // lo lleva a la unica franja realmente libre que queda.
+    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "arriba", desplazamientoX: 10 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
 ];
@@ -129,8 +135,12 @@ conCta.forEach((b, i) => {
   console.log(`      imagen se conserva : ${b.backgroundImage?.asset?._ref ?? "(sin imagen)"}`);
   console.log(`      boton              : "${b.ctaTexto}" -> ${b.ctaEnlace}`);
   console.log(`      color              : ${b.ctaColor}`);
-  console.log(`      desktop            : ${d.horizontal} / ${d.vertical}`);
-  console.log(`      mobile             : ${m.horizontal} / ${m.vertical}\n`);
+  const ajuste = (p) =>
+    p.desplazamientoX || p.desplazamientoY
+      ? `  (ajuste ${p.desplazamientoX ?? 0}% , ${p.desplazamientoY ?? 0}%)`
+      : "";
+  console.log(`      desktop            : ${d.horizontal} / ${d.vertical}${ajuste(d)}`);
+  console.log(`      mobile             : ${m.horizontal} / ${m.vertical}${ajuste(m)}\n`);
 });
 
 if (!aplicar) {

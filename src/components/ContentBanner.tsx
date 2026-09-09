@@ -64,21 +64,35 @@ import type {
  * en globals.css). Los extremos no van pegados al borde: 6% de margen a
  * cada lado, asi el boton nunca queda lamiendo el filo de la pantalla.
  */
-const ANCLAS_X: Record<PosicionHorizontalCta, { left: string; tx: string }> = {
-  izquierda: { left: "6%", tx: "0%" },
-  "centro-izquierda": { left: "33%", tx: "-50%" },
-  centro: { left: "50%", tx: "-50%" },
-  "centro-derecha": { left: "67%", tx: "-50%" },
-  derecha: { left: "94%", tx: "-100%" },
+const ANCLAS_X: Record<PosicionHorizontalCta, { left: number; tx: string }> = {
+  izquierda: { left: 6, tx: "0%" },
+  "centro-izquierda": { left: 33, tx: "-50%" },
+  centro: { left: 50, tx: "-50%" },
+  "centro-derecha": { left: 67, tx: "-50%" },
+  derecha: { left: 94, tx: "-100%" },
 };
 
-const ANCLAS_Y: Record<PosicionVerticalCta, { top: string; ty: string }> = {
-  arriba: { top: "6%", ty: "0%" },
-  "centro-arriba": { top: "28%", ty: "-50%" },
-  centro: { top: "50%", ty: "-50%" },
-  "centro-abajo": { top: "72%", ty: "-50%" },
-  abajo: { top: "94%", ty: "-100%" },
+const ANCLAS_Y: Record<PosicionVerticalCta, { top: number; ty: string }> = {
+  arriba: { top: 6, ty: "0%" },
+  "centro-arriba": { top: 28, ty: "-50%" },
+  centro: { top: 50, ty: "-50%" },
+  "centro-abajo": { top: 72, ty: "-50%" },
+  abajo: { top: 94, ty: "-100%" },
 };
+
+/** Ancla + ajuste fino, ya resueltos a porcentajes listos para CSS. El
+ *  ajuste se suma al ancla en vez de reemplazarla: el desplegable sigue
+ *  marcando la zona, y el numero solo la corre un poco. */
+function resolverPosicion(pos: PosicionCta) {
+  const x = ANCLAS_X[pos.horizontal];
+  const y = ANCLAS_Y[pos.vertical];
+  return {
+    left: `${x.left + pos.desplazamientoX}%`,
+    top: `${y.top + pos.desplazamientoY}%`,
+    tx: x.tx,
+    ty: y.ty,
+  };
+}
 
 /**
  * Paleta del boton, por banner.
@@ -108,20 +122,18 @@ const PALETAS: Record<ColorCta, { bg: string; bgHover: string; fg: string; aro: 
  *  asi el boton es UN solo enlace en el DOM (no uno oculto por breakpoint,
  *  que duplicaria el enlace para lectores de pantalla y buscadores). */
 function variablesDePosicion(mobile: PosicionCta, desktop: PosicionCta): React.CSSProperties {
-  const mx = ANCLAS_X[mobile.horizontal];
-  const my = ANCLAS_Y[mobile.vertical];
-  const dx = ANCLAS_X[desktop.horizontal];
-  const dy = ANCLAS_Y[desktop.vertical];
+  const m = resolverPosicion(mobile);
+  const d = resolverPosicion(desktop);
 
   return {
-    "--cta-left": mx.left,
-    "--cta-top": my.top,
-    "--cta-tx": mx.tx,
-    "--cta-ty": my.ty,
-    "--cta-left-md": dx.left,
-    "--cta-top-md": dy.top,
-    "--cta-tx-md": dx.tx,
-    "--cta-ty-md": dy.ty,
+    "--cta-left": m.left,
+    "--cta-top": m.top,
+    "--cta-tx": m.tx,
+    "--cta-ty": m.ty,
+    "--cta-left-md": d.left,
+    "--cta-top-md": d.top,
+    "--cta-tx-md": d.tx,
+    "--cta-ty-md": d.ty,
   } as React.CSSProperties;
 }
 

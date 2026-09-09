@@ -488,6 +488,12 @@ export type ColorCta = "naranja" | "morado" | "blanco" | "oscuro";
 export type PosicionCta = {
   horizontal: PosicionHorizontalCta;
   vertical: PosicionVerticalCta;
+  /** Corrimiento fino sobre el ancla elegida, en % del banner. Los pasos del
+   *  selector saltan de a mucho (33% -> 50%); esto permite los ajustes de
+   *  "un poco mas abajo" sin agregar mas opciones al desplegable. 0 = el
+   *  ancla tal cual. */
+  desplazamientoX: number;
+  desplazamientoY: number;
 };
 
 /** El boton que va ENCIMA del banner (Sprint "CTA sobre los banners"). No
@@ -572,7 +578,12 @@ type CapacidadRaw = {
   enlace: string | null;
 };
 
-type PosicionCtaRaw = { horizontal: string | null; vertical: string | null } | null;
+type PosicionCtaRaw = {
+  horizontal: string | null;
+  vertical: string | null;
+  desplazamientoX: number | null;
+  desplazamientoY: number | null;
+} | null;
 
 type SeccionContenidoRaw = {
   id: string | null;
@@ -636,8 +647,8 @@ const QUERY_PAGINA_INICIO = `{
       ctaTexto,
       ctaEnlace,
       ctaColor,
-      ctaPosicionDesktop{ horizontal, vertical },
-      ctaPosicionMobile{ horizontal, vertical }
+      ctaPosicionDesktop{ horizontal, vertical, desplazamientoX, desplazamientoY },
+      ctaPosicionMobile{ horizontal, vertical, desplazamientoX, desplazamientoY }
     }
   },
   "heroDoc": *[_type == "hero"][0]{
@@ -788,7 +799,20 @@ const COLORES_CTA = new Set<ColorCta>(["naranja", "morado", "blanco", "oscuro"])
 /** Si el Studio todavia no tiene posicion elegida (o llega un valor que este
  *  codigo no conoce), el boton cae abajo y al centro: la ubicacion mas
  *  predecible y la que menos suele tapar en una pieza apaisada. */
-const POSICION_CTA_POR_DEFECTO: PosicionCta = { horizontal: "centro", vertical: "abajo" };
+const POSICION_CTA_POR_DEFECTO: PosicionCta = {
+  horizontal: "centro",
+  vertical: "abajo",
+  desplazamientoX: 0,
+  desplazamientoY: 0,
+};
+
+/** Acota el ajuste fino al mismo rango que valida el Studio. Un numero
+ *  absurdo (o un texto colado en el campo) mandaria el boton fuera del
+ *  banner, donde el overflow-hidden lo cortaria sin dejar rastro. */
+function desplazamientoValido(valor: number | null | undefined): number {
+  if (typeof valor !== "number" || !Number.isFinite(valor)) return 0;
+  return Math.max(-30, Math.min(30, valor));
+}
 
 function normalizarPosicionCta(raw: PosicionCtaRaw): PosicionCta {
   const horizontal = raw?.horizontal as PosicionHorizontalCta | undefined;
@@ -800,6 +824,8 @@ function normalizarPosicionCta(raw: PosicionCtaRaw): PosicionCta {
         : POSICION_CTA_POR_DEFECTO.horizontal,
     vertical:
       vertical && POSICIONES_V.has(vertical) ? vertical : POSICION_CTA_POR_DEFECTO.vertical,
+    desplazamientoX: desplazamientoValido(raw?.desplazamientoX),
+    desplazamientoY: desplazamientoValido(raw?.desplazamientoY),
   };
 }
 

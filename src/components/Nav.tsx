@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import { Wordmark } from "./Wordmark";
 import { headerSocialLinks, type HeaderSocialKey } from "@/config/company";
+import { NAV_LINKS as LINKS } from "@/config/navegacion";
 
 /**
  * Header DOFI — arquitectura de 3 zonas sobre lienzo blanco, inspirada en
@@ -94,42 +95,10 @@ const ICONOS_SOCIAL = {
   tiktok: TiktokLogo,
 } satisfies Record<HeaderSocialKey, typeof InstagramLogo>;
 
-type NavLink = {
-  label: string;
-  href: string;
-  match: (pathname: string) => boolean;
-};
-
-const esRuta = (base: string) => (pathname: string) =>
-  pathname === base || pathname.startsWith(`${base}/`);
-
-/**
- * Navegación nueva (spec §10-12). Las 4 rutas de servicio todavía no
- * existían en el proyecto — se verificó la arquitectura de rutas antes de
- * escribir estos href (no se inventaron sobre la marcha). Cada una recibe
- * hoy una página placeholder mínima (`PaginaEnConstruccion`, ya usada por
- * /feniax y /el-socio con el mismo propósito) para que la navegación sea
- * real y no rompa: no se diseña contenido de servicio en este sprint.
- */
-const LINKS: NavLink[] = [
-  { label: "Inicio", href: "/", match: (p) => p === "/" },
-  {
-    label: "Marketing Digital",
-    href: "/marketing-digital",
-    match: esRuta("/marketing-digital"),
-  },
-  {
-    label: "Tráfico / Ads",
-    href: "/trafico-ads",
-    match: esRuta("/trafico-ads"),
-  },
-  {
-    label: "ChatBots / CRM",
-    href: "/chatbots-crm",
-    match: esRuta("/chatbots-crm"),
-  },
-  { label: "Asesorías", href: "/asesorias", match: esRuta("/asesorias") },
-];
+/* Los enlaces del Header viven en src/config/navegacion.ts desde que el pie
+   necesito la misma lista: una sola definicion para los dos, en vez de dos
+   copias que se desincronizan. Aqui no cambia nada mas: misma lista, mismas
+   rutas y mismo resaltado de pagina activa. */
 
 /** La barra gana opacidad despues de este scroll (rango del sistema 24-48). */
 const UMBRAL_SOLIDO = 32;

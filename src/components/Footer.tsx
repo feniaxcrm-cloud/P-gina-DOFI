@@ -8,7 +8,9 @@ import {
   MapPin,
 } from "@phosphor-icons/react/dist/ssr";
 import { Wordmark } from "./Wordmark";
+import { MapaMini } from "./MapaMini";
 import { company, socialLinks, type SocialKey } from "@/config/company";
+import { NAV_LINKS } from "@/config/navegacion";
 import { whatsappUrl } from "@/lib/whatsapp";
 
 /**
@@ -24,15 +26,14 @@ import { whatsappUrl } from "@/lib/whatsapp";
  * portadas de las plataformas—, lo que resta credibilidad a una agencia que
  * vende gestion de redes. Sin URL verificada, el icono no aparece. Se
  * activan definiendo NEXT_PUBLIC_INSTAGRAM_URL / _TIKTOK_URL / _LINKEDIN_URL.
+ *
+ * NAVEGACION: sale de src/config/navegacion.ts, la MISMA lista que pinta el
+ * Header. Antes este archivo tenia su propio arreglo con anclas
+ * (/#servicios, /#socio, /#herramientas, /#clientes, /#proceso) que habian
+ * quedado rotas: esas secciones se retiraron de la home en el sprint
+ * "Retirar secciones entre Sección 4 y el Footer", asi que los cinco
+ * enlaces del pie no llevaban a ningun lado.
  */
-
-const navegacion = [
-  { label: "Servicios", href: "/#servicios" },
-  { label: "El Socio", href: "/#socio" },
-  { label: "Herramientas", href: "/#herramientas" },
-  { label: "Clientes", href: "/#clientes" },
-  { label: "Proceso", href: "/#proceso" },
-];
 
 const contacto = [
   {
@@ -45,7 +46,14 @@ const contacto = [
     label: company.email,
     href: `mailto:${company.email}`,
   },
-  { Icon: MapPin, label: company.location.label, href: null },
+  // Direccion completa en dos lineas. El enlace abre la ficha de Google
+  // Maps, igual que la mini tarjeta de la ultima columna.
+  {
+    Icon: MapPin,
+    label: `${company.location.address},\n${company.location.city} - ${company.location.country}`,
+    href: company.location.mapsUrl,
+    externo: true,
+  },
 ];
 
 const horario = company.hours;
@@ -69,21 +77,25 @@ export function Footer() {
     <footer className="border-t border-brand-lift/20 bg-abyss">
       <div className="mx-auto max-w-[1400px] px-5 py-16 md:px-8 md:py-20">
         {/* Cuatro columnas */}
-        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-10">
+        {/* La primera columna era 1.4fr cuando llevaba un parrafo de tres
+            lineas. Ahora dice solo "Un Mar de Ideas.", asi que ese ancho
+            extra quedaba como un hueco en el medio del pie: se reparte hacia
+            las columnas que si crecieron (Información con la direccion en
+            dos lineas, y Horario con la tarjeta de mapa). */}
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.15fr_1.25fr] lg:gap-10">
           {/* Marca */}
           <div>
             <Wordmark size="md" withTagline />
-            <p className="mt-6 max-w-[34ch] font-sans text-sm leading-relaxed text-fog">
-              Creatividad, producción y CRM para marcas que necesitan vender, no
-              solo publicar.
+            <p className="mt-6 font-sans text-sm leading-relaxed text-fog">
+              {company.tagline}.
             </p>
           </div>
 
-          {/* Navegacion */}
+          {/* Navegacion: misma lista que el Header (config/navegacion.ts) */}
           <nav aria-label="Navegación del pie">
             <ColTitle>Navegación</ColTitle>
             <ul className="mt-6 flex flex-col gap-3">
-              {navegacion.map((l) => (
+              {NAV_LINKS.map((l) => (
                 <li key={l.href}>
                   <Link
                     href={l.href}
@@ -100,13 +112,16 @@ export function Footer() {
           <div>
             <ColTitle>Información</ColTitle>
             <ul className="mt-6 flex flex-col gap-3">
-              {contacto.map(({ Icon, label, href }) => {
+              {contacto.map(({ Icon, label, href, externo }) => {
                 const inner = (
-                  <span className="flex items-center gap-2.5 font-sans text-sm text-fog transition-colors duration-300 group-hover:text-foam">
+                  // items-start (no items-center) y whitespace-pre-line: la
+                  // direccion ocupa dos lineas, y con el icono centrado
+                  // quedaria flotando a media altura del bloque.
+                  <span className="flex items-start gap-2.5 whitespace-pre-line font-sans text-sm leading-snug text-fog transition-colors duration-300 group-hover:text-foam">
                     <Icon
                       size={16}
                       weight="fill"
-                      className="shrink-0 text-accent"
+                      className="mt-[3px] shrink-0 text-accent"
                     />
                     {label}
                   </span>
@@ -114,7 +129,13 @@ export function Footer() {
                 return (
                   <li key={label}>
                     {href ? (
-                      <a href={href} className="group">
+                      <a
+                        href={href}
+                        className="group"
+                        {...(externo
+                          ? { target: "_blank", rel: "noopener noreferrer" }
+                          : {})}
+                      >
                         {inner}
                       </a>
                     ) : (
@@ -126,7 +147,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Horario */}
+          {/* Horario + ubicacion */}
           <div>
             <ColTitle>Horario de atención</ColTitle>
             <ul className="mt-6 flex flex-col gap-3">
@@ -136,6 +157,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+            <MapaMini />
           </div>
         </div>
 
