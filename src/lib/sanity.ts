@@ -753,7 +753,7 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
     enlace: null,
   },
   {
-    titulo: "$+3M Vendidos en Redes",
+    titulo: "+3M$ Vendidos en Redes",
     descripcion: "Resultados reales impulsados por estrategia y ejecución.",
     icono: "growth",
     enlace: null,
