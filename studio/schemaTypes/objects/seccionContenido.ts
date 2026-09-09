@@ -74,6 +74,25 @@ export const seccionContenido = defineType({
         }),
     }),
     defineField({
+      name: "ctaColor",
+      title: "Color del botón",
+      type: "string",
+      fieldset: "cta",
+      options: {
+        list: [
+          { title: "Naranja DOFI", value: "naranja" },
+          { title: "Morado DOFI", value: "morado" },
+          { title: "Blanco", value: "blanco" },
+          { title: "Oscuro", value: "oscuro" },
+        ],
+        layout: "radio",
+        direction: "horizontal",
+      },
+      initialValue: "naranja",
+      description:
+        "Elegí el que NO se mezcle con el fondo de esta pieza: el naranja destaca sobre blanco, oscuro y morado, pero desaparece sobre el banner naranja — ahí conviene el morado. Los cuatro llevan un aro blanco y sombra, así que siempre se despegan de la imagen.",
+    }),
+    defineField({
       name: "ctaPosicionDesktop",
       title: "Posición en desktop",
       type: "posicionCta",

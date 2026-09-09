@@ -23,31 +23,66 @@ Un dato que el número solo no capta: en el banner 03 la región con menos energ
 sobre la camiseta negra del DOFI (superficie lisa, energía baja) — descartada, porque
 tapaba a una persona y su logo.
 
-| Banner | Desktop | Por qué |
-|---|---|---|
-| 01 · Redes Sociales que SÍ VENDEN | centro-izquierda / abajo | El titular ocupa arriba a la izquierda y los iconos de redes bajan hasta el pie. El hueco real está a la derecha del racimo de iconos, antes de la chapa "LO COMPRUEBAN". La *inferior izquierda* que sugerías está ocupada por Messenger y WhatsApp. |
-| 02 · PAUTA INTELIGENTE = VENTAS INTELIGENTES | derecha / centro | Justo debajo de "VENTAS INTELIGENTES", sobre el blanco limpio que separa el titular del icono de Claude. Acompaña al mensaje principal en vez de competir con él. La inferior derecha estaba ocupada por el megáfono y Claude. |
-| 03 · con RESPUESTAS RÁPIDAS hay CLIENTES FELICES | centro / abajo | Pasillo oscuro entre el diagrama de herramientas y la chapa "ES DINERO". Abajo a la izquierda no entra: ahí están n8n y el icono del CRM. |
-| 04 · ASESORÍAS UNO A UNO | centro-derecha / centro | El único banner con medio lienzo libre. El botón se apoya en ese morado vacío, lejos de la persona y de las dos chapas. |
+### Posición final: debajo del titular de cada pieza
 
-Las 4 posiciones son distintas entre sí, medido: `(33%, 89%)`, `(82,5%, 50%)`,
-`(50%, 89%)`, `(67%, 50%)`.
+Segunda pasada, a pedido: cada botón se movió a la banda que queda inmediatamente
+**debajo del título** de su banner.
+
+| Banner | Desktop | Color | Qué hay debajo del título |
+|---|---|---|---|
+| 01 · Redes Sociales que SÍ VENDEN | izquierda / centro | **morado** | Justo bajo el subrayado de "SÍ VENDEN". Se apoya sobre el icono de Instagram: esa banda es la fila de redes. |
+| 02 · PAUTA INTELIGENTE = VENTAS INTELIGENTES | derecha / centro | naranja | Ya estaba debajo de "VENTAS INTELIGENTES" — la posición no cambió, sí el color y el tamaño. |
+| 03 · con RESPUESTAS RÁPIDAS hay CLIENTES FELICES | izquierda / centro | naranja | Bajo "CLIENTES FELICES". Cubre parte de WhatsApp y Facebook: es el precio de ponerlo bajo el título en esta pieza. |
+| 04 · ASESORÍAS UNO A UNO | centro-derecha / centro-arriba | naranja | Misma altura que "debajo de ASESORÍAS UNO", pero corrido al morado libre: justo debajo de esa chapa está la cara de la persona. |
+
+Medido: `(18,4%, 50%)`, `(81,6%, 50%)`, `(18,4%, 50%)`, `(67%, 28%)`.
+
+En mobile los cuatro van centrados abajo `(50%, 86,6%)`. La pieza se recorta a su 37%
+central y el titular no llega a verse, así que "debajo del título" no significa nada ahí;
+centrado abajo entra siempre y no tapa el foco de la imagen.
+
+### El color: por qué no puede ser uno solo
+
+Los 4 banners tienen fondos opuestos — naranja saturado, blanco, azul casi negro y
+morado. **Ningún relleno único destaca sobre los cuatro.** El naranja DOFI funciona en
+tres, pero sobre el banner 01 se mezcla con el fondo y deja de leerse; ahí va morado DOFI,
+que es el máximo contraste posible contra ese naranja sin salirse de la marca.
+
+Por eso el color pasó a ser un campo más del banner en Sanity, con cuatro opciones. Las
+cuatro pasan WCAG AA con margen:
+
+| Opción | Relleno | Texto | Contraste |
+|---|---|---|---|
+| Naranja DOFI | `#F47B20` | `#1A0F3D` | 6,53:1 |
+| Morado DOFI | `#4B2A93` | `#FFFFFF` | 10,2:1 |
+| Blanco | `#FFFFFF` | `#1A0F3D` | 17,8:1 |
+| Oscuro | `#120A26` | `#FFFFFF` | 19,1:1 |
+
+Los cuatro llevan además un **aro sólido de 3px** y sombra. El aro no es decorativo: es
+lo que garantiza que el botón no se funda con la imagen aunque debajo caiga una zona del
+mismo tono que el relleno. Va como primera capa del `box-shadow` y no como `border`, para
+no alterar el tamaño de la caja ni el cálculo de posición. No hay rectángulo ni velo
+detrás: el banner nunca se oscurece.
 
 ## Verificación (medida, no a ojo)
 
 **Geometría del CTA en 7 anchos** — 1440 / 1280 / 1024 / 768 / 560 / 430 / 390:
 
 - Los 4 botones **caen enteros dentro de su banner** en los 7 anchos (`dentroDelBanner=true`).
-- Tamaño estable: 333×60 en desktop, 288×52 en mobile. Sin partirse en dos líneas.
+- Tamaño estable: 358×64 en desktop, 313×56 en mobile. Sin partirse en dos líneas.
 - Los 4 son `<a>` **hermanos** de la imagen, no hijos (`hijoDeImg=false`), con
   `position:absolute` y `z-index:10` sobre ella.
-- Colores: fondo `rgb(244,123,32)` (naranja DOFI) y texto `rgb(26,15,61)` — **6,53:1**,
-  pasa WCAG AA con margen.
-- Sombra aplicada: `rgba(244,123,32,.55) 0 10px 30px -8px` + `rgba(18,10,38,.28) 0 2px 10px`.
-  Sin rectángulo ni velo detrás: ningún banner se oscurece.
+- Colores renderizados: banner 01 `rgb(75,42,147)` sobre texto blanco; banners 02-04
+  `rgb(244,123,32)` sobre `rgb(26,15,61)`. Los 4 con aro `rgb(255,255,255) 0 0 0 3px`.
 
-**Hover** (§11): `scale` `none → 1.03`, flecha `translate` `none → 4px`, fondo
-`#F47B20 → #FF9440`, transición **0,3s** sobre `background-color, box-shadow, scale`.
+**Hover** (§11): `scale` `none → 1.04`, flecha `translate` `none → 4px`, fondo
+`#4B2A93 → #6D4BC9` (y `#F47B20 → #FF9440` en los naranjas), transición **0,3s** sobre
+`background-color, box-shadow, scale`.
+
+**Tarjeta del Hero**: dice `$+3M Vendidos en Redes` / "Resultados reales impulsados por
+estrategia y ejecución." Ese texto vivía en el respaldo de `sanity.ts`, no en Sanity: el
+campo `capacidades` del documento está en `null`, así que la home pinta las 4 tarjetas
+desde el código.
 
 **Sin movimiento infinito** (§13): `animation-name: none` en el botón, la flecha y su
 envoltorio, en los 4 banners y en todos los anchos.
@@ -98,15 +133,18 @@ Banner
   ── Botón (CTA) ──────────────────────────────
   Texto del botón                [Quiero Mejorar mis Ventas]
   Enlace del botón               [/marketing-digital]
-  Posición en desktop            Horizontal [Centro-izquierda]  Vertical [Abajo]
-  Posición en mobile             Horizontal [Centro-izquierda]  Vertical [Abajo]
+  Color del botón                (o) Naranja DOFI  ( ) Morado DOFI  ( ) Blanco  ( ) Oscuro
+  Posición en desktop            Horizontal [Izquierda]  Vertical [Centro]
+  Posición en mobile             Horizontal [Centro]     Vertical [Abajo]
 ```
 
 **Por qué dos desplegables y no uno de 9 opciones**: las piezas están llenas de borde a
 borde y los huecos reales no caen en una grilla de 3×3 — el banner 01 necesita algo entre
-"izquierda" y "centro", y el 04 entre "centro" y "derecha". Con 5 pasos horizontales × 3
-verticales hay hueco en las 4 piezas sin taparle nada a ninguna, y siguen siendo dos
-listas cortas en vez de una de 15.
+"izquierda" y "centro", y el 04 entre "centro" y "derecha". El eje vertical también se
+abrió a 5 pasos (arriba · centro-arriba · centro · centro-abajo · abajo) al pedir que
+cada botón quede debajo del título de su pieza: en el banner 04 el título termina cerca
+del 20% de la altura, y ni "arriba" (6%) ni "centro" (50%) caen ahí. Con 5 pasos por eje
+hay ubicación útil en las 4 piezas y siguen siendo dos listas cortas en vez de una de 25.
 
 Si dejás vacío el texto o el enlace, ese banner se muestra **sin botón** (no un botón a
 medias). El campo de enlace valida que empiece con `/` o con `https://`.
@@ -152,8 +190,10 @@ quedan acá.
 
 ## Archivos modificados
 
-- `src/components/ContentBanner.tsx` — el CTA como capa sobre la imagen; tabla de anclajes.
-- `src/lib/sanity.ts` — tipos `PosicionCta`/`CtaBanner`, GROQ y normalizador del CTA.
+- `src/components/ContentBanner.tsx` — el CTA como capa sobre la imagen; tabla de anclajes
+  y paletas.
+- `src/lib/sanity.ts` — tipos `PosicionCta`/`ColorCta`/`CtaBanner`, GROQ y normalizador del
+  CTA; y el texto de la tarjeta `$+3M Vendidos en Redes` en `CAPACIDADES_FALLBACK`.
 - `src/components/Reveal.tsx` — prop `duration` opcional (0,75s por defecto: ningún
   llamador existente cambia; el CTA usa 0,6s).
 - `src/app/globals.css` — `.banner-cta` (posición por variables + media queries) y foco

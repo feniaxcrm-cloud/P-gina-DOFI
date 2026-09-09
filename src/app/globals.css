@@ -267,15 +267,41 @@ body {
   }
 }
 
+/* Colores del boton: llegan por variables desde ContentBanner.tsx porque el
+   color es un dato del banner (se elige en Sanity), y una clase de Tailwind
+   armada en tiempo de ejecucion no sobreviviria al purgado de CSS.
+
+   El aro solido de 3px es lo que garantiza que el boton no se funda con la
+   imagen: cada banner tiene un fondo distinto y debajo del boton puede caer
+   cualquier tono. Va como primera capa del box-shadow (no como `border`)
+   para no alterar el tamaño de la caja ni el calculo de posicion. */
+.banner-cta-boton {
+  background-color: var(--cta-bg);
+  color: var(--cta-fg);
+  box-shadow:
+    0 0 0 3px var(--cta-aro),
+    0 18px 42px -12px rgba(18, 10, 38, 0.65),
+    0 4px 14px rgba(18, 10, 38, 0.35);
+}
+
+.banner-cta-boton:hover {
+  background-color: var(--cta-bg-hover);
+  box-shadow:
+    0 0 0 3px var(--cta-aro),
+    0 24px 52px -12px rgba(18, 10, 38, 0.7),
+    0 6px 18px rgba(18, 10, 38, 0.4);
+}
+
 /* El foco global es un contorno naranja: sobre un boton naranja no se ve.
    Aca se cambia por blanco con un halo oscuro alrededor, que se distingue
    sobre los cuatro fondos (naranja, blanco, azul casi negro y morado). */
 .banner-cta-boton:focus-visible {
   outline: 3px solid #ffffff;
-  outline-offset: 3px;
+  outline-offset: 4px;
   box-shadow:
-    0 0 0 6px rgba(18, 10, 38, 0.55),
-    0 10px 30px -8px rgba(244, 123, 32, 0.55);
+    0 0 0 3px var(--cta-aro),
+    0 0 0 8px rgba(18, 10, 38, 0.6),
+    0 18px 42px -12px rgba(18, 10, 38, 0.65);
 }
 
 /* Grano: capa fija, sin repintados durante el scroll */

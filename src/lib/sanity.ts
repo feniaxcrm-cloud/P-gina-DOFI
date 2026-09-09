@@ -472,7 +472,18 @@ export type PosicionHorizontalCta =
   | "centro-derecha"
   | "derecha";
 
-export type PosicionVerticalCta = "arriba" | "centro" | "abajo";
+export type PosicionVerticalCta =
+  | "arriba"
+  | "centro-arriba"
+  | "centro"
+  | "centro-abajo"
+  | "abajo";
+
+/** Paleta del boton. Existe porque los 4 banners tienen fondos opuestos
+ *  (naranja, blanco, azul casi negro y morado) y ningun relleno unico
+ *  destaca sobre los cuatro: el naranja DOFI funciona en tres, pero sobre el
+ *  banner naranja desaparece. */
+export type ColorCta = "naranja" | "morado" | "blanco" | "oscuro";
 
 export type PosicionCta = {
   horizontal: PosicionHorizontalCta;
@@ -489,6 +500,7 @@ export type CtaBanner = {
    *  por lo tanto tiene que abrirse en una pestaña nueva. Se resuelve aca y
    *  no en el componente para que la decision viva junto al dato. */
   esExterno: boolean;
+  color: ColorCta;
   desktop: PosicionCta;
   mobile: PosicionCta;
 };
@@ -569,6 +581,7 @@ type SeccionContenidoRaw = {
   hotspot: { x: number; y: number } | null;
   ctaTexto: string | null;
   ctaEnlace: string | null;
+  ctaColor: string | null;
   ctaPosicionDesktop: PosicionCtaRaw;
   ctaPosicionMobile: PosicionCtaRaw;
 };
@@ -622,6 +635,7 @@ const QUERY_PAGINA_INICIO = `{
       "hotspot": backgroundImage.hotspot{ x, y },
       ctaTexto,
       ctaEnlace,
+      ctaColor,
       ctaPosicionDesktop{ horizontal, vertical },
       ctaPosicionMobile{ horizontal, vertical }
     }
@@ -728,7 +742,7 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
     enlace: null,
   },
   {
-    titulo: "+3M Vendidos en Redes",
+    titulo: "$+3M Vendidos en Redes",
     descripcion: "Resultados reales impulsados por estrategia y ejecución.",
     icono: "growth",
     enlace: null,
@@ -761,7 +775,15 @@ const POSICIONES_H = new Set<PosicionHorizontalCta>([
   "centro-derecha",
   "derecha",
 ]);
-const POSICIONES_V = new Set<PosicionVerticalCta>(["arriba", "centro", "abajo"]);
+const POSICIONES_V = new Set<PosicionVerticalCta>([
+  "arriba",
+  "centro-arriba",
+  "centro",
+  "centro-abajo",
+  "abajo",
+]);
+
+const COLORES_CTA = new Set<ColorCta>(["naranja", "morado", "blanco", "oscuro"]);
 
 /** Si el Studio todavia no tiene posicion elegida (o llega un valor que este
  *  codigo no conoce), el boton cae abajo y al centro: la ubicacion mas
@@ -788,12 +810,15 @@ function normalizarCtaBanner(raw: SeccionContenidoRaw): CtaBanner | null {
   const enlace = raw.ctaEnlace?.trim();
   if (!texto || !enlace) return null;
 
+  const color = raw.ctaColor as ColorCta | null;
+
   return {
     texto,
     enlace,
     // Una ruta interna empieza con "/". Todo lo demas (https://, mailto:,
     // tel:) sale del sitio y se abre en pestaña nueva -- ver §14 del pedido.
     esExterno: !enlace.startsWith("/"),
+    color: color && COLORES_CTA.has(color) ? color : "naranja",
     desktop: normalizarPosicionCta(raw.ctaPosicionDesktop),
     mobile: normalizarPosicionCta(raw.ctaPosicionMobile),
   };

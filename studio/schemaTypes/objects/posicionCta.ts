@@ -8,11 +8,15 @@ import { defineType, defineField } from "sanity";
  * -----------------------------------------------------------------
  * Las 4 piezas graficas estan llenas de borde a borde (titulares, rostros,
  * logos, iconos). Se midio la ocupacion visual de cada una -- energia de
- * bordes por region -- y los unicos huecos reales no caen en una grilla de
- * 3x3: el banner 01 necesita algo entre "izquierda" y "centro", y el 04
- * entre "centro" y "derecha". Con 5 pasos horizontales x 3 verticales hay
- * hueco disponible en las 4 piezas sin taparle nada a ninguna, y siguen
- * siendo dos desplegables cortos en vez de una lista de 15.
+ * bordes por region -- y los huecos reales no caen en una grilla de 3x3: el
+ * banner 01 necesita algo entre "izquierda" y "centro", y el 04 entre
+ * "centro" y "derecha". El eje vertical tambien se abrio a 5 pasos al pedir
+ * que cada boton quede DEBAJO del titulo de su pieza: en el banner 04 el
+ * titulo termina cerca del 20% de la altura, y ni "arriba" (6%) ni "centro"
+ * (50%) caen ahi.
+ *
+ * Con 5 pasos por eje hay ubicacion util en las 4 piezas y siguen siendo dos
+ * desplegables cortos en vez de una lista de 25 combinaciones.
  *
  * El frontend traduce cada valor a (left/top + translate) -- ver la tabla
  * ANCLAS_X/ANCLAS_Y en src/components/ContentBanner.tsx. El boton NUNCA
@@ -47,7 +51,9 @@ export const posicionCta = defineType({
       options: {
         list: [
           { title: "Arriba", value: "arriba" },
+          { title: "Centro-arriba", value: "centro-arriba" },
           { title: "Centro", value: "centro" },
+          { title: "Centro-abajo", value: "centro-abajo" },
           { title: "Abajo", value: "abajo" },
         ],
       },

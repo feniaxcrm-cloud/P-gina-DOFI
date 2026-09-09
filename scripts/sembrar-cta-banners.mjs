@@ -39,46 +39,59 @@ if (!projectId || !dataset || !token) {
   process.exit(1);
 }
 
-/** Un CTA por banner, en el orden en que aparecen en la pagina. */
+/** Un CTA por banner, en el orden en que aparecen en la pagina.
+ *
+ *  Sprint "CTA debajo del titulo": cada boton se corre a la banda que queda
+ *  inmediatamente DEBAJO del titular de su pieza, y el color pasa a elegirse
+ *  por banner -- ningun relleno unico destaca sobre cuatro fondos opuestos
+ *  (naranja, blanco, azul casi negro y morado).
+ *
+ *  En mobile todos van centrados abajo: la pieza se recorta a su 37% central
+ *  y el titular no llega a verse, asi que "debajo del titulo" no significa
+ *  nada ahi. Centrado abajo entra siempre y no tapa el foco de la imagen. */
 const CTAS = [
   {
     banner: "01 · Redes Sociales que SÍ VENDEN",
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/marketing-digital",
-    // El titular ocupa arriba a la izquierda y los iconos de redes bajan
-    // hasta el pie; el hueco esta a la derecha del racimo de iconos, antes
-    // de que empiece la chapa "LO COMPRUEBAN".
-    ctaPosicionDesktop: { horizontal: "centro-izquierda", vertical: "abajo" },
-    ctaPosicionMobile: { horizontal: "centro-izquierda", vertical: "abajo" },
+    // Morado: el fondo de esta pieza es el mismo naranja del boton, asi que
+    // el naranja desaparece. El morado DOFI es el maximo contraste posible
+    // contra ese naranja sin salirse de la marca.
+    ctaColor: "morado",
+    // Debajo del subrayado de "SÍ VENDEN".
+    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro" },
+    ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
     banner: "02 · PAUTA INTELIGENTE = VENTAS INTELIGENTES",
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/trafico-ads",
-    // Queda justo debajo de "VENTAS INTELIGENTES", sobre el blanco limpio
-    // que separa el titular del icono de Claude: acompaña al mensaje en vez
-    // de competir con el.
+    ctaColor: "naranja",
+    // Ya estaba justo debajo de "VENTAS INTELIGENTES": la posicion no cambia.
     ctaPosicionDesktop: { horizontal: "derecha", vertical: "centro" },
-    ctaPosicionMobile: { horizontal: "derecha", vertical: "abajo" },
+    ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
     banner: "03 · con RESPUESTAS RÁPIDAS hay CLIENTES FELICES",
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/chatbots-crm",
-    // Pasillo oscuro entre el diagrama de herramientas (izquierda) y la
-    // chapa "ES DINERO" (derecha). Abajo a la izquierda no entra: ahi estan
-    // los iconos de n8n y del CRM.
-    ctaPosicionDesktop: { horizontal: "centro", vertical: "abajo" },
-    ctaPosicionMobile: { horizontal: "centro-izquierda", vertical: "abajo" },
+    ctaColor: "naranja",
+    // Debajo de "CLIENTES FELICES". Esa banda es la fila de iconos de
+    // herramientas: el boton se apoya sobre parte de ellos, que es el precio
+    // de ponerlo bajo el titulo en esta pieza.
+    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro" },
+    ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
     banner: "04 · ASESORÍAS UNO A UNO",
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/asesorias",
-    // Es el unico banner con medio lienzo libre. El boton se apoya en ese
-    // morado vacio, a media altura, lejos de la persona y de las dos chapas.
-    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "centro" },
-    ctaPosicionMobile: { horizontal: "centro-derecha", vertical: "centro" },
+    ctaColor: "naranja",
+    // Misma banda que "debajo de ASESORÍAS UNO", pero corrido al morado
+    // libre de la derecha: justo debajo de esa chapa esta la cara de la
+    // persona, y taparla no era una opcion.
+    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "centro-arriba" },
+    ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
 ];
 
@@ -103,6 +116,7 @@ const conCta = actuales.map((item, i) => ({
   backgroundImageAlt: item.backgroundImageAlt,
   ctaTexto: CTAS[i].ctaTexto,
   ctaEnlace: CTAS[i].ctaEnlace,
+  ctaColor: CTAS[i].ctaColor,
   ctaPosicionDesktop: { _type: "posicionCta", ...CTAS[i].ctaPosicionDesktop },
   ctaPosicionMobile: { _type: "posicionCta", ...CTAS[i].ctaPosicionMobile },
 }));
@@ -114,6 +128,7 @@ conCta.forEach((b, i) => {
   console.log(`  ${CTAS[i].banner}`);
   console.log(`      imagen se conserva : ${b.backgroundImage?.asset?._ref ?? "(sin imagen)"}`);
   console.log(`      boton              : "${b.ctaTexto}" -> ${b.ctaEnlace}`);
+  console.log(`      color              : ${b.ctaColor}`);
   console.log(`      desktop            : ${d.horizontal} / ${d.vertical}`);
   console.log(`      mobile             : ${m.horizontal} / ${m.vertical}\n`);
 });
