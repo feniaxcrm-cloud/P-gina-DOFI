@@ -68,10 +68,13 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/trafico-ads",
     ctaColor: "naranja",
-    // Centrado bajo el bloque "PAUTA INTELIGENTE = / VENTAS / INTELIGENTES"
-    // (su eje visual cae en el 81% del ancho) y separado de el, para que se
-    // lea como el boton de ESE texto y no como algo suelto.
-    ctaPosicionDesktop: { horizontal: "derecha", vertical: "centro", desplazamientoY: 6 },
+    // Bajo el bloque "PAUTA INTELIGENTE = / VENTAS / INTELIGENTES", corrido
+    // a la izquierda y mas abajo. Se ancla a "derecha" y no a "centro"
+    // porque el titular vive en el borde derecho de la pieza: al angostarse
+    // la pantalla el recorte crece por los dos lados y el texto se queda
+    // cerca de ese borde, asi que el boton lo acompaña.
+    // Centro resultante: 76% del ancho, 60% del alto.
+    ctaPosicionDesktop: { horizontal: "derecha", vertical: "centro", desplazamientoX: -5.5, desplazamientoY: 10 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
@@ -79,12 +82,10 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/chatbots-crm",
     ctaColor: "naranja",
-    // Mas abajo y mas a la derecha, como se pidio -- pero bastante mas de
-    // "un poco": entre el 50% y el 85% de altura no hay un solo hueco donde
-    // entre el boton, es todo el diagrama de herramientas (WhatsApp, GHL,
-    // TikTok, n8n...). El primer espacio libre real esta por debajo de esa
-    // constelacion, y ahi va.
-    ctaPosicionDesktop: { horizontal: "centro-izquierda", vertical: "abajo" },
+    // Encima del icono de GHL, por pedido explicito. GHL ocupa el 13-22%
+    // del ancho y el 53-72% del alto (medido sobre la pieza actual): el
+    // boton queda centrado en el (17,4% / 62%) y lo tapa a proposito.
+    ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro", desplazamientoX: -1, desplazamientoY: 12 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
   {
@@ -92,11 +93,11 @@ const CTAS = [
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/asesorias",
     ctaColor: "naranja",
-    // Arriba a la derecha. La pieza de este banner CAMBIO (ahora trae el
-    // titulo "RESCATANDO EMPRENDEDORES" en el lado derecho, donde antes
-    // habia morado vacio): subir el boton lo saca de encima de ese titulo y
-    // lo lleva a la unica franja realmente libre que queda.
-    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "arriba", desplazamientoX: 10 },
+    // Debajo de "RESCATANDO EMPRENDEDORES" y alineado con el: el bloque va
+    // del 55% al 88% del ancho, o sea centrado en el 72%, y termina cerca
+    // del 49% del alto. El boton queda en (72% / 60%), centrado con el
+    // titulo y con aire suficiente para leerse como su remate.
+    ctaPosicionDesktop: { horizontal: "centro-derecha", vertical: "centro", desplazamientoX: 5, desplazamientoY: 10 },
     ctaPosicionMobile: { horizontal: "centro", vertical: "abajo" },
   },
 ];
