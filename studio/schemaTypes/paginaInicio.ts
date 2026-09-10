@@ -18,12 +18,14 @@ import { defineType, defineField } from "sanity";
  * texto y los botones — src/lib/sanity.ts combina ambos documentos en un
  * solo HeroContent para el frontend.
  *
- * BANNERS (Sprint "Banners full-width"): los 4 bloques que van debajo de las
- * tarjetas del Hero. Cada uno es UNA SOLA IMAGEN a todo el ancho del
- * viewport -- ver seccionContenido.ts. El campo sigue llamandose
- * "seccionesContenido" a proposito: renombrarlo dejaria huerfanos los 4
- * items ya publicados. El orden del arreglo (arrastrar para reordenar) ES
- * el 01/02/03/04 de la pagina.
+ * BANNERS: ya NO viven aca. Eran el campo "seccionesContenido" de este
+ * documento, dentro de una pestaña llamada "Banners", y el menu del Studio
+ * tenia una entrada del mismo nombre que abria este documento esperando
+ * caer en esa pestaña. No funcionaba: el structure builder no permite
+ * elegir con que pestaña abrir un documento, asi que siempre caia en
+ * "Hero". Se movieron a su propio documento singleton `banners` (ver
+ * banners.ts), que es lo que la entrada del menu prometia desde el
+ * principio.
  */
 export const paginaInicio = defineType({
   name: "paginaInicio",
@@ -32,7 +34,6 @@ export const paginaInicio = defineType({
   groups: [
     { name: "hero", title: "Hero", default: true },
     { name: "capacidades", title: "Capacidades" },
-    { name: "seccionesContenido", title: "Banners" },
   ],
   fields: [
     defineField({
@@ -100,15 +101,6 @@ export const paginaInicio = defineType({
       description:
         "La banda de 4 tarjetas superpuesta debajo del Hero. Arrastrá para reordenar.",
       of: [{ type: "capacidad" }],
-    }),
-    defineField({
-      name: "seccionesContenido",
-      title: "Banners",
-      type: "array",
-      group: "seccionesContenido",
-      description:
-        "Los 4 banners full-width debajo de las tarjetas del Hero, en este mismo orden (el primero es el Banner 01, el que sigue más abajo en la página). Arrastrá para reordenar. Cada banner es una sola imagen a todo el ancho: el mensaje va dentro de la pieza gráfica.",
-      of: [{ type: "seccionContenido" }],
     }),
   ],
   preview: {

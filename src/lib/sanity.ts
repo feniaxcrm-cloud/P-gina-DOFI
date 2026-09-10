@@ -602,8 +602,12 @@ type PaginaInicioRaw = {
   secciones: SeccionRaw[] | null;
   hero: HeroRaw;
   capacidades: CapacidadRaw[] | null;
-  seccionesContenido: SeccionContenidoRaw[] | null;
 };
+
+/** El documento singleton `banners` (ver studio/schemaTypes/banners.ts).
+ *  Antes era un campo de paginaInicio; se separo para que el Studio pueda
+ *  darle una entrada propia en el menu -- ver la nota de ese archivo. */
+type BannersDocRaw = { seccionesContenido: SeccionContenidoRaw[] | null } | null;
 
 /** Un solo fetch trae DOS documentos independientes: `paginaInicio`
  *  (texto/CTA del Hero + secciones + capacidades) y `hero` (solo la
@@ -636,6 +640,8 @@ const QUERY_PAGINA_INICIO = `{
       activa,
       enlace
     },
+  },
+  "bannersDoc": *[_type == "banners"][0]{
     seccionesContenido[]{
       "id": _key,
       // 2400 (no 1400 como cuando era una tarjeta): el banner ocupa el
@@ -997,7 +1003,11 @@ export async function getPaginaInicio(): Promise<{
   capacidades: Capacidad[];
   seccionesContenido: SeccionContenido[];
 }> {
-  const respuesta = await sanityQuery<{ pagina: PaginaInicioRaw | null; heroDoc: HeroDocRaw }>(
+  const respuesta = await sanityQuery<{
+    pagina: PaginaInicioRaw | null;
+    bannersDoc: BannersDocRaw;
+    heroDoc: HeroDocRaw;
+  }>(
     QUERY_PAGINA_INICIO
   );
   const pagina = respuesta?.pagina ?? null;
@@ -1016,6 +1026,8 @@ export async function getPaginaInicio(): Promise<{
     secciones: [...validas, ...faltantes],
     hero: normalizarHero(pagina?.hero ?? null, respuesta?.heroDoc ?? null),
     capacidades: normalizarCapacidades(pagina?.capacidades ?? null),
-    seccionesContenido: normalizarSeccionesContenido(pagina?.seccionesContenido ?? null),
+    seccionesContenido: normalizarSeccionesContenido(
+      respuesta?.bannersDoc?.seccionesContenido ?? null
+    ),
   };
 }

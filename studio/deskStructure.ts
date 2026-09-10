@@ -12,6 +12,7 @@ import type { StructureResolver } from "sanity/structure";
  *  query siempre trae el documento con ese _id fijo). */
 const ID_PAGINA_INICIO = "paginaInicio";
 const ID_HERO = "hero";
+const ID_BANNERS = "banners";
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
@@ -38,21 +39,19 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId(ID_PAGINA_INICIO)
             .title("Página de inicio")
         ),
-      // Mismo documento que "Página de inicio" de arriba (paginaInicio,
-      // campo seccionesContenido) -- entrada propia en el menu a proposito
-      // (Sprint "no encuentro donde editar las secciones"): el campo vive
-      // como pestaña DENTRO del formulario de Página de inicio, y esa
-      // pestaña no era lo bastante visible. Con esta entrada, al hacer
-      // click ya se ve el titulo "Banners" tanto en el menu como en la
-      // pestaña arriba del formulario -- mismo lugar, doble puerta de
-      // entrada.
+      // Documento propio (antes era una pestaña dentro de "Página de
+      // inicio"). Esta entrada existia desde el sprint "no encuentro donde
+      // editar las secciones", pero abria paginaInicio y caia en la pestaña
+      // "Hero": el structure builder no permite elegir con que pestaña se
+      // abre un documento. Ahora abre un formulario que SOLO tiene los 4
+      // banners y su boton -- texto, enlace, color y posicion.
       S.listItem()
         .title("Banners")
-        .schemaType("paginaInicio")
+        .schemaType("banners")
         .child(
           S.document()
-            .schemaType("paginaInicio")
-            .documentId(ID_PAGINA_INICIO)
+            .schemaType("banners")
+            .documentId(ID_BANNERS)
             .title("Banners")
         ),
       S.divider(),
@@ -71,6 +70,6 @@ export const deskStructure: StructureResolver = (S) =>
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) =>
-          !["cuenta", "contenido", "servicio", "paginaInicio", "hero"].includes(item.getId() ?? "")
+          !["cuenta", "contenido", "servicio", "paginaInicio", "hero", "banners"].includes(item.getId() ?? "")
       ),
     ]);

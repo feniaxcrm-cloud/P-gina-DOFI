@@ -1,0 +1,109 @@
+[
+  {
+    "_key": "axzhfwjOxKlDVob5Dbk8nh",
+    "_type": "seccionContenido",
+    "backgroundImage": {
+      "_type": "image",
+      "asset": {
+        "_ref": "image-c948e9e530cb7c6a3b8c8d24f21f22ea66d2f13a-2077x757-png",
+        "_type": "reference"
+      }
+    },
+    "backgroundImageAlt": "Redes Sociales que SI VENDEN",
+    "ctaColor": "morado",
+    "ctaEnlace": "/marketing-digital",
+    "ctaPosicionDesktop": {
+      "_type": "posicionCta",
+      "desplazamientoY": 9,
+      "horizontal": "izquierda",
+      "vertical": "centro"
+    },
+    "ctaPosicionMobile": {
+      "_type": "posicionCta",
+      "horizontal": "centro",
+      "vertical": "abajo"
+    },
+    "ctaTexto": "Quiero Mejorar mis Ventas"
+  },
+  {
+    "_key": "axzhfwjOxKlDVob5Dbk8r7",
+    "_type": "seccionContenido",
+    "backgroundImage": {
+      "_type": "image",
+      "asset": {
+        "_ref": "image-2fb63823f30212a6179cc1709f428f8981b7e227-2077x757-png",
+        "_type": "reference"
+      }
+    },
+    "backgroundImageAlt": "PAUTA INTELIGENTE = VENTAS INTELIGENTES",
+    "ctaColor": "naranja",
+    "ctaEnlace": "/trafico-ads",
+    "ctaPosicionDesktop": {
+      "_type": "posicionCta",
+      "desplazamientoX": -5.5,
+      "desplazamientoY": 10,
+      "horizontal": "derecha",
+      "vertical": "centro"
+    },
+    "ctaPosicionMobile": {
+      "_type": "posicionCta",
+      "horizontal": "centro",
+      "vertical": "abajo"
+    },
+    "ctaTexto": "Quiero Mejorar mis Ventas"
+  },
+  {
+    "_key": "axzhfwjOxKlDVob5Dbk8uX",
+    "_type": "seccionContenido",
+    "backgroundImage": {
+      "_type": "image",
+      "asset": {
+        "_ref": "image-b89b77c8fb6f47312f278a0a9dd704ac5fc5e19a-2077x757-png",
+        "_type": "reference"
+      }
+    },
+    "backgroundImageAlt": "con RESPUESTAS RÁPIDAS hay CLIENTES FELICES",
+    "ctaColor": "naranja",
+    "ctaEnlace": "/chatbots-crm",
+    "ctaPosicionDesktop": {
+      "_type": "posicionCta",
+      "desplazamientoX": -1,
+      "desplazamientoY": 12,
+      "horizontal": "izquierda",
+      "vertical": "centro"
+    },
+    "ctaPosicionMobile": {
+      "_type": "posicionCta",
+      "horizontal": "centro",
+      "vertical": "abajo"
+    },
+    "ctaTexto": "Quiero Mejorar mis Ventas"
+  },
+  {
+    "_key": "axzhfwjOxKlDVob5Dbk8xx",
+    "_type": "seccionContenido",
+    "backgroundImage": {
+      "_type": "image",
+      "asset": {
+        "_ref": "image-144be9ecdf40410b34043f360e04d71791d7e556-2077x757-png",
+        "_type": "reference"
+      }
+    },
+    "backgroundImageAlt": "RESCATANDO EMPRENDEDORES",
+    "ctaColor": "naranja",
+    "ctaEnlace": "/asesorias",
+    "ctaPosicionDesktop": {
+      "_type": "posicionCta",
+      "desplazamientoX": 5,
+      "desplazamientoY": 10,
+      "horizontal": "centro-derecha",
+      "vertical": "centro"
+    },
+    "ctaPosicionMobile": {
+      "_type": "posicionCta",
+      "horizontal": "centro",
+      "vertical": "abajo"
+    },
+    "ctaTexto": "Quiero Mejorar mis Ventas"
+  }
+]

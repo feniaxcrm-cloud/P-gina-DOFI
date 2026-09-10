@@ -109,12 +109,44 @@ export const seccionContenido = defineType({
         "Dónde se apoya el botón en pantallas de menos de 768px. Se configura aparte porque en mobile el banner es mucho más angosto y recorta la imagen: la zona que estaba libre en desktop puede no estarlo acá.",
     }),
   ],
+  // La vista previa lleva el color y la posicion del boton A PROPOSITO: es
+  // lo que permite ver la configuracion de los 4 banners de un vistazo, sin
+  // abrir uno por uno. Es la diferencia entre "hay un apartado" y "hay un
+  // apartado que sirve".
   preview: {
-    select: { media: "backgroundImage", alt: "backgroundImageAlt", cta: "ctaTexto" },
-    prepare: ({ media, alt, cta }) => ({
-      title: alt || "Banner sin texto alternativo",
-      subtitle: cta ? `Botón: ${cta}` : "Sin botón",
-      media,
-    }),
+    select: {
+      media: "backgroundImage",
+      alt: "backgroundImageAlt",
+      cta: "ctaTexto",
+      color: "ctaColor",
+      dh: "ctaPosicionDesktop.horizontal",
+      dv: "ctaPosicionDesktop.vertical",
+      dx: "ctaPosicionDesktop.desplazamientoX",
+      dy: "ctaPosicionDesktop.desplazamientoY",
+      mh: "ctaPosicionMobile.horizontal",
+      mv: "ctaPosicionMobile.vertical",
+    },
+    prepare: ({ media, alt, cta, color, dh, dv, dx, dy, mh, mv }) => {
+      const PUNTO: Record<string, string> = {
+        naranja: "🟠",
+        morado: "🟣",
+        blanco: "⚪",
+        oscuro: "⚫",
+      };
+      if (!cta) {
+        return { title: alt || "Banner sin texto alternativo", subtitle: "Sin botón", media };
+      }
+      const conSigno = (n: number) => (n > 0 ? `+${n}` : `${n}`);
+      const ejeX = dx ?? 0;
+      const ejeY = dy ?? 0;
+      const ajuste = ejeX !== 0 || ejeY !== 0 ? ` (${conSigno(ejeX)}, ${conSigno(ejeY)})` : "";
+      const pc = dh && dv ? `${dh}·${dv}${ajuste}` : "sin posición";
+      const movil = mh && mv ? `${mh}·${mv}` : "sin posición";
+      return {
+        title: alt || "Banner sin texto alternativo",
+        subtitle: `${PUNTO[color] ?? "🟠"} ${color ?? "naranja"} · PC ${pc} · Móvil ${movil}`,
+        media,
+      };
+    },
   },
 });

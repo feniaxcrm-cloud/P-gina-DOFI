@@ -54,10 +54,11 @@ const CTAS = [
     banner: "01 · Redes Sociales que SÍ VENDEN",
     ctaTexto: "Quiero Mejorar mis Ventas",
     ctaEnlace: "/marketing-digital",
-    // Morado: el fondo de esta pieza es el mismo naranja del boton, asi que
-    // el naranja desaparece. El morado DOFI es el maximo contraste posible
-    // contra ese naranja sin salirse de la marca.
-    ctaColor: "morado",
+    // Naranja. Esta pieza fue naranja un tiempo y el boton tuvo que ser
+    // morado para no fundirse con el fondo; la version actual tiene fondo
+    // MORADO, asi que el morado era justo el que se mezclaba y vuelve el
+    // naranja de marca.
+    ctaColor: "naranja",
     // Debajo del subrayado de "SÍ VENDEN", bajado un poco mas: el ancla
     // "centro" lo dejaba pegado al titular.
     ctaPosicionDesktop: { horizontal: "izquierda", vertical: "centro", desplazamientoY: 9 },
@@ -105,12 +106,12 @@ const CTAS = [
 const aplicar = process.argv.includes("--aplicar");
 const client = createClient({ projectId, dataset, token, apiVersion: "2024-01-01", useCdn: false });
 
-const doc = await client.getDocument("paginaInicio");
+const doc = await client.getDocument("banners");
 const actuales = doc?.seccionesContenido ?? [];
 
 if (actuales.length !== CTAS.length) {
   console.error(
-    `Se esperaban ${CTAS.length} banners en paginaInicio.seccionesContenido y hay ${actuales.length}.\n` +
+    `Se esperaban ${CTAS.length} banners en el documento "banners" y hay ${actuales.length}.\n` +
       "Este script asigna cada CTA por posicion en el arreglo, asi que no corre a ciegas si la cantidad no coincide."
   );
   process.exit(1);
@@ -149,5 +150,5 @@ if (!aplicar) {
   process.exit(0);
 }
 
-const res = await client.patch("paginaInicio").set({ seccionesContenido: conCta }).commit();
+const res = await client.patch("banners").set({ seccionesContenido: conCta }).commit();
 console.log("Sembrado. rev:", res._rev);
