@@ -1,10 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { Reveal } from "./Reveal";
+import { BotonCta } from "./BotonCta";
 import type {
-  ColorCta,
-  CtaBanner,
   PosicionCta,
   PosicionHorizontalCta,
   PosicionVerticalCta,
@@ -22,14 +19,14 @@ import type {
  * No hay titulo ni descripcion en HTML: el mensaje, la tipografia y los
  * remates viven DENTRO de la pieza grafica que se carga desde Sanity. El
  * unico texto propio del banner es el `alt` (obligatorio en el Studio) y,
- * desde este sprint, la etiqueta del boton.
+ * desde el sprint de CTA, la etiqueta del boton.
  *
  * EL CTA VA ENCIMA, NO ADENTRO (Sprint "CTA sobre los banners")
  * -----------------------------------------------------------------
  * El boton es una capa HTML posicionada sobre la imagen, con z-index
- * propio. Esa es toda la gracia: texto, enlace y ubicacion se cambian desde
- * Sanity sin volver a exportar la pieza. La jerarquia se mantiene -- primero
- * se lee el mensaje de la imagen, despues el boton.
+ * propio. Esa es toda la gracia: texto, enlace, color y ubicacion se
+ * cambian desde Sanity sin volver a exportar la pieza. El boton en si vive
+ * en BotonCta.tsx, compartido con el resto del sitio.
  *
  * ANCHO COMPLETO SIN TRUCOS
  * -----------------------------------------------------------------
@@ -94,29 +91,6 @@ function resolverPosicion(pos: PosicionCta) {
   };
 }
 
-/**
- * Paleta del boton, por banner.
- *
- * POR QUE NO HAY UN SOLO COLOR
- * -----------------------------------------------------------------
- * Los 4 banners tienen fondos opuestos: naranja saturado, blanco, azul casi
- * negro y morado. Ningun relleno unico destaca sobre los cuatro -- el
- * naranja DOFI funciona en tres, pero sobre el banner naranja se mezcla y
- * deja de leerse. Por eso el color es un campo mas del banner en Sanity.
- *
- * Las cuatro combinaciones pasan WCAG AA con margen: naranja 6,53:1,
- * morado 10,2:1, blanco 17,8:1, oscuro 19,1:1.
- *
- * El `aro` no es decorativo: es lo que garantiza que el boton no se funda
- * con la imagen aunque debajo caiga una zona del mismo tono que el relleno.
- */
-const PALETAS: Record<ColorCta, { bg: string; bgHover: string; fg: string; aro: string }> = {
-  naranja: { bg: "#F47B20", bgHover: "#FF9440", fg: "#1A0F3D", aro: "#FFFFFF" },
-  morado: { bg: "#4B2A93", bgHover: "#6D4BC9", fg: "#FFFFFF", aro: "#FFFFFF" },
-  blanco: { bg: "#FFFFFF", bgHover: "#F4F0FE", fg: "#1A0F3D", aro: "#4B2A93" },
-  oscuro: { bg: "#120A26", bgHover: "#241553", fg: "#FFFFFF", aro: "#F47B20" },
-};
-
 /** Las 8 variables que consume .banner-cta: 4 para mobile y 4 para desktop.
  *  El cambio entre unas y otras lo hace una media query en CSS, no React --
  *  asi el boton es UN solo enlace en el DOM (no uno oculto por breakpoint,
@@ -135,65 +109,6 @@ function variablesDePosicion(mobile: PosicionCta, desktop: PosicionCta): React.C
     "--cta-tx-md": d.tx,
     "--cta-ty-md": d.ty,
   } as React.CSSProperties;
-}
-
-/** El boton, con la paleta elegida en Sanity. Colores y sombra viven en
- *  globals.css (.banner-cta-boton) alimentados por variables, porque el color
- *  es un DATO del banner: una clase de Tailwind armada en tiempo de ejecucion
- *  no sobrevive al purgado de CSS.
- *
- *  Es deliberadamente mas grande y contundente que el CTA del Hero: compite
- *  con una pieza grafica a pantalla completa, y el pedido fue que resalte.
- *  El aro y la sombra son lo que lo despega de la imagen sin recurrir a un
- *  rectangulo ni a un velo detras -- el banner nunca se oscurece.
- *
- *  El foco tiene regla propia (globals.css): el contorno naranja global
- *  seria invisible sobre un boton naranja. */
-function BotonCta({ cta }: { cta: CtaBanner }) {
-  const paleta = PALETAS[cta.color];
-  const clases =
-    "banner-cta-boton group/cta inline-flex min-h-[56px] items-center justify-center gap-2.5 " +
-    "rounded-full px-8 py-3 text-center font-display text-[16px] font-bold leading-tight " +
-    "transition-[background-color,box-shadow,scale] duration-300 ease-out " +
-    "motion-safe:hover:scale-[1.04] active:scale-[0.99] " +
-    "md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]";
-
-  const estilo = {
-    "--cta-bg": paleta.bg,
-    "--cta-bg-hover": paleta.bgHover,
-    "--cta-fg": paleta.fg,
-    "--cta-aro": paleta.aro,
-  } as React.CSSProperties;
-
-  const contenido = (
-    <>
-      {cta.texto}
-      <ArrowRight
-        size={20}
-        weight="bold"
-        aria-hidden="true"
-        className="shrink-0 transition-transform duration-300 ease-out group-hover/cta:translate-x-1"
-      />
-    </>
-  );
-
-  // Enlace externo: pestaña nueva + rel de seguridad. Interno: <Link> de
-  // Next, que hace la navegacion del lado del cliente y precarga la ruta.
-  return cta.esExterno ? (
-    <a
-      href={cta.enlace}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={clases}
-      style={estilo}
-    >
-      {contenido}
-    </a>
-  ) : (
-    <Link href={cta.enlace} className={clases} style={estilo}>
-      {contenido}
-    </Link>
-  );
 }
 
 export function ContentBanner({
@@ -246,7 +161,12 @@ export function ContentBanner({
               style={variablesDePosicion(cta.mobile, cta.desktop)}
             >
               <Reveal y={12} delay={0.2} duration={0.6}>
-                <BotonCta cta={cta} />
+                <BotonCta
+                  texto={cta.texto}
+                  enlace={cta.enlace}
+                  color={cta.color}
+                  esExterno={cta.esExterno}
+                />
               </Reveal>
             </div>
           )}

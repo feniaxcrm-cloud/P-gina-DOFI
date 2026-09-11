@@ -357,7 +357,7 @@ export async function getAccountBySlug(slug: string): Promise<Client | null> {
 
 /** Devuelve null ante cualquier problema (sin credenciales, red, documento
  *  inexistente); getSeccionesPaginaInicio() decide el respaldo. */
-async function sanityQuery<T>(query: string): Promise<T | null> {
+export async function sanityQuery<T>(query: string): Promise<T | null> {
   const projectId = process.env.SANITY_PROJECT_ID;
   const dataset = process.env.SANITY_DATASET;
 

@@ -3,6 +3,11 @@ import { contenido } from "./contenido";
 import { servicio } from "./servicio";
 import { paginaInicio } from "./paginaInicio";
 import { banners } from "./banners";
+import { marketingDigitalPage } from "./marketingDigitalPage";
+import { resena } from "./resena";
+import { ctaSimple } from "./objects/ctaSimple";
+import { mdBannerFoto } from "./objects/mdBannerFoto";
+import { mdPiezaGrafica } from "./objects/mdPiezaGrafica";
 import { hero } from "./hero";
 import { resultado } from "./objects/resultado";
 import { testimonio } from "./objects/testimonio";
@@ -17,6 +22,8 @@ export const schemaTypes = [
   servicio,
   paginaInicio,
   banners,
+  marketingDigitalPage,
+  resena,
   hero,
   resultado,
   testimonio,
@@ -24,4 +31,7 @@ export const schemaTypes = [
   capacidad,
   seccionContenido,
   posicionCta,
+  ctaSimple,
+  mdBannerFoto,
+  mdPiezaGrafica,
 ];

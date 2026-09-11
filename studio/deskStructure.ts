@@ -13,6 +13,7 @@ import type { StructureResolver } from "sanity/structure";
 const ID_PAGINA_INICIO = "paginaInicio";
 const ID_HERO = "hero";
 const ID_BANNERS = "banners";
+const ID_MARKETING = "marketingDigitalPage";
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
@@ -54,6 +55,21 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId(ID_BANNERS)
             .title("Banners")
         ),
+      // Pagina /marketing-digital: documento unico, una pestaña por banner.
+      S.listItem()
+        .title("Marketing Digital")
+        .schemaType("marketingDigitalPage")
+        .child(
+          S.document()
+            .schemaType("marketingDigitalPage")
+            .documentId(ID_MARKETING)
+            .title("Marketing Digital")
+        ),
+      // Reseñas de Google cargadas a mano (las usa Marketing Digital).
+      S.listItem()
+        .title("Reseñas")
+        .schemaType("resena")
+        .child(S.documentTypeList("resena").title("Reseñas")),
       S.divider(),
       S.listItem()
         .title("Cuentas")
@@ -70,6 +86,6 @@ export const deskStructure: StructureResolver = (S) =>
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) =>
-          !["cuenta", "contenido", "servicio", "paginaInicio", "hero", "banners"].includes(item.getId() ?? "")
+          !["cuenta", "contenido", "servicio", "paginaInicio", "hero", "banners", "marketingDigitalPage", "resena"].includes(item.getId() ?? "")
       ),
     ]);
