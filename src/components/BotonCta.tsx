@@ -24,6 +24,10 @@ import type { ColorCta } from "@/lib/sanity";
  * con lo que tenga detras aunque debajo caiga una zona del mismo tono que el
  * relleno. No se usa ningun rectangulo ni velo detras.
  *
+ * TAMAÑO: "normal" es el de siempre (los banners de la home no cambian).
+ * "grande" existe para el cierre de Marketing Digital, donde el brief pide
+ * que el boton sea el protagonista de la seccion.
+ *
  * El foco tiene regla propia (globals.css): el contorno naranja global
  * seria invisible sobre un boton naranja.
  */
@@ -39,6 +43,7 @@ export function BotonCta({
   enlace,
   color = "naranja",
   esExterno,
+  tamano = "normal",
 }: {
   texto: string;
   enlace: string;
@@ -46,15 +51,17 @@ export function BotonCta({
   /** Si no se indica, se deduce del enlace: una ruta del sitio empieza con
    *  "/"; todo lo demas (https://, mailto:, tel:) sale del sitio. */
   esExterno?: boolean;
+  tamano?: "normal" | "grande";
 }) {
   const externo = esExterno ?? !enlace.startsWith("/");
   const paleta = PALETAS_CTA[color];
   const clases =
-    "banner-cta-boton group/cta inline-flex min-h-[56px] items-center justify-center gap-2.5 " +
-    "rounded-full px-8 py-3 text-center font-display text-[16px] font-bold leading-tight " +
+    "banner-cta-boton group/cta inline-flex items-center justify-center rounded-full text-center font-display font-bold leading-tight " +
     "transition-[background-color,box-shadow,scale] duration-300 ease-out " +
     "motion-safe:hover:scale-[1.04] active:scale-[0.99] " +
-    "md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]";
+    (tamano === "grande"
+      ? "min-h-[60px] gap-3 px-9 py-3.5 text-[17px] md:min-h-[76px] md:px-12 md:text-[21px]"
+      : "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]");
 
   const estilo = {
     "--cta-bg": paleta.bg,
@@ -67,7 +74,7 @@ export function BotonCta({
     <>
       {texto}
       <ArrowRight
-        size={20}
+        size={tamano === "grande" ? 22 : 20}
         weight="bold"
         aria-hidden="true"
         className="shrink-0 transition-transform duration-300 ease-out group-hover/cta:translate-x-1"

@@ -1,83 +1,61 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { PiezaCompleta } from "./PiezaCompleta";
-import type { PiezaGraficaData } from "@/lib/marketing-digital";
+import type { CtaSimple, ImagenSanity, SeccionQueEs } from "@/lib/marketing-digital";
 
 /**
- * Seccion construida alrededor de una pieza grafica TERMINADA (2 · ¿Qué es
- * DOFI? y 3 · ¿Cómo navegamos contigo?).
+ * 2 · ¿Qué es DOFI? (aboutBanner).
  *
- * CON PIEZA CARGADA
- * -----------------------------------------------------------------
- * Se muestra la pieza completa, sin recortar ni superponerle nada (ver
- * PiezaCompleta). Su texto -- que ya esta dibujado dentro de la imagen --
- * no se repite en pantalla: pasa al `alt` y a un titulo solo para lectores
- * de pantalla. Asi buscadores y lectores lo tienen, y nadie lo lee dos veces.
- * El "texto adicional" y el boton van debajo de la pieza: son contenido que
- * la imagen no trae.
+ * Composicion aprobada: fondo blanco, titulo grande a la izquierda,
+ * descripcion a la derecha repartidos 50/50, linea de degradado morado ->
+ * naranja y ondas DOFI abajo. Editorial, sin tarjetas.
  *
- * SIN PIEZA TODAVIA
- * -----------------------------------------------------------------
- * Esos mismos textos se muestran en HTML con un diseño propio, y el texto
- * adicional se integra en la misma columna (como un parrafo mas) en vez de
- * quedar suelto debajo con otra alineacion. La pagina se ve terminada hoy, y
- * el dia que se sube la pieza en el Studio la reemplaza sola.
+ * Si en el Studio se sube una pieza grafica terminada, la seccion pasa a
+ * "modo pieza" (ModoPieza, abajo): la pieza completa y sin recortar, y el
+ * texto pasa al alt para no leerse dos veces.
  */
-export function PiezaGrafica({
-  data,
-  id,
-  invertido = false,
-}: {
-  data: PiezaGraficaData;
-  id: string;
-  /** Titulo a la derecha en escritorio, para que dos secciones seguidas no
-   *  repitan la misma composicion. */
-  invertido?: boolean;
-}) {
-  const { imagen, imagenMovil, titulo, texto, destacado, textoAdicional, cta, animar } = data;
-  const parrafos = texto
+
+export function parrafosDe(texto: string): string[] {
+  return texto
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean);
-  const altPieza = imagen?.alt || [texto, destacado].filter(Boolean).join(" ");
-  const idTitulo = `${id}-titulo`;
+}
 
-  if (!imagen) {
-    return (
-      <section id={id} aria-labelledby={idTitulo} className="relative overflow-hidden bg-canvas">
-        <VersionTexto
-          idTitulo={idTitulo}
-          titulo={titulo}
-          parrafos={textoAdicional ? [...parrafos, textoAdicional] : parrafos}
-          destacado={destacado}
-          cta={cta}
-          invertido={invertido}
-          animar={animar}
-        />
-      </section>
-    );
-  }
-
+/** Seccion cuyo contenido es una pieza grafica terminada. La comparten
+ *  aboutBanner y navigationBanner cuando tienen imagen cargada. */
+export function ModoPieza({
+  id,
+  nivel,
+  titulo,
+  imagen,
+  imagenMovil,
+  altPorDefecto,
+  cta,
+  animar,
+}: {
+  id: string;
+  nivel: "h1" | "h2";
+  titulo: string;
+  imagen: ImagenSanity;
+  imagenMovil: ImagenSanity | null;
+  altPorDefecto: string;
+  cta: CtaSimple;
+  animar: boolean;
+}) {
+  const Titulo = nivel;
   return (
-    <section id={id} aria-labelledby={idTitulo} className="relative overflow-hidden bg-canvas">
-      <h2 id={idTitulo} className="sr-only">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="relative overflow-hidden bg-canvas">
+      <Titulo id={`${id}-titulo`} className="sr-only">
         {titulo}
-      </h2>
+      </Titulo>
       <Anim animar={animar} y={20}>
-        <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={altPieza} />
+        <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={imagen.alt || altPorDefecto} />
       </Anim>
-
-      {(textoAdicional || cta) && (
-        <div className="relative mx-auto max-w-page px-5 py-14 sm:px-6 md:px-10 md:py-20 lg:px-12">
-          <Anim animar={animar} className="mx-auto flex max-w-[780px] flex-col items-center text-center">
-            {textoAdicional && (
-              <p className="font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{textoAdicional}</p>
-            )}
-            {cta && (
-              <div className={textoAdicional ? "mt-9" : ""}>
-                <BotonCta texto={cta.texto} enlace={cta.enlace} />
-              </div>
-            )}
+      {cta && (
+        <div className="mx-auto flex max-w-page justify-center px-5 py-14 sm:px-6 md:px-10 md:py-20 lg:px-12">
+          <Anim animar={animar}>
+            <BotonCta texto={cta.texto} enlace={cta.enlace} />
           </Anim>
         </div>
       )}
@@ -85,75 +63,60 @@ export function PiezaGrafica({
   );
 }
 
-function VersionTexto({
-  idTitulo,
-  titulo,
-  parrafos,
-  destacado,
-  cta,
-  invertido,
-  animar,
-}: {
-  idTitulo: string;
-  titulo: string;
-  parrafos: string[];
-  destacado: string;
-  cta: PiezaGraficaData["cta"];
-  invertido: boolean;
-  animar: boolean;
-}) {
+export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id: string; nivel: "h1" | "h2" }) {
+  const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar } = seccion;
+
+  if (imagen) {
+    return (
+      <ModoPieza
+        id={id}
+        nivel={nivel}
+        titulo={titulo}
+        imagen={imagen}
+        imagenMovil={imagenMovil}
+        altPorDefecto={[descripcion, destacado].filter(Boolean).join(" ")}
+        cta={cta}
+        animar={animar}
+      />
+    );
+  }
+
+  const Titulo = nivel;
+  const parrafos = parrafosDe(descripcion);
+
   return (
-    <div className="relative">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="relative overflow-hidden bg-canvas">
       {/* Decoracion: resplandor y oleaje en tinta de marca muy baja. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className={`absolute top-10 h-[26rem] w-[26rem] rounded-full bg-brand-lift/10 blur-[120px] ${
-            invertido ? "-right-24" : "-left-24"
-          }`}
-        />
-        <svg
-          className="absolute inset-x-0 bottom-0 h-40 w-full"
-          viewBox="0 0 1440 160"
-          preserveAspectRatio="none"
-          fill="none"
-        >
+        <div className="absolute -left-24 top-10 h-[26rem] w-[26rem] rounded-full bg-brand-lift/10 blur-[120px]" />
+        <svg className="absolute inset-x-0 bottom-0 h-40 w-full" viewBox="0 0 1440 160" preserveAspectRatio="none" fill="none">
           <path d="M0 96 C 240 56, 480 136, 720 96 S 1200 56, 1440 90" stroke="rgba(75,42,147,0.12)" strokeWidth="1.5" />
           <path d="M0 126 C 260 86, 520 166, 760 126 S 1220 86, 1440 120" stroke="rgba(244,123,32,0.22)" strokeWidth="1.5" />
         </svg>
       </div>
 
-      {/* items-center: titulo y texto se centran entre si en alto. Con el
-          texto arriba y un titulo de tres lineas al lado, la columna mas
-          corta dejaba un hueco debajo (medido en la seccion 3). */}
-      <div className="relative mx-auto grid max-w-page gap-10 px-5 py-20 sm:px-6 md:grid-cols-12 md:items-center md:gap-12 md:px-10 md:py-28 lg:px-12">
-        <Anim
-          animar={animar}
-          className={
-            invertido
-              ? "md:col-span-5 md:col-start-8 md:row-start-1"
-              : "md:col-span-5 md:col-start-1 md:row-start-1"
-          }
-        >
-          <h2
-            id={idTitulo}
+      {/* 50% titulo / 50% contenido (6 + 6 columnas). items-center: si una
+          columna es mas corta, se centra contra la otra en vez de dejar un
+          hueco debajo. */}
+      {/* pb-32 en movil: las ondas miden 160px y sin ese aire rozaban la frase
+          destacada, que en telefono es lo ultimo de la columna. */}
+      <div className="relative mx-auto grid max-w-page grid-cols-1 gap-10 px-5 pb-32 pt-20 sm:px-6 md:grid-cols-12 md:items-center md:gap-12 md:px-10 md:py-28 lg:px-12">
+        <Anim animar={animar} className="min-w-0 md:col-span-6">
+          {subtitulo && (
+            <p className="mb-5 font-sans text-sm font-semibold uppercase tracking-[0.16em] text-brand">{subtitulo}</p>
+          )}
+          <Titulo
+            id={`${id}-titulo`}
             className="text-balance font-display text-[clamp(2.5rem,1.6rem+3.4vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink"
           >
             {titulo}
-          </h2>
+          </Titulo>
           <span aria-hidden="true" className="mt-7 block h-1.5 w-20 rounded-full bg-gradient-to-r from-brand to-accent" />
         </Anim>
 
-        <Anim
-          animar={animar}
-          delay={0.1}
-          className={
-            invertido
-              ? "flex flex-col gap-6 md:col-span-6 md:col-start-1 md:row-start-1"
-              : "flex flex-col gap-6 md:col-span-6 md:col-start-7 md:row-start-1"
-          }
-        >
-          {parrafos.map((p) => (
-            <p key={p} className="font-sans text-lg leading-relaxed text-ink-muted md:text-xl">
+        <Anim animar={animar} delay={0.1} className="flex min-w-0 flex-col gap-6 md:col-span-6 md:col-start-7">
+          {parrafos.map((p, i) => (
+            <p key={i} className="font-sans text-lg leading-relaxed text-ink-muted md:text-xl">
               {p}
             </p>
           ))}
@@ -169,6 +132,6 @@ function VersionTexto({
           )}
         </Anim>
       </div>
-    </div>
+    </section>
   );
 }

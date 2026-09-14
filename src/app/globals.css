@@ -413,6 +413,26 @@ body {
   [data-parallax] {
     transform: none !important;
   }
+
+  /* Trazos que se dibujan al entrar (Trazo.tsx: ruta del Metodo, orbita de
+     la brujula) y aguja de la brujula (Brujula.tsx): con movimiento
+     reducido aparecen ya completos y quietos. */
+  [data-trazo] {
+    clip-path: none !important;
+  }
+
+  [data-aguja] {
+    transform: none !important;
+  }
+
+  /* Carrusel de giros (CarruselGiros.tsx): los paneles cambian de ancho,
+     color y etiqueta al instante. !important porque esas transiciones van en
+     style en linea (sus duraciones salen del video de referencia). */
+  [data-giros],
+  [data-giros] * {
+    transition-duration: 0ms !important;
+    transition-delay: 0ms !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

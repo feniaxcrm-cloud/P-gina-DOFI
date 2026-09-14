@@ -3,21 +3,22 @@ import { clients as clientesRespaldo } from "@/data/clients";
 import { company } from "@/config/company";
 
 /**
- * Datos de la pagina /marketing-digital: documento singleton
- * "marketingDigitalPage" en Sanity (ver studio/schemaTypes/marketingDigitalPage.ts).
+ * Datos de la pagina /marketing-digital.
  *
- * UNA sola consulta trae las 7 secciones, los clientes activos del carrusel
- * y las reseñas activas. Los clientes salen del tipo "cuenta" -- el mismo que
- * usa /clientes --, no de un modelo aparte: asi una cuenta nueva aparece en
- * los dos lugares sin cargarla dos veces.
+ * ESTRUCTURA: documento singleton "marketingDigitalPage" con un arreglo
+ * `sections[]`. Cada item es una seccion tipada (teamBanner, aboutBanner,
+ * navigationBanner, methodBanner, clientsBanner, reviewsBanner, ctaBanner) y
+ * el ORDEN DEL ARREGLO ES EL ORDEN DE LA PAGINA: se reordena arrastrando en
+ * el Studio. No hay un campo numerico "orden" aparte a proposito -- dos
+ * fuentes de orden terminan contradiciendose.
  *
- * RESPALDO
- * -----------------------------------------------------------------
- * Si Sanity no responde o el documento todavia no existe, la pagina se arma
- * entera con FALLBACK_MARKETING (el copy del brief). Si el documento existe,
- * se respeta tal cual: un campo vaciado en el Studio queda vacio, NO
- * reaparece el texto de respaldo -- si no, seria imposible borrar algo. Solo
- * una SECCION entera ausente cae a su respaldo.
+ * UNA sola consulta trae las secciones, los clientes activos de la
+ * marquesina (tipo "cuenta", el mismo de /clientes) y las reseñas activas.
+ *
+ * RESPALDO: si Sanity no responde o el documento no tiene secciones, la
+ * pagina se arma con SECCIONES_RESPALDO (el copy del brief). Si el documento
+ * tiene secciones, se respeta tal cual: una seccion apagada no se muestra y
+ * un campo vaciado queda vacio.
  */
 
 // ============================================================
@@ -38,45 +39,7 @@ export type ImagenSanity = {
 export type CtaSimple = { texto: string; enlace: string } | null;
 export type Overlay = "ninguno" | "suave" | "medio" | "fuerte";
 export type Alineacion = "izquierda" | "centro" | "derecha";
-
-/** Banner fotografico con texto HTML encima (1 · Equipo y 7 · Cierre). */
-export type BannerFotoData = {
-  imagen: ImagenSanity | null;
-  imagenMovil: ImagenSanity | null;
-  etiqueta: string;
-  titulo: string;
-  descripcion: string;
-  destacado: string;
-  cta: CtaSimple;
-  alineacion: Alineacion;
-  overlay: Overlay;
-  animar: boolean;
-};
-
-/** Pieza grafica terminada (2 · Que es DOFI y 3 · Como navegamos). */
-export type PiezaGraficaData = {
-  imagen: ImagenSanity | null;
-  imagenMovil: ImagenSanity | null;
-  titulo: string;
-  texto: string;
-  destacado: string;
-  textoAdicional: string;
-  cta: CtaSimple;
-  animar: boolean;
-};
-
 export type PasoMetodo = { titulo: string; descripcion: string };
-
-export type MetodoData = {
-  imagenes: ImagenSanity[];
-  titulo: string;
-  introduccion: string;
-  pasos: PasoMetodo[];
-  mostrarPasos: boolean;
-  mensajeFinal: string;
-  cta: CtaSimple;
-  animar: boolean;
-};
 
 export const ICONOS_CATEGORIA = [
   "construccion",
@@ -90,29 +53,30 @@ export const ICONOS_CATEGORIA = [
 ] as const;
 export type IconoCategoria = (typeof ICONOS_CATEGORIA)[number];
 
-export type CategoriaData = { nombre: string; icono: IconoCategoria };
-
-export type MultimediaData = {
-  tipo: "video" | "imagen";
-  videoUrl: string | null;
-  poster: ImagenSanity | null;
-  imagen: ImagenSanity | null;
-  testimonio: { cita: string; autor: string; cargo: string } | null;
-  texto: string;
-  cuenta: { nombre: string; slug: string; logo: string | null } | null;
-};
-
 export type ClienteMarquesina = { nombre: string; slug: string; logo: string | null };
 
-export type ClientesData = {
-  titulo: string;
-  descripcion: string;
-  categorias: CategoriaData[];
-  multimedia: MultimediaData;
-  cta: CtaSimple;
-  animar: boolean;
-  clientes: ClienteMarquesina[];
+/** Una empresa dentro de un giro. Puede venir de una Cuenta (su nombre y su
+ *  logo son los de la Cuenta: no se duplican) o cargarse directo en el giro
+ *  con su propio logo. `logo` trae las dimensiones reales del archivo para
+ *  reservar su proporcion y no deformarlo. */
+export type EmpresaGiro = {
+  key: string;
+  nombre: string;
+  logo: { url: string; ancho: number; alto: number } | null;
 };
+
+/** Giro de negocio: un panel del carrusel de Clientes y su lista de empresas. */
+export type GiroNegocio = {
+  key: string;
+  nombre: string;
+  icono: IconoCategoria;
+  imagen: ImagenSanity | null;
+  empresas: EmpresaGiro[];
+};
+
+export const FORMATOS_VIDEO = ["vertical", "cuadrado", "horizontal"] as const;
+export type FormatoVideo = (typeof FORMATOS_VIDEO)[number];
+export type VideoSeccion = { url: string; formato: FormatoVideo; sonido: boolean };
 
 export type Resena = {
   id: string;
@@ -124,23 +88,45 @@ export type Resena = {
   enlace: string | null;
 };
 
-export type ResenasData = {
+/** Campos comunes a todas las secciones (los del brief). */
+type Base = {
+  key: string;
+  imagen: ImagenSanity | null;
+  imagenMovil: ImagenSanity | null;
+  subtitulo: string;
   titulo: string;
   descripcion: string;
-  enlaceGoogle: string;
+  destacado: string;
+  cta: CtaSimple;
   animar: boolean;
-  resenas: Resena[];
 };
 
-export type PaginaMarketingDigital = {
-  equipo: BannerFotoData;
-  queEs: PiezaGraficaData;
-  navegamos: PiezaGraficaData;
-  metodo: MetodoData;
-  clientes: ClientesData;
-  resenas: ResenasData;
-  ctaFinal: BannerFotoData;
+export type SeccionEquipo = Base & { tipo: "teamBanner"; alineacion: Alineacion; overlay: Overlay };
+export type SeccionQueEs = Base & { tipo: "aboutBanner" };
+export type SeccionNavegacion = Base & { tipo: "navigationBanner" };
+export type SeccionMetodo = Base & { tipo: "methodBanner"; pasos: PasoMetodo[]; mostrarPasos: boolean };
+export type SeccionClientes = Base & {
+  tipo: "clientsBanner";
+  giros: GiroNegocio[];
+  rotacionAutomatica: boolean;
+  /** Columna derecha. La portada es `imagen` (campo comun de la seccion). */
+  video: VideoSeccion | null;
+  /** Marquesina continua: todas las Cuentas activas. */
+  clientes: ClienteMarquesina[];
 };
+export type SeccionResenas = Base & { tipo: "reviewsBanner"; enlaceGoogle: string; resenas: Resena[] };
+export type SeccionCierre = Base & { tipo: "ctaBanner"; alineacion: Alineacion; overlay: Overlay };
+
+export type SeccionMarketing =
+  | SeccionEquipo
+  | SeccionQueEs
+  | SeccionNavegacion
+  | SeccionMetodo
+  | SeccionClientes
+  | SeccionResenas
+  | SeccionCierre;
+
+export type TipoSeccion = SeccionMarketing["tipo"];
 
 // ============================================================
 // Respaldo: el copy del brief, textual
@@ -148,146 +134,139 @@ export type PaginaMarketingDigital = {
 
 const CTA_VENTAS: CtaSimple = { texto: "Quiero Mejorar mis Ventas", enlace: "/contactanos" };
 
-const MULTIMEDIA_VACIA: MultimediaData = {
-  tipo: "video",
-  videoUrl: null,
-  poster: null,
-  imagen: null,
-  testimonio: null,
-  texto: "",
-  cuenta: null,
-};
-
-export const FALLBACK_MARKETING: PaginaMarketingDigital = {
-  equipo: {
+function base(key: string, parcial: Partial<Base>): Base {
+  return {
+    key,
     imagen: null,
     imagenMovil: null,
-    etiqueta: "Cuenca - Ecuador",
-    titulo: "¿Necesitas un equipo completo de marketing para hacer crecer tu negocio?",
-    descripcion:
-      "Un equipo de marketing digital completo a una fracción de lo que te costaría contratarlo.",
-    destacado: "Un Mar de Ideas",
-    cta: CTA_VENTAS,
+    subtitulo: "",
+    titulo: "",
+    descripcion: "",
+    destacado: "",
+    cta: null,
+    animar: true,
+    ...parcial,
+  };
+}
+
+export const SECCIONES_RESPALDO: SeccionMarketing[] = [
+  {
+    ...base("respaldo-equipo", {
+      subtitulo: "Cuenca - Ecuador",
+      titulo: "¿Necesitas un equipo de marketing completo?",
+      descripcion: "Todo lo que necesitas para hacer crecer tu negocio, en un solo equipo.",
+      destacado: "Un Mar de Ideas",
+      cta: CTA_VENTAS,
+    }),
+    tipo: "teamBanner",
     alineacion: "izquierda",
     overlay: "medio",
-    animar: true,
   },
-  queEs: {
-    imagen: null,
-    imagenMovil: null,
-    titulo: "¿Qué es DOFI?",
-    texto:
-      "¿Sabías que los delfines son seres de alta vibración que han venido a ayudar a las personas a despertar?\n\nUtilizamos este pensamiento como analogía, ya que somos un equipo especializado y con todas las herramientas necesarias que requiere tu marca para fluir en nuevos retos.",
-    destacado: "Navegar en un Mar de Oportunidades.",
-    textoAdicional: "",
-    cta: null,
-    animar: true,
+  {
+    ...base("respaldo-que-es", {
+      titulo: "¿Qué es DOFI?",
+      descripcion:
+        "¿Sabías que los delfines son seres de alta vibración que han venido a ayudar a las personas a despertar?\n\nUtilizamos este pensamiento como analogía, ya que somos un equipo especializado y con todas las herramientas necesarias que requiere tu marca para fluir en nuevos retos.",
+      destacado: "Navegar en un Mar de Oportunidades.",
+    }),
+    tipo: "aboutBanner",
   },
-  navegamos: {
-    imagen: null,
-    imagenMovil: null,
-    titulo: "¿Cómo navegamos contigo?",
-    texto:
-      "Dentro del infinito mar de ideas y posibilidades buscamos la mejor forma de adaptarnos a tu marca y guiarla hacia el éxito.",
-    destacado: "",
-    textoAdicional:
-      "Durante el viaje te guiamos por diferentes fases donde exploramos oportunidades y construimos la mejor propuesta para tu marca.",
-    cta: null,
-    animar: true,
+  {
+    ...base("respaldo-navegamos", {
+      titulo: "¿Cómo navegamos contigo?",
+      descripcion:
+        "Dentro del infinito mar de ideas y posibilidades buscamos la mejor forma de adaptarnos a tu marca y guiarla hacia el éxito.\n\nDurante el viaje te guiamos por diferentes fases donde exploramos oportunidades y construimos la mejor propuesta para tu marca.",
+    }),
+    tipo: "navigationBanner",
   },
-  metodo: {
-    imagenes: [],
-    titulo: "Método DOFI en 5 pasos",
-    introduccion: "",
+  {
+    ...base("respaldo-metodo", {
+      titulo: "Método DOFI en 5 pasos",
+      destacado: "Ventas Inteligentes Garantizadas",
+      cta: CTA_VENTAS,
+    }),
+    tipo: "methodBanner",
+    mostrarPasos: true,
     pasos: [
-      {
-        titulo: "Adentrarnos en tu marca",
-        descripcion: "Investigación de experiencia y características de la marca.",
-      },
+      { titulo: "Adentrarnos en tu marca", descripcion: "Investigación de experiencia y características de la marca." },
       { titulo: "Bitácora de viaje", descripcion: "Desarrollo de propuesta de valor." },
       { titulo: "Preparados para zarpar", descripcion: "Creación de campaña publicitaria." },
-      {
-        titulo: "Navegando con viento a favor",
-        descripcion: "Ejecución del plan de marketing de contenido.",
-      },
+      { titulo: "Navegando con viento a favor", descripcion: "Ejecución del plan de marketing de contenido." },
       { titulo: "Retorno de tu inversión", descripcion: "Monitoreo y optimización de datos." },
     ],
-    mostrarPasos: true,
-    mensajeFinal: "Ventas inteligentes garantizadas.",
-    cta: CTA_VENTAS,
-    animar: true,
   },
-  clientes: {
-    titulo: "Clientes y casos de éxito",
-    descripcion: "",
-    categorias: [
-      { nombre: "Construcción", icono: "construccion" },
-      { nombre: "Belleza", icono: "belleza" },
-      { nombre: "Servicios", icono: "servicios" },
-      { nombre: "Comercio", icono: "comercio" },
-      { nombre: "Emprendedores", icono: "emprendedores" },
-    ],
-    multimedia: MULTIMEDIA_VACIA,
-    cta: { texto: "Ver casos de éxito", enlace: "/clientes" },
-    animar: true,
+  {
+    ...base("respaldo-clientes", {
+      titulo: "Clientes y casos de éxito",
+      cta: { texto: "Ver casos de éxito", enlace: "/clientes" },
+    }),
+    tipo: "clientsBanner",
+    // Los giros del Studio, sin empresas: asignarlas es decision editorial.
+    giros: (
+      [
+        ["Construcción", "construccion"],
+        ["Belleza", "belleza"],
+        ["Servicios", "servicios"],
+        ["Comercio", "comercio"],
+        ["Emprendedores", "emprendedores"],
+      ] as const
+    ).map(([nombre, icono]) => ({ key: `respaldo-${icono}`, nombre, icono, imagen: null, empresas: [] })),
+    rotacionAutomatica: true,
+    video: null,
     clientes: [],
   },
-  resenas: {
-    titulo: "Reseñas en Google",
-    descripcion: "",
+  {
+    ...base("respaldo-resenas", { titulo: "Reseñas en Google" }),
+    tipo: "reviewsBanner",
     enlaceGoogle: company.location.mapsUrl,
-    animar: true,
     resenas: [],
   },
-  ctaFinal: {
-    imagen: null,
-    imagenMovil: null,
-    etiqueta: "",
-    titulo: "¿Somos socios o le pasas tu oportunidad a alguien más?",
-    descripcion: "",
-    destacado: "",
-    cta: CTA_VENTAS,
+  {
+    ...base("respaldo-cierre", {
+      titulo: "¿Somos socios o le pasas tu oportunidad a alguien más?",
+      cta: CTA_VENTAS,
+    }),
+    tipo: "ctaBanner",
     alineacion: "centro",
     overlay: "medio",
-    animar: true,
   },
-};
+];
 
 // ============================================================
 // Consulta
 // ============================================================
 
-/** Proyeccion de una imagen con su alt, que vive DENTRO del campo imagen
- *  (ver campoImagen en el Studio): el alt viaja siempre pegado a su archivo. */
+/** Imagen con su alt, que vive DENTRO del campo imagen en el Studio. */
 const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
-const CTA = `cta{ texto, enlace }`;
-const BANNER_FOTO = `etiqueta, titulo, descripcion, destacado, ${CTA}, alineacion, overlay, animar, "imagen": imagen{ ${IMG} }, "imagenMovil": imagenMovil{ ${IMG} }`;
-const PIEZA = `titulo, texto, destacado, textoAdicional, ${CTA}, animar, "imagen": imagen{ ${IMG} }, "imagenMovil": imagenMovil{ ${IMG} }`;
+
+/** Logo de una empresa de giro, con sus dimensiones reales (object-contain
+ *  necesita la proporcion para reservar el espacio sin deformar). */
+const LOGO = `"logo": logo.asset->url, "ancho": logo.asset->metadata.dimensions.width, "alto": logo.asset->metadata.dimensions.height`;
 
 const QUERY_MARKETING = `{
   "pagina": *[_type == "marketingDigitalPage"][0]{
-    equipo{ ${BANNER_FOTO} },
-    queEs{ ${PIEZA} },
-    navegamos{ ${PIEZA} },
-    metodo{
-      titulo, introduccion, mostrarPasos, mensajeFinal, ${CTA}, animar,
-      "imagenes": imagenes[]{ ${IMG} },
-      pasos[]{ titulo, descripcion }
-    },
-    clientes{
-      titulo, descripcion, ${CTA}, animar,
-      categorias[]{ nombre, icono },
-      multimedia{
-        tipo, texto,
-        "videoUrl": video.asset->url,
-        "poster": poster{ ${IMG} },
-        "imagen": imagen{ ${IMG} },
-        testimonio{ cita, autor, cargo },
-        "cuenta": cuentaRelacionada->{ nombre, "slug": slug.current, "logo": logo.asset->url + "?w=240&auto=format" }
-      }
-    },
-    resenas{ titulo, descripcion, enlaceGoogle, animar },
-    ctaFinal{ ${BANNER_FOTO} }
+    sections[]{
+      _type, _key, activo, subtitulo, titulo, descripcion, destacado, animar,
+      cta{ texto, enlace },
+      "imagen": imagen{ ${IMG} },
+      "imagenMovil": imagenMovil{ ${IMG} },
+      _type in ["teamBanner", "ctaBanner"] => { alineacion, overlay },
+      _type == "methodBanner" => { mostrarPasos, pasos[]{ titulo, descripcion } },
+      _type == "clientsBanner" => {
+        "giros": categorias[]{
+          _key, nombre, icono,
+          "imagen": imagen{ ${IMG} },
+          "empresas": empresas[]{
+            _key,
+            defined(_ref) => @->{ nombre, activa, ${LOGO} },
+            !defined(_ref) => { nombre, ${LOGO} }
+          }
+        },
+        rotacionAutomatica,
+        "videoUrl": video.asset->url, formatoVideo, sonidoVideo
+      },
+      _type == "reviewsBanner" => { enlaceGoogle }
+    }
   },
   "clientes": *[_type == "cuenta" && activa == true] | order(orden asc){
     nombre, "slug": slug.current, "logo": logo.asset->url + "?w=320&auto=format"
@@ -310,85 +289,51 @@ type ImgRaw =
   | undefined;
 type CtaRaw = { texto?: Txt; enlace?: Txt } | null | undefined;
 
-type BannerFotoRaw =
-  | {
-      etiqueta?: Txt;
-      titulo?: Txt;
-      descripcion?: Txt;
-      destacado?: Txt;
-      cta?: CtaRaw;
-      alineacion?: Txt;
-      overlay?: Txt;
-      animar?: boolean | null;
-      imagen?: ImgRaw;
-      imagenMovil?: ImgRaw;
-    }
-  | null
-  | undefined;
+/** Una empresa de giro cruda. Si era una referencia a una Cuenta borrada,
+ *  llega solo con _key (sin nombre) y se descarta. */
+type EmpresaRaw = {
+  _key?: Txt;
+  nombre?: Txt;
+  activa?: boolean | null;
+  logo?: Txt;
+  ancho?: number | null;
+  alto?: number | null;
+} | null;
 
-type PiezaRaw =
-  | {
-      titulo?: Txt;
-      texto?: Txt;
-      destacado?: Txt;
-      textoAdicional?: Txt;
-      cta?: CtaRaw;
-      animar?: boolean | null;
-      imagen?: ImgRaw;
-      imagenMovil?: ImgRaw;
-    }
-  | null
-  | undefined;
+type GiroRaw = {
+  _key?: Txt;
+  nombre?: Txt;
+  icono?: Txt;
+  imagen?: ImgRaw;
+  empresas?: EmpresaRaw[] | null;
+} | null;
 
-type MetodoRaw =
-  | {
-      titulo?: Txt;
-      introduccion?: Txt;
-      mostrarPasos?: boolean | null;
-      mensajeFinal?: Txt;
-      cta?: CtaRaw;
-      animar?: boolean | null;
-      imagenes?: ImgRaw[] | null;
-      pasos?: { titulo?: Txt; descripcion?: Txt }[] | null;
-    }
-  | null
-  | undefined;
-
-type ClientesRaw =
-  | {
-      titulo?: Txt;
-      descripcion?: Txt;
-      cta?: CtaRaw;
-      animar?: boolean | null;
-      categorias?: { nombre?: Txt; icono?: Txt }[] | null;
-      multimedia?: {
-        tipo?: Txt;
-        texto?: Txt;
-        videoUrl?: Txt;
-        poster?: ImgRaw;
-        imagen?: ImgRaw;
-        testimonio?: { cita?: Txt; autor?: Txt; cargo?: Txt } | null;
-        cuenta?: { nombre?: Txt; slug?: Txt; logo?: Txt } | null;
-      } | null;
-    }
-  | null
-  | undefined;
-
-type ResenasRaw =
-  | { titulo?: Txt; descripcion?: Txt; enlaceGoogle?: Txt; animar?: boolean | null }
-  | null
-  | undefined;
+type SeccionRaw = {
+  _type?: Txt;
+  _key?: Txt;
+  activo?: boolean | null;
+  subtitulo?: Txt;
+  titulo?: Txt;
+  descripcion?: Txt;
+  destacado?: Txt;
+  animar?: boolean | null;
+  cta?: CtaRaw;
+  imagen?: ImgRaw;
+  imagenMovil?: ImgRaw;
+  alineacion?: Txt;
+  overlay?: Txt;
+  mostrarPasos?: boolean | null;
+  pasos?: { titulo?: Txt; descripcion?: Txt }[] | null;
+  giros?: GiroRaw[] | null;
+  rotacionAutomatica?: boolean | null;
+  videoUrl?: Txt;
+  formatoVideo?: Txt;
+  sonidoVideo?: boolean | null;
+  enlaceGoogle?: Txt;
+};
 
 type RespuestaRaw = {
-  pagina: {
-    equipo?: BannerFotoRaw;
-    queEs?: PiezaRaw;
-    navegamos?: PiezaRaw;
-    metodo?: MetodoRaw;
-    clientes?: ClientesRaw;
-    resenas?: ResenasRaw;
-    ctaFinal?: BannerFotoRaw;
-  } | null;
+  pagina: { sections?: SeccionRaw[] | null } | null;
   clientes: { nombre?: Txt; slug?: Txt; logo?: Txt }[] | null;
   resenas:
     | {
@@ -416,7 +361,7 @@ function unoDe<T extends string>(v: Txt, validos: readonly T[], porDefecto: T): 
 }
 
 /** Una imagen sin archivo, o sin dimensiones, no se puede mostrar sin
- *  adivinar su proporcion: se descarta y la seccion usa su estado vacio. */
+ *  adivinar su proporcion: se descarta y la seccion usa su estado sin imagen. */
 function imagen(raw: ImgRaw, ancho: number, altPorDefecto = ""): ImagenSanity | null {
   if (!raw?.url || !raw.ancho || !raw.alto) return null;
   return {
@@ -435,94 +380,106 @@ function cta(raw: CtaRaw): CtaSimple {
   return texto && enlace ? { texto, enlace } : null;
 }
 
-function bannerFoto(raw: NonNullable<BannerFotoRaw>, respaldo: BannerFotoData): BannerFotoData {
-  const titulo = t(raw.titulo) || respaldo.titulo;
+/** `altFoto`: en las fotos de fondo el titulo es un buen alt por defecto.
+ *  En las piezas graficas no: su alt lo arma el componente con el texto que
+ *  la pieza trae dibujado. */
+function camposBase(raw: SeccionRaw, altFoto: boolean): Base {
+  const titulo = t(raw.titulo);
   return {
-    imagen: imagen(raw.imagen, 2400, titulo),
-    imagenMovil: imagen(raw.imagenMovil, 1200, titulo),
-    etiqueta: t(raw.etiqueta),
+    key: t(raw._key) || t(raw._type),
+    imagen: imagen(raw.imagen, 2400, altFoto ? titulo : ""),
+    imagenMovil: imagen(raw.imagenMovil, 1200, altFoto ? titulo : ""),
+    subtitulo: t(raw.subtitulo),
     titulo,
     descripcion: t(raw.descripcion),
     destacado: t(raw.destacado),
     cta: cta(raw.cta),
-    alineacion: unoDe(raw.alineacion, ["izquierda", "centro", "derecha"] as const, respaldo.alineacion),
-    overlay: unoDe(raw.overlay, ["ninguno", "suave", "medio", "fuerte"] as const, respaldo.overlay),
     animar: bool(raw.animar, true),
   };
 }
 
-function pieza(raw: NonNullable<PiezaRaw>, respaldo: PiezaGraficaData): PiezaGraficaData {
-  return {
-    imagen: imagen(raw.imagen, 2400),
-    imagenMovil: imagen(raw.imagenMovil, 1200),
-    titulo: t(raw.titulo) || respaldo.titulo,
-    texto: t(raw.texto),
-    destacado: t(raw.destacado),
-    textoAdicional: t(raw.textoAdicional),
-    cta: cta(raw.cta),
-    animar: bool(raw.animar, true),
-  };
+const ALINEACIONES = ["izquierda", "centro", "derecha"] as const;
+const OVERLAYS = ["ninguno", "suave", "medio", "fuerte"] as const;
+
+/** Giros con sus empresas, en el orden del Studio. Se descartan: giros sin
+ *  nombre, empresas sin nombre (referencia a una Cuenta borrada) y Cuentas
+ *  desactivadas -- una Cuenta apagada no aparece en ningun lado del sitio. */
+function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[] {
+  return (raw ?? [])
+    .filter((g): g is NonNullable<GiroRaw> => Boolean(g && t(g.nombre)))
+    .map((g, i) => ({
+      key: t(g._key) || `giro-${i}`,
+      nombre: t(g.nombre),
+      icono: unoDe(g.icono, ICONOS_CATEGORIA, "servicios"),
+      imagen: imagen(g.imagen, 1200, t(g.nombre)),
+      empresas: (g.empresas ?? [])
+        .filter((e): e is NonNullable<EmpresaRaw> => Boolean(e && t(e.nombre)) && e?.activa !== false)
+        .map((e, j) => ({
+          key: t(e._key) || `${i}-${j}`,
+          nombre: t(e.nombre),
+          logo:
+            t(e.logo) && e.ancho && e.alto
+              ? { url: `${t(e.logo)}?w=360&fit=max&auto=format`, ancho: e.ancho, alto: e.alto }
+              : null,
+        })),
+    }));
 }
 
-function metodo(raw: NonNullable<MetodoRaw>, respaldo: MetodoData): MetodoData {
-  const pasos = (raw.pasos ?? [])
-    .map((p) => ({ titulo: t(p.titulo), descripcion: t(p.descripcion) }))
-    .filter((p) => p.titulo);
-  return {
-    imagenes: (raw.imagenes ?? [])
-      .map((i) => imagen(i, 2400, "Método DOFI"))
-      .filter((i): i is ImagenSanity => i !== null),
-    titulo: t(raw.titulo) || respaldo.titulo,
-    introduccion: t(raw.introduccion),
-    pasos,
-    mostrarPasos: bool(raw.mostrarPasos, true) && pasos.length > 0,
-    mensajeFinal: t(raw.mensajeFinal),
-    cta: cta(raw.cta),
-    animar: bool(raw.animar, true),
-  };
+function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
+  const url = t(raw.videoUrl);
+  if (!url) return null;
+  return { url, formato: unoDe(raw.formatoVideo, FORMATOS_VIDEO, "vertical"), sonido: bool(raw.sonidoVideo, false) };
 }
 
-function clientesSeccion(
-  raw: NonNullable<ClientesRaw>,
-  respaldo: ClientesData,
-  clientes: ClienteMarquesina[]
-): ClientesData {
-  const m = raw.multimedia;
-  const cita = t(m?.testimonio?.cita);
-  const autor = t(m?.testimonio?.autor);
-  return {
-    titulo: t(raw.titulo) || respaldo.titulo,
-    descripcion: t(raw.descripcion),
-    categorias: (raw.categorias ?? [])
-      .map((c) => ({ nombre: t(c.nombre), icono: unoDe(c.icono, ICONOS_CATEGORIA, "servicios") }))
-      .filter((c) => c.nombre),
-    multimedia: {
-      tipo: unoDe(m?.tipo, ["video", "imagen"] as const, "video"),
-      videoUrl: t(m?.videoUrl) || null,
-      poster: imagen(m?.poster, 1600),
-      imagen: imagen(m?.imagen, 1600),
-      // Un testimonio sin cita o sin autor no se muestra: sin firma, una
-      // cita no es un testimonio.
-      testimonio: cita && autor ? { cita, autor, cargo: t(m?.testimonio?.cargo) } : null,
-      texto: t(m?.texto),
-      cuenta: t(m?.cuenta?.nombre)
-        ? { nombre: t(m?.cuenta?.nombre), slug: t(m?.cuenta?.slug), logo: t(m?.cuenta?.logo) || null }
-        : null,
-    },
-    cta: cta(raw.cta),
-    animar: bool(raw.animar, true),
-    clientes,
-  };
-}
+function normalizarSeccion(
+  raw: SeccionRaw,
+  clientes: ClienteMarquesina[],
+  resenas: Resena[]
+): SeccionMarketing | null {
+  if (!raw || raw.activo === false) return null;
 
-function resenasSeccion(raw: NonNullable<ResenasRaw>, respaldo: ResenasData, resenas: Resena[]): ResenasData {
-  return {
-    titulo: t(raw.titulo) || respaldo.titulo,
-    descripcion: t(raw.descripcion),
-    enlaceGoogle: t(raw.enlaceGoogle) || respaldo.enlaceGoogle,
-    animar: bool(raw.animar, true),
-    resenas,
-  };
+  switch (raw._type) {
+    case "teamBanner":
+    case "ctaBanner":
+      return {
+        ...camposBase(raw, true),
+        tipo: raw._type,
+        alineacion: unoDe(raw.alineacion, ALINEACIONES, raw._type === "teamBanner" ? "izquierda" : "centro"),
+        overlay: unoDe(raw.overlay, OVERLAYS, "medio"),
+      };
+    case "aboutBanner":
+    case "navigationBanner":
+      return { ...camposBase(raw, false), tipo: raw._type };
+    case "methodBanner":
+      return {
+        ...camposBase(raw, false),
+        tipo: "methodBanner",
+        mostrarPasos: bool(raw.mostrarPasos, true),
+        pasos: (raw.pasos ?? [])
+          .map((p) => ({ titulo: t(p.titulo), descripcion: t(p.descripcion) }))
+          .filter((p) => p.titulo),
+      };
+    case "clientsBanner":
+      return {
+        // En Clientes, `imagen` es la portada del video: alt vacio (decorativa).
+        ...camposBase(raw, false),
+        tipo: "clientsBanner",
+        giros: normalizarGiros(raw.giros),
+        rotacionAutomatica: bool(raw.rotacionAutomatica, true),
+        video: normalizarVideo(raw),
+        clientes,
+      };
+    case "reviewsBanner":
+      return {
+        ...camposBase(raw, false),
+        tipo: "reviewsBanner",
+        enlaceGoogle: t(raw.enlaceGoogle) || company.location.mapsUrl,
+        resenas,
+      };
+    default:
+      // Un tipo que este codigo todavia no sabe pintar se ignora sin romper.
+      return null;
+  }
 }
 
 function normalizarClientes(raw: RespuestaRaw["clientes"] | undefined): ClienteMarquesina[] {
@@ -532,9 +489,8 @@ function normalizarClientes(raw: RespuestaRaw["clientes"] | undefined): ClienteM
 }
 
 /** Reseñas: SOLO las que alguien cargo a mano en el Studio, copiadas de
- *  Google. Nunca hay reseñas de respaldo en el codigo -- una reseña
- *  inventada es publicidad engañosa. Sin reseñas, la seccion lo dice y
- *  manda al perfil real de Google. */
+ *  Google. Nunca hay reseñas de respaldo en el codigo -- una reseña inventada
+ *  es publicidad engañosa. */
 function normalizarResenas(raw: RespuestaRaw["resenas"] | undefined): Resena[] {
   return (raw ?? [])
     .filter((r) => t(r.nombre) && t(r.comentario) && typeof r.estrellas === "number")
@@ -549,9 +505,14 @@ function normalizarResenas(raw: RespuestaRaw["resenas"] | undefined): Resena[] {
     }));
 }
 
-export async function getPaginaMarketingDigital(): Promise<PaginaMarketingDigital> {
+function conDatos(s: SeccionMarketing, clientes: ClienteMarquesina[], resenas: Resena[]): SeccionMarketing {
+  if (s.tipo === "clientsBanner") return { ...s, clientes };
+  if (s.tipo === "reviewsBanner") return { ...s, resenas };
+  return s;
+}
+
+export async function getPaginaMarketingDigital(): Promise<{ secciones: SeccionMarketing[] }> {
   const respuesta = await sanityQuery<RespuestaRaw>(QUERY_MARKETING);
-  const F = FALLBACK_MARKETING;
 
   // Sin Sanity (credenciales, red): clientes del respaldo local, el mismo
   // que usa el resto del sitio. Con Sanity, solo las cuentas activas.
@@ -560,24 +521,14 @@ export async function getPaginaMarketingDigital(): Promise<PaginaMarketingDigita
     : clientesRespaldo.map((c) => ({ nombre: c.name, slug: c.slug, logo: c.logo ?? null }));
   const resenas = normalizarResenas(respuesta?.resenas);
 
-  const p = respuesta?.pagina;
-  if (!p) {
-    return {
-      ...F,
-      clientes: { ...F.clientes, clientes },
-      resenas: { ...F.resenas, resenas },
-    };
+  const crudas = respuesta?.pagina?.sections ?? [];
+  if (crudas.length === 0) {
+    return { secciones: SECCIONES_RESPALDO.map((s) => conDatos(s, clientes, resenas)) };
   }
 
   return {
-    equipo: p.equipo ? bannerFoto(p.equipo, F.equipo) : F.equipo,
-    queEs: p.queEs ? pieza(p.queEs, F.queEs) : F.queEs,
-    navegamos: p.navegamos ? pieza(p.navegamos, F.navegamos) : F.navegamos,
-    metodo: p.metodo ? metodo(p.metodo, F.metodo) : F.metodo,
-    clientes: p.clientes
-      ? clientesSeccion(p.clientes, F.clientes, clientes)
-      : { ...F.clientes, clientes },
-    resenas: p.resenas ? resenasSeccion(p.resenas, F.resenas, resenas) : { ...F.resenas, resenas },
-    ctaFinal: p.ctaFinal ? bannerFoto(p.ctaFinal, F.ctaFinal) : F.ctaFinal,
+    secciones: crudas
+      .map((s) => normalizarSeccion(s, clientes, resenas))
+      .filter((s): s is SeccionMarketing => s !== null),
   };
 }

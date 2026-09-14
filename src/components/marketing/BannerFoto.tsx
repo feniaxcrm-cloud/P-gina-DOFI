@@ -4,23 +4,36 @@ import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { Parallax } from "./Parallax";
 import { AtmosferaMar } from "./AtmosferaMar";
-import type { Alineacion, BannerFotoData, ImagenSanity, Overlay } from "@/lib/marketing-digital";
+import type {
+  Alineacion,
+  ImagenSanity,
+  Overlay,
+  SeccionCierre,
+  SeccionEquipo,
+} from "@/lib/marketing-digital";
 
 /**
- * Banner fotografico a todo el ancho con texto HTML encima. Se usa dos
- * veces en Marketing Digital: 1 · Equipo DOFI (abre la pagina, lleva el H1)
- * y 7 · Cierre (Daniel dando la mano).
+ * Banner fotografico a todo el ancho con texto HTML encima. Lo usan dos tipos
+ * de seccion: teamBanner (Equipo DOFI, abre la pagina) y ctaBanner (el
+ * cierre, Daniel dando la mano).
  *
- * A diferencia de las piezas graficas terminadas (PiezaGrafica), aca la foto
- * SI se recorta: es un fondo, el mensaje va en HTML por encima. Por eso usa
- * object-cover con el hotspot de Sanity, admite overlay para leer el texto
- * y parallax ligero.
+ * La foto SI se recorta (es un fondo; el mensaje va en HTML), por eso usa
+ * object-cover con el hotspot de Sanity, overlay para leer el texto y
+ * parallax ligero. Sin foto, pinta AtmosferaMar: el mismo banner con fondo de
+ * marca, y la foto ocupa su lugar el dia que se sube.
  *
- * SIN FOTO TODAVIA
+ * ESCALA DEL TITULO (Equipo)
  * -----------------------------------------------------------------
- * Pinta AtmosferaMar: el mismo banner con fondo de marca. La pagina se ve
- * terminada aunque falte el material fotografico, y el dia que se sube la
- * foto en el Studio ocupa su lugar sin tocar codigo.
+ * El brief pidio un titulo bastante mas chico que la version anterior (que
+ * llegaba a 72px y ocupaba casi todo el alto). Ahora tope de ~56px y un
+ * ancho maximo en `ch` con text-balance: el salto de linea cae natural en
+ * dos lineas en escritorio, en vez de una palabra suelta al final. En un
+ * telefono de 390px baja a 30px: con 34px la pregunta se partia en 4 lineas.
+ *
+ * ENTRADA ESCALONADA
+ * -----------------------------------------------------------------
+ * Ubicacion -> titulo -> descripcion -> slogan -> boton, cada uno 80ms
+ * despues del anterior y en 600ms: rapida, sin movimiento permanente.
  */
 
 function aPosicion(h: ImagenSanity["hotspot"]) {
@@ -64,9 +77,8 @@ function FotoCubierta({
   );
 }
 
-/** Overlay orientado hacia el lado del texto: oscurece donde se lee y deja
- *  respirar la foto del otro lado. Strings literales (no armados) para que
- *  Tailwind los vea al compilar. */
+/** Overlay orientado hacia el lado del texto. Strings literales (no armados)
+ *  para que Tailwind los vea al compilar. */
 const OVERLAY: Record<Exclude<Overlay, "ninguno">, Record<Alineacion, string>> = {
   suave: {
     izquierda: "bg-gradient-to-r from-abyss/60 via-abyss/25 to-transparent",
@@ -86,7 +98,7 @@ const OVERLAY: Record<Exclude<Overlay, "ninguno">, Record<Alineacion, string>> =
 };
 
 /** En mobile el texto va siempre abajo; en escritorio, centrado en alto y
- *  alineado segun el campo "Posición del contenido". */
+ *  alineado segun "Posición del contenido". */
 const ALINEA: Record<Alineacion, { caja: string; texto: string }> = {
   izquierda: { caja: "justify-start", texto: "items-start text-left" },
   centro: { caja: "justify-center", texto: "items-center text-center" },
@@ -94,29 +106,28 @@ const ALINEA: Record<Alineacion, { caja: string; texto: string }> = {
 };
 
 export function BannerFoto({
-  data,
+  seccion,
   id,
-  nivel = "h2",
-  variante = "equipo",
+  nivel,
   prioridad = false,
 }: {
-  data: BannerFotoData;
+  seccion: SeccionEquipo | SeccionCierre;
   id: string;
-  /** "h1" solo en el banner que abre la pagina. */
-  nivel?: "h1" | "h2";
-  variante?: "equipo" | "cierre";
-  /** Precarga la foto: solo para la que se ve sin hacer scroll. */
+  nivel: "h1" | "h2";
+  /** Precarga la foto: solo para la seccion que se ve sin hacer scroll. */
   prioridad?: boolean;
 }) {
-  const { imagen, imagenMovil, etiqueta, titulo, descripcion, destacado, cta, alineacion, overlay, animar } = data;
+  const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, alineacion, overlay, animar } =
+    seccion;
+  const esEquipo = seccion.tipo === "teamBanner";
   const Titulo = nivel;
   const a = ALINEA[alineacion];
-  const alto =
-    variante === "equipo"
-      ? "min-h-[680px] md:min-h-[640px] lg:min-h-[720px]"
-      : "min-h-[560px] md:min-h-[600px]";
-  // El primer banner arranca debajo del header fijo.
-  const relleno = nivel === "h1" ? "pb-16 pt-36 md:pb-24 md:pt-40" : "py-20 md:py-24";
+  const alto = esEquipo ? "min-h-[640px] md:min-h-[600px] lg:min-h-[660px]" : "min-h-[560px] md:min-h-[600px]";
+  // La seccion que abre la pagina arranca debajo del header fijo (64-68px).
+  const relleno = nivel === "h1" ? "pb-16 pt-32 md:pb-20 md:pt-36" : "py-20 md:py-24";
+  const escalaTitulo = esEquipo
+    ? "max-w-[18ch] text-[clamp(1.875rem,1.3rem+2.3vw,3.5rem)] leading-[1.06]"
+    : "max-w-[20ch] text-[clamp(2.25rem,1.3rem+2.8vw,3.875rem)] leading-[1.05]";
 
   return (
     <section
@@ -134,7 +145,7 @@ export function BannerFoto({
             <FotoCubierta imagen={imagen} imagenMovil={imagenMovil} prioridad={prioridad} />
           )
         ) : (
-          <AtmosferaMar variante={variante} />
+          <AtmosferaMar variante={esEquipo ? "equipo" : "cierre"} />
         )}
 
         {imagen && overlay !== "ninguno" && (
@@ -151,40 +162,50 @@ export function BannerFoto({
       <div
         className={`relative mx-auto flex w-full max-w-page items-end px-5 sm:px-6 md:items-center md:px-10 lg:px-12 ${relleno} ${a.caja}`}
       >
-        <Anim animar={animar} y={24} className={`flex max-w-[700px] flex-col ${a.texto}`}>
-          {etiqueta && (
-            <p className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 font-sans text-sm text-foam/90 backdrop-blur-sm">
-              <MapPin size={15} weight="fill" aria-hidden="true" className="text-accent-lift" />
-              {etiqueta}
-            </p>
+        <div className={`flex max-w-[720px] flex-col ${a.texto}`}>
+          {subtitulo && (
+            <Anim animar={animar} y={12} duration={0.6}>
+              <p className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 font-sans text-sm text-foam/90 backdrop-blur-sm">
+                {esEquipo && <MapPin size={15} weight="fill" aria-hidden="true" className="text-accent-lift" />}
+                {subtitulo}
+              </p>
+            </Anim>
           )}
 
-          <Titulo
-            id={`${id}-titulo`}
-            className="text-balance font-display text-[clamp(2.25rem,1.35rem+3.4vw,4.5rem)] font-extrabold leading-[1.04] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)]"
-          >
-            {titulo}
-          </Titulo>
+          <Anim animar={animar} y={16} delay={0.08} duration={0.6}>
+            <Titulo
+              id={`${id}-titulo`}
+              className={`text-balance font-display font-extrabold tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)] ${escalaTitulo}`}
+            >
+              {titulo}
+            </Titulo>
+          </Anim>
 
           {descripcion && (
-            <p className="mt-6 max-w-[580px] font-sans text-lg leading-relaxed text-foam/85 md:text-xl">
-              {descripcion}
-            </p>
+            <Anim animar={animar} y={14} delay={0.16} duration={0.6}>
+              <p className="mt-5 max-w-[520px] font-sans text-lg leading-relaxed text-foam/85 md:text-xl">
+                {descripcion}
+              </p>
+            </Anim>
           )}
 
           {destacado && (
-            <p className="mt-7 flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-accent-lift md:text-xl">
-              <span aria-hidden="true" className="h-px w-10 bg-accent-lift/70" />
-              {destacado}
-            </p>
+            <Anim animar={animar} y={14} delay={0.24} duration={0.6}>
+              <p className="mt-6 flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-accent-lift md:text-xl">
+                <span aria-hidden="true" className="h-px w-10 bg-accent-lift/70" />
+                {destacado}
+              </p>
+            </Anim>
           )}
 
           {cta && (
-            <div className="mt-9">
-              <BotonCta texto={cta.texto} enlace={cta.enlace} />
-            </div>
+            <Anim animar={animar} y={14} delay={0.32} duration={0.6}>
+              <div className="mt-9">
+                <BotonCta texto={cta.texto} enlace={cta.enlace} tamano={esEquipo ? "normal" : "grande"} />
+              </div>
+            </Anim>
           )}
-        </Anim>
+        </div>
       </div>
     </section>
   );

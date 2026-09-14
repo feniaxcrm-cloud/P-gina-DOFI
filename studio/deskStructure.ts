@@ -55,7 +55,7 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId(ID_BANNERS)
             .title("Banners")
         ),
-      // Pagina /marketing-digital: documento unico, una pestaña por banner.
+      // Pagina /marketing-digital: documento unico con la lista de secciones.
       S.listItem()
         .title("Marketing Digital")
         .schemaType("marketingDigitalPage")

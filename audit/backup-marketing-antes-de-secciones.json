@@ -1,0 +1,135 @@
+{
+  "equipo": {
+    "_type": "mdBannerFoto",
+    "alineacion": "izquierda",
+    "animar": true,
+    "cta": {
+      "_type": "ctaSimple",
+      "enlace": "/contactanos",
+      "texto": "Quiero Mejorar mis Ventas"
+    },
+    "descripcion": "Un equipo de marketing digital completo a una fracción de lo que te costaría contratarlo.",
+    "destacado": "Un Mar de Ideas",
+    "etiqueta": "Cuenca - Ecuador",
+    "overlay": "medio",
+    "titulo": "¿Necesitas un equipo completo de marketing para hacer crecer tu negocio?"
+  },
+  "queEs": {
+    "_type": "mdPiezaGrafica",
+    "animar": true,
+    "destacado": "Navegar en un Mar de Oportunidades.",
+    "texto": "¿Sabías que los delfines son seres de alta vibración que han venido a ayudar a las personas a despertar?\n\nUtilizamos este pensamiento como analogía, ya que somos un equipo especializado y con todas las herramientas necesarias que requiere tu marca para fluir en nuevos retos.",
+    "titulo": "¿Qué es DOFI?"
+  },
+  "navegamos": {
+    "_type": "mdPiezaGrafica",
+    "animar": true,
+    "texto": "Dentro del infinito mar de ideas y posibilidades buscamos la mejor forma de adaptarnos a tu marca y guiarla hacia el éxito.",
+    "textoAdicional": "Durante el viaje te guiamos por diferentes fases donde exploramos oportunidades y construimos la mejor propuesta para tu marca.",
+    "titulo": "¿Cómo navegamos contigo?"
+  },
+  "metodo": {
+    "animar": true,
+    "cta": {
+      "_type": "ctaSimple",
+      "enlace": "/contactanos",
+      "texto": "Quiero Mejorar mis Ventas"
+    },
+    "mensajeFinal": "Ventas inteligentes garantizadas.",
+    "mostrarPasos": true,
+    "pasos": [
+      {
+        "_key": "aec4c8a1cd2b",
+        "_type": "pasoMetodo",
+        "descripcion": "Investigación de experiencia y características de la marca.",
+        "titulo": "Adentrarnos en tu marca"
+      },
+      {
+        "_key": "e11cd788cad0",
+        "_type": "pasoMetodo",
+        "descripcion": "Desarrollo de propuesta de valor.",
+        "titulo": "Bitácora de viaje"
+      },
+      {
+        "_key": "b7a3c9c91e25",
+        "_type": "pasoMetodo",
+        "descripcion": "Creación de campaña publicitaria.",
+        "titulo": "Preparados para zarpar"
+      },
+      {
+        "_key": "40e229b2ea4e",
+        "_type": "pasoMetodo",
+        "descripcion": "Ejecución del plan de marketing de contenido.",
+        "titulo": "Navegando con viento a favor"
+      },
+      {
+        "_key": "0f3052666699",
+        "_type": "pasoMetodo",
+        "descripcion": "Monitoreo y optimización de datos.",
+        "titulo": "Retorno de tu inversión"
+      }
+    ],
+    "titulo": "Método DOFI en 5 pasos"
+  },
+  "clientes": {
+    "animar": true,
+    "categorias": [
+      {
+        "_key": "44bf2d5d9ec0",
+        "_type": "categoriaIcono",
+        "icono": "construccion",
+        "nombre": "Construcción"
+      },
+      {
+        "_key": "2309544e73bd",
+        "_type": "categoriaIcono",
+        "icono": "belleza",
+        "nombre": "Belleza"
+      },
+      {
+        "_key": "1507ea766b4a",
+        "_type": "categoriaIcono",
+        "icono": "servicios",
+        "nombre": "Servicios"
+      },
+      {
+        "_key": "9d09c694ef66",
+        "_type": "categoriaIcono",
+        "icono": "comercio",
+        "nombre": "Comercio"
+      },
+      {
+        "_key": "0ed080869edd",
+        "_type": "categoriaIcono",
+        "icono": "emprendedores",
+        "nombre": "Emprendedores"
+      }
+    ],
+    "cta": {
+      "_type": "ctaSimple",
+      "enlace": "/clientes",
+      "texto": "Ver casos de éxito"
+    },
+    "multimedia": {
+      "tipo": "video"
+    },
+    "titulo": "Clientes y casos de éxito"
+  },
+  "resenas": {
+    "animar": true,
+    "enlaceGoogle": "https://maps.app.goo.gl/QxAWAwctM2cGfo598",
+    "titulo": "Reseñas en Google"
+  },
+  "ctaFinal": {
+    "_type": "mdBannerFoto",
+    "alineacion": "centro",
+    "animar": true,
+    "cta": {
+      "_type": "ctaSimple",
+      "enlace": "/contactanos",
+      "texto": "Quiero Mejorar mis Ventas"
+    },
+    "overlay": "medio",
+    "titulo": "¿Somos socios o le pasas tu oportunidad a alguien más?"
+  }
+}

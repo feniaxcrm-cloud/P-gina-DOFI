@@ -6,8 +6,13 @@ import { banners } from "./banners";
 import { marketingDigitalPage } from "./marketingDigitalPage";
 import { resena } from "./resena";
 import { ctaSimple } from "./objects/ctaSimple";
-import { mdBannerFoto } from "./objects/mdBannerFoto";
-import { mdPiezaGrafica } from "./objects/mdPiezaGrafica";
+import { teamBanner } from "./marketing/teamBanner";
+import { aboutBanner } from "./marketing/aboutBanner";
+import { navigationBanner } from "./marketing/navigationBanner";
+import { methodBanner } from "./marketing/methodBanner";
+import { clientsBanner } from "./marketing/clientsBanner";
+import { reviewsBanner } from "./marketing/reviewsBanner";
+import { ctaBanner } from "./marketing/ctaBanner";
 import { hero } from "./hero";
 import { resultado } from "./objects/resultado";
 import { testimonio } from "./objects/testimonio";
@@ -32,6 +37,11 @@ export const schemaTypes = [
   seccionContenido,
   posicionCta,
   ctaSimple,
-  mdBannerFoto,
-  mdPiezaGrafica,
+  teamBanner,
+  aboutBanner,
+  navigationBanner,
+  methodBanner,
+  clientsBanner,
+  reviewsBanner,
+  ctaBanner,
 ];
