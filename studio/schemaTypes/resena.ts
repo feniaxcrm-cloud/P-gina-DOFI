@@ -65,6 +65,12 @@ export const resena = defineType({
       description: "Permite que cualquiera verifique que la reseña es real.",
     }),
     defineField({
+      name: "fecha",
+      title: "Fecha (opcional)",
+      type: "string",
+      description: 'Tal como la muestra Google, en texto libre. Por ejemplo: "hace 2 semanas" o "agosto 2026".',
+    }),
+    defineField({
       name: "activa",
       title: "Mostrar en la web",
       type: "boolean",

@@ -1,6 +1,7 @@
 import { ArrowUpRight, GoogleLogo } from "@phosphor-icons/react/dist/ssr";
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
+import { OrnamentoIcono, OrnamentoOlas } from "./OrnamentoNautico";
 import { ResenasCarrusel } from "./ResenasCarrusel";
 import type { SeccionResenas } from "@/lib/marketing-digital";
 
@@ -23,7 +24,19 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
   const invitacion = cta ?? (enlaceGoogle ? { texto: "Ver reseñas en Google", enlace: enlaceGoogle } : null);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative overflow-hidden bg-canvas py-20 md:py-28">
+    <section
+      id={id}
+      aria-labelledby={`${id}-titulo`}
+      className="group/nautico relative overflow-hidden bg-canvas py-20 md:py-28"
+    >
+      {/* Un ancla arriba (lo que dicen los clientes sostiene la reputacion) y
+          un hilo de oleaje muy fino abajo del todo, cerrando la pagina. */}
+      <OrnamentoIcono
+        motivo="ancla"
+        deriva="asentar"
+        className="-right-6 top-2 h-24 w-24 rotate-6 text-brand/[0.09] sm:-right-8 sm:h-36 sm:w-36 lg:h-44 lg:w-44"
+      />
+      <OrnamentoOlas className="inset-x-0 bottom-6 hidden h-10 text-brand/[0.16] md:block" />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <Anim animar={animar} className="max-w-[720px]">

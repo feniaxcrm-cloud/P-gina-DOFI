@@ -45,6 +45,7 @@ function Estrellas({ n }: { n: number }) {
 }
 
 function Tarjeta({ r }: { r: Resena }) {
+  const metadato = [r.empresa, r.fecha].filter(Boolean).join(" · ");
   return (
     <article className="relative flex h-full flex-col rounded-[24px] border border-brand/10 bg-white p-7 shadow-[0_22px_44px_-28px_rgba(26,15,61,0.4)]">
       <span
@@ -69,7 +70,7 @@ function Tarjeta({ r }: { r: Resena }) {
         )}
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-[15px] font-semibold text-ink">{r.nombre}</p>
-          {r.empresa && <p className="truncate font-sans text-sm text-ink-subtle">{r.empresa}</p>}
+          {metadato && <p className="truncate font-sans text-sm text-ink-subtle">{metadato}</p>}
         </div>
         {r.enlace && (
           <a

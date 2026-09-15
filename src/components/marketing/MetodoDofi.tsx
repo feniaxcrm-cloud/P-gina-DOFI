@@ -1,5 +1,6 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
+import { OrnamentoIcono, OrnamentoRuta } from "./OrnamentoNautico";
 import { PiezaCompleta } from "./PiezaCompleta";
 import { RutaMetodo } from "./RutaMetodo";
 import type { SeccionMetodo } from "@/lib/marketing-digital";
@@ -27,8 +28,16 @@ export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id:
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)] py-20 md:py-28"
+      className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)] py-20 md:py-28"
     >
+      {/* El Metodo es el tramo del viaje: timon guiando desde arriba a la
+          izquierda, y una ruta punteada chica cerca del boton, abajo. */}
+      <OrnamentoIcono
+        motivo="timon"
+        deriva="asentar"
+        className="-left-8 top-2 h-32 w-32 -rotate-12 text-brand/[0.08] sm:-left-10 sm:h-48 sm:w-48 lg:-left-14 lg:top-4 lg:h-64 lg:w-64"
+      />
+      <OrnamentoRuta className="bottom-6 right-[6%] hidden h-16 w-36 text-accent/[0.22] md:block lg:h-20 lg:w-48" />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="mx-auto max-w-[820px] text-center">
           {subtitulo && (

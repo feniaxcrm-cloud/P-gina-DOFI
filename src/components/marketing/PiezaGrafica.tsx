@@ -1,5 +1,6 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
+import { OrnamentoDelfin, OrnamentoRuta } from "./OrnamentoNautico";
 import { PiezaCompleta } from "./PiezaCompleta";
 import type { CtaSimple, ImagenSanity, SeccionQueEs } from "@/lib/marketing-digital";
 
@@ -85,7 +86,7 @@ export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id
   const parrafos = parrafosDe(descripcion);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative overflow-hidden bg-canvas">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="group/nautico relative overflow-hidden bg-canvas">
       {/* Decoracion: resplandor y oleaje en tinta de marca muy baja. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-24 top-10 h-[26rem] w-[26rem] rounded-full bg-brand-lift/10 blur-[120px]" />
@@ -94,6 +95,13 @@ export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id
           <path d="M0 126 C 260 86, 520 166, 760 126 S 1220 86, 1440 120" stroke="rgba(244,123,32,0.22)" strokeWidth="1.5" />
         </svg>
       </div>
+      {/* El delfin es EL simbolo de DOFI (lo dice el propio texto de esta
+          seccion): sangra por el borde superior derecho, muy sutil. */}
+      {/* Arriba del todo, mayormente sobre el relleno superior de la seccion
+          (por eso -top-*, no top-*): asi nunca cae sobre la columna de texto,
+          que empieza mas abajo. */}
+      <OrnamentoDelfin className="-right-5 -top-4 h-24 w-24 text-brand/[0.09] sm:-right-6 sm:-top-6 sm:h-32 sm:w-32 lg:-right-8 lg:-top-8 lg:h-40 lg:w-40" />
+      <OrnamentoRuta className="left-[8%] top-[62%] hidden h-20 w-40 text-accent/20 md:block lg:h-24 lg:w-52" />
 
       {/* 50% titulo / 50% contenido (6 + 6 columnas). items-center: si una
           columna es mas corta, se centra contra la otra en vez de dejar un

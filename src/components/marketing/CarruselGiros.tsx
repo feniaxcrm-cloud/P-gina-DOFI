@@ -499,7 +499,7 @@ export function CarruselGiros({
                   <span className="flex items-center gap-2.5 sm:gap-3">
                     <span className="min-h-5 w-[3px] shrink-0 self-stretch rounded-full bg-accent" />
                     <span
-                      className={`line-clamp-2 font-display font-bold leading-tight text-white ${
+                      className={`line-clamp-2 break-words font-display font-bold leading-tight text-white ${
                         compacto === null ? "whitespace-nowrap text-base sm:text-xl lg:text-2xl" : ""
                       }`}
                       style={

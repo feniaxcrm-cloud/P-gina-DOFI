@@ -1,5 +1,4 @@
 import { sanityQuery } from "@/lib/sanity";
-import { clients as clientesRespaldo } from "@/data/clients";
 import { company } from "@/config/company";
 
 /**
@@ -12,8 +11,7 @@ import { company } from "@/config/company";
  * el Studio. No hay un campo numerico "orden" aparte a proposito -- dos
  * fuentes de orden terminan contradiciendose.
  *
- * UNA sola consulta trae las secciones, los clientes activos de la
- * marquesina (tipo "cuenta", el mismo de /clientes) y las reseñas activas.
+ * UNA sola consulta trae las secciones y las reseñas activas.
  *
  * RESPALDO: si Sanity no responde o el documento no tiene secciones, la
  * pagina se arma con SECCIONES_RESPALDO (el copy del brief). Si el documento
@@ -53,7 +51,11 @@ export const ICONOS_CATEGORIA = [
 ] as const;
 export type IconoCategoria = (typeof ICONOS_CATEGORIA)[number];
 
-export type ClienteMarquesina = { nombre: string; slug: string; logo: string | null };
+/** Una ficha de la marquesina continua de Clientes. `logo` nunca es null:
+ *  sale de las empresas cargadas en los giros de negocio (mismo lugar que el
+ *  carrusel de arriba), y solo entran ahi las que YA tienen logo -- la
+ *  marquesina nunca sustituye un logo por el nombre escrito. */
+export type ClienteMarquesina = { nombre: string; slug: string; logo: string };
 
 /** Una empresa dentro de un giro. Puede venir de una Cuenta (su nombre y su
  *  logo son los de la Cuenta: no se duplican) o cargarse directo en el giro
@@ -91,6 +93,8 @@ export type Resena = {
   estrellas: number;
   comentario: string;
   enlace: string | null;
+  /** Opcional: solo si se cargo en el Studio. Ya formateada ("agosto 2026"). */
+  fecha: string | null;
 };
 
 /** Campos comunes a todas las secciones (los del brief). */
@@ -268,11 +272,8 @@ const QUERY_MARKETING = `{
       _type == "reviewsBanner" => { enlaceGoogle }
     }
   },
-  "clientes": *[_type == "cuenta" && activa == true] | order(orden asc){
-    nombre, "slug": slug.current, "logo": logo.asset->url + "?w=320&auto=format"
-  },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
-    "id": _id, nombre, empresa, estrellas, comentario,
+    "id": _id, nombre, empresa, estrellas, comentario, fecha,
     "foto": foto.asset->url + "?w=160&h=160&fit=crop&auto=format",
     "enlace": enlaceOriginal
   }
@@ -334,7 +335,6 @@ type SeccionRaw = {
 
 type RespuestaRaw = {
   pagina: { sections?: SeccionRaw[] | null } | null;
-  clientes: { nombre?: Txt; slug?: Txt; logo?: Txt }[] | null;
   resenas:
     | {
         id?: Txt;
@@ -344,6 +344,7 @@ type RespuestaRaw = {
         comentario?: Txt;
         foto?: Txt;
         enlace?: Txt;
+        fecha?: Txt;
       }[]
     | null;
 };
@@ -431,11 +432,26 @@ function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
   return { url, ajuste: unoDe(raw.ajusteVideo, AJUSTES_VIDEO, "rellenar"), sonido: bool(raw.sonidoVideo, false) };
 }
 
-function normalizarSeccion(
-  raw: SeccionRaw,
-  clientes: ClienteMarquesina[],
-  resenas: Resena[]
-): SeccionMarketing | null {
+/** La marquesina continua reutiliza los logos que YA existen en los giros de
+ *  negocio (misma fuente que el carrusel de arriba, "NO crear un sistema
+ *  independiente de logos"): junta las empresas de TODOS los giros que
+ *  tengan logo, sin repetir el mismo logo dos veces si la misma empresa
+ *  quedo asignada a mas de un giro. Sin logo, una empresa no entra aca --
+ *  nunca se muestra su nombre como reemplazo. */
+function logosDeGiros(giros: GiroNegocio[]): ClienteMarquesina[] {
+  const vistos = new Set<string>();
+  const lista: ClienteMarquesina[] = [];
+  for (const g of giros) {
+    for (const e of g.empresas) {
+      if (!e.logo || vistos.has(e.logo.url)) continue;
+      vistos.add(e.logo.url);
+      lista.push({ nombre: e.nombre, slug: e.key, logo: e.logo.url });
+    }
+  }
+  return lista;
+}
+
+function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
   if (!raw || raw.activo === false) return null;
 
   switch (raw._type) {
@@ -459,16 +475,18 @@ function normalizarSeccion(
           .map((p) => ({ titulo: t(p.titulo), descripcion: t(p.descripcion) }))
           .filter((p) => p.titulo),
       };
-    case "clientsBanner":
+    case "clientsBanner": {
+      const giros = normalizarGiros(raw.giros);
       return {
         // En Clientes, `imagen` es la portada del video: alt vacio (decorativa).
         ...camposBase(raw, false),
         tipo: "clientsBanner",
-        giros: normalizarGiros(raw.giros),
+        giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
         video: normalizarVideo(raw),
-        clientes,
+        clientes: logosDeGiros(giros),
       };
+    }
     case "reviewsBanner":
       return {
         ...camposBase(raw, false),
@@ -480,12 +498,6 @@ function normalizarSeccion(
       // Un tipo que este codigo todavia no sabe pintar se ignora sin romper.
       return null;
   }
-}
-
-function normalizarClientes(raw: RespuestaRaw["clientes"] | undefined): ClienteMarquesina[] {
-  return (raw ?? [])
-    .filter((c) => t(c.nombre))
-    .map((c) => ({ nombre: t(c.nombre), slug: t(c.slug), logo: t(c.logo) || null }));
 }
 
 /** Reseñas: SOLO las que alguien cargo a mano en el Studio, copiadas de
@@ -502,33 +514,25 @@ function normalizarResenas(raw: RespuestaRaw["resenas"] | undefined): Resena[] {
       estrellas: Math.min(5, Math.max(1, Math.round(r.estrellas as number))),
       comentario: t(r.comentario),
       enlace: t(r.enlace) || null,
+      fecha: t(r.fecha) || null,
     }));
 }
 
-function conDatos(s: SeccionMarketing, clientes: ClienteMarquesina[], resenas: Resena[]): SeccionMarketing {
-  if (s.tipo === "clientsBanner") return { ...s, clientes };
+function conDatos(s: SeccionMarketing, resenas: Resena[]): SeccionMarketing {
   if (s.tipo === "reviewsBanner") return { ...s, resenas };
   return s;
 }
 
 export async function getPaginaMarketingDigital(): Promise<{ secciones: SeccionMarketing[] }> {
   const respuesta = await sanityQuery<RespuestaRaw>(QUERY_MARKETING);
-
-  // Sin Sanity (credenciales, red): clientes del respaldo local, el mismo
-  // que usa el resto del sitio. Con Sanity, solo las cuentas activas.
-  const clientes = respuesta
-    ? normalizarClientes(respuesta.clientes)
-    : clientesRespaldo.map((c) => ({ nombre: c.name, slug: c.slug, logo: c.logo ?? null }));
   const resenas = normalizarResenas(respuesta?.resenas);
 
   const crudas = respuesta?.pagina?.sections ?? [];
   if (crudas.length === 0) {
-    return { secciones: SECCIONES_RESPALDO.map((s) => conDatos(s, clientes, resenas)) };
+    return { secciones: SECCIONES_RESPALDO.map((s) => conDatos(s, resenas)) };
   }
 
   return {
-    secciones: crudas
-      .map((s) => normalizarSeccion(s, clientes, resenas))
-      .filter((s): s is SeccionMarketing => s !== null),
+    secciones: crudas.map((s) => normalizarSeccion(s, resenas)).filter((s): s is SeccionMarketing => s !== null),
   };
 }
