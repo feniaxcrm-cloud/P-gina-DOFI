@@ -71,13 +71,8 @@ const doc = {
     {
       _type: "clientsBanner",
       titulo: "Clientes y casos de éxito",
-      categorias: [
-        ["Construcción", "construccion"],
-        ["Belleza", "belleza"],
-        ["Servicios", "servicios"],
-        ["Comercio", "comercio"],
-        ["Emprendedores", "emprendedores"],
-      ].map(([nombre, icono]) => ({ _key: clave(), _type: "categoriaIcono", nombre, icono })),
+      // Sin giros: los crea el editor en el Studio. No se siembra contenido
+      // de ejemplo (antes se sembraban 5 giros y aparecian en la web).
       cta: { _type: "ctaSimple", texto: "Ver casos de éxito", enlace: "/clientes" },
     },
     {

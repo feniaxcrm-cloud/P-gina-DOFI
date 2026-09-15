@@ -1,58 +1,71 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Pause, Play, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
-import type { FormatoVideo, ImagenSanity } from "@/lib/marketing-digital";
+import { FilmSlate, Pause, Play, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
+import type { ImagenSanity, VideoSeccion } from "@/lib/marketing-digital";
 
 /**
- * Video de la columna derecha de Clientes. El archivo, su formato y su
- * portada se cargan en el Studio: cambiar el video no toca codigo.
+ * Columna derecha de Clientes: el video de la seccion, cargado en el Studio
+ * (cambiarlo o reemplazarlo no toca codigo).
+ *
+ * LA COLUMNA EXISTE SIEMPRE. Sin video cargado muestra un estado vacio
+ * discreto con los colores DOFI -- nunca desaparece y nunca deja al carrusel
+ * ocupando todo el ancho. Tampoco se oculta en telefono: ahi va debajo de los
+ * logos.
+ *
+ * TAMAÑO: en escritorio y tablet el marco ocupa toda su columna (el ~45% del
+ * ancho) y todo el alto del carrusel de al lado. En telefono, 4:5.
+ *
+ * AJUSTE (desde el Studio), sin deformar nunca:
+ *  - "rellenar": el video cubre el marco (object-cover; puede recortar bordes).
+ *  - "completo": se ve entero (object-contain) sobre el fondo de marca.
  *
  * REPRODUCCION: en silencio, en bucle y en linea (muted + loop + playsInline),
- * y SOLO mientras esta en pantalla: fuera de pantalla se pausa (bateria y
- * datos en movil). Con movimiento reducido no arranca solo: se ve la portada
- * y el visitante decide.
- *
- * CONTROLES MINIMOS: pausa/reproduccion siempre (un video que se mueve solo
+ * solo mientras esta en pantalla. Con movimiento reducido no arranca solo.
+ * Controles minimos: pausa/reproduccion siempre (un video que se mueve solo
  * tiene que poder detenerse) y sonido solo si el editor lo activa.
- *
- * PROPORCION: el marco toma el formato elegido en el Studio y el video lo
- * llena con object-cover: nunca se deforma. En escritorio el vertical se
- * estira al alto del carrusel de al lado (recorte minimo, columnas parejas);
- * cuadrado y horizontal mantienen su proporcion y se centran en alto.
  */
 
-const MARCO: Record<FormatoVideo, string> = {
-  vertical: "mx-auto aspect-[9/16] w-full max-w-[360px] lg:aspect-auto lg:h-full lg:max-w-none",
-  // Cuadrado y horizontal conservan su proporcion tambien en escritorio y se
-  // centran en alto: estirarlos al alto del carrusel recortaba 23% del cuadro.
-  cuadrado: "mx-auto aspect-square w-full max-w-[520px] lg:max-w-none",
-  horizontal: "aspect-video w-full",
-};
+const MARCO =
+  "relative w-full overflow-hidden rounded-[28px] aspect-[4/5] md:aspect-auto md:h-full md:min-h-[420px] shadow-[0_32px_64px_-36px_rgba(26,15,61,0.6)]";
 
 const BOTON =
   "flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors duration-300 hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
+function VideoVacio() {
+  return (
+    <div
+      className={`${MARCO} flex flex-col items-center justify-center gap-4 bg-[radial-gradient(90%_70%_at_80%_100%,rgba(244,123,32,0.22)_0%,rgba(244,123,32,0)_60%),linear-gradient(160deg,#2E1B68_0%,#1A0F3D_55%,#120A26_100%)]`}
+    >
+      <svg aria-hidden="true" className="absolute inset-x-0 bottom-0 h-28 w-full" viewBox="0 0 400 110" preserveAspectRatio="none" fill="none">
+        <path d="M0 62 C 70 38, 140 86, 210 62 S 340 38, 400 58" stroke="rgba(255,255,255,0.10)" strokeWidth="1.5" />
+        <path d="M0 86 C 80 62, 160 110, 240 86 S 360 62, 400 82" stroke="rgba(244,123,32,0.30)" strokeWidth="1.5" />
+      </svg>
+      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm">
+        <FilmSlate size={26} weight="duotone" aria-hidden="true" />
+      </span>
+      <p className="px-8 text-center font-sans text-sm text-white/60">Pronto verás aquí nuestro video.</p>
+    </div>
+  );
+}
+
 export function VideoClientes({
-  url,
-  formato,
-  sonido,
+  video,
   portada,
   titulo,
 }: {
-  url: string;
-  formato: FormatoVideo;
-  sonido: boolean;
+  video: VideoSeccion | null;
   portada: ImagenSanity | null;
   titulo: string;
 }) {
-  const video = useRef<HTMLVideoElement>(null);
+  const ref = useRef<HTMLVideoElement>(null);
   const pausaManual = useRef(false);
   const [reproduciendo, setReproduciendo] = useState(false);
   const [silenciado, setSilenciado] = useState(true);
+  const url = video?.url;
 
   useEffect(() => {
-    const v = video.current;
+    const v = ref.current;
     if (!v) return;
     // La propiedad, no solo el atributo: es la que habilita el autoplay.
     v.muted = true;
@@ -67,10 +80,12 @@ export function VideoClientes({
     );
     io.observe(v);
     return () => io.disconnect();
-  }, []);
+  }, [url]);
+
+  if (!video) return <VideoVacio />;
 
   function alternarReproduccion() {
-    const v = video.current;
+    const v = ref.current;
     if (!v) return;
     if (v.paused) {
       pausaManual.current = false;
@@ -82,7 +97,7 @@ export function VideoClientes({
   }
 
   function alternarSonido() {
-    const v = video.current;
+    const v = ref.current;
     if (!v) return;
     v.muted = !v.muted;
     setSilenciado(v.muted);
@@ -92,13 +107,13 @@ export function VideoClientes({
     }
   }
 
+  const completo = video.ajuste === "completo";
+
   return (
-    <div
-      className={`relative overflow-hidden rounded-[28px] bg-deep shadow-[0_32px_64px_-36px_rgba(26,15,61,0.6)] ${MARCO[formato]}`}
-    >
+    <div className={`${MARCO} ${completo ? "bg-[linear-gradient(160deg,#2E1B68_0%,#120A26_100%)]" : "bg-deep"}`}>
       <video
-        ref={video}
-        src={url}
+        ref={ref}
+        src={video.url}
         poster={portada?.url}
         muted
         loop
@@ -107,14 +122,14 @@ export function VideoClientes({
         aria-label={`Video: ${titulo}`}
         onPlay={() => setReproduciendo(true)}
         onPause={() => setReproduciendo(false)}
-        className="absolute inset-0 h-full w-full object-cover"
+        className={`absolute inset-0 h-full w-full ${completo ? "object-contain" : "object-cover"}`}
       />
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-abyss/55 to-transparent"
       />
       <div className="absolute bottom-4 right-4 flex gap-2">
-        {sonido && (
+        {video.sonido && (
           <button
             type="button"
             onClick={alternarSonido}

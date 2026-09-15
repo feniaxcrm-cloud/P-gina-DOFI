@@ -3,6 +3,50 @@
 Solo cambió esta sección de `/marketing-digital`. Hero, Footer y las otras seis secciones
 quedaron igual (la regresión da los mismos números que antes), y la home también.
 
+## Corrección posterior (mismo día): lo que estaba mal y cómo quedó
+
+Lo publicado en `76789ed` no correspondía a lo pedido. Hubo cuatro problemas:
+
+| Problema | Causa | Corrección |
+|---|---|---|
+| **Faltaba la columna del video** | Sin video cargado, la columna se ocultaba | Las dos columnas existen **siempre** desde tablet: 55% carrusel y 45% video. Sin video, el marco muestra un estado vacío discreto. En teléfono el video va debajo de los logos y nunca desaparece. |
+| **El carrusel ocupaba todo el ancho** | Consecuencia del punto anterior | Resuelto con la columna fija del video. |
+| **El panel abierto quedaba gigante** | A 1224px medía 688 contra 124 (5,5 a 1) | Con la columna al 55% (651px) mide 257 contra 89: **relación 2,90**, la del video (255/88). |
+| **Aparecía "Emprendedores" sin configurarlo** | Los 5 giros (Construcción, Belleza, Servicios, Comercio, Emprendedores) los había sembrado yo en Sanity en un sprint anterior, con la lista de ejemplo del primer brief. El código además los tenía como respaldo. | Quitados de Sanity (respaldo exacto en `audit/backup-giros-sembrados-2026-09-14.json`), del respaldo del código y del script de siembra. |
+
+Sin giros en Sanity, el carrusel muestra una **estructura vacía** (un panel ancho y cuatro
+angostos, sin nombres ni logos) y la línea "Pronto verás aquí a nuestros clientes por giro de
+negocio." No se inventa ningún giro, empresa ni logo.
+
+**Cambios en el Studio:**
+- **Ícono del giro:** ahora es opcional. Un giro necesita nombre; su orden es el de la lista
+  (arrastrar); la foto es opcional; y lleva sus empresas con logos.
+- **"Formato del video" → "Ajuste del video en su columna":**
+  - Rellenar la columna: puede recortar bordes, nunca deforma.
+  - Mostrar el video completo: sin recortes, sobre fondo de marca.
+
+**Verificación de la corrección:**
+- **Página real, con los datos de hoy (sin giros ni video):**
+
+  | | 1440 | 1024 | 768 | 390 |
+  |---|---|---|---|---|
+  | Columnas | 651 / 533 (55/45), lado a lado | 488 / 400 | 361 / 295 | apiladas, video debajo |
+  | Alto del marco del video | = columna carrusel (487) | = 447 | = 429 | 350×438 (4:5) |
+  | Nombres de giro de ejemplo en la sección | ninguno | ninguno | ninguno | ninguno |
+  | Marquesina | 26 fichas, 63s, 2.ª en reversa | igual | igual | igual |
+  | Botón | 281×64, a 40px | igual | 281×64, a 48px | 244×56, a 48px |
+  | Desborde / errores | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+
+- **Con datos genéricos `[prueba]`** (página local, ya borrada):
+  - Paneles a 1440: [89, 257, 89, 89, 89], relación 2,90. A 1024: [195, 67…], también 2,90.
+  - La etiqueta del giro entra en una línea.
+  - El video ocupa toda su columna (533×664, igual al alto del carrusel) y reproduce.
+  - La curva sigue igual a la del video: 30 / 53 / 70 / 83 / 96 / 100%, con el ancho total fijo.
+  - En teléfono el orden es carrusel → logos → video → marquesina → botón.
+- **Regresión:** las otras 6 secciones y la home dan los mismos valores.
+
+Lo que sigue abajo describe la primera versión. Donde la contradice, manda esta corrección.
+
 ```
 Clientes y casos de éxito                     (una línea en escritorio, morado DOFI)
 ┌───────────────────────────────────┬──────────┐
@@ -99,15 +143,15 @@ Marketing Digital → Secciones → Clientes y casos de éxito
 │
 ├── Carrusel de giros de negocio
 │   ├── Giros de negocio   (crear, editar, borrar, arrastrar para reordenar)
-│   │   └── Giro: nombre · ícono · foto (opcional)
-│   │       └── Empresas de este giro  (agregar, quitar, reemplazar, reordenar)
+│   │   └── Giro: nombre · ícono (opcional) · foto (opcional)
+│   │       └── Empresas y logos de este giro  (agregar, quitar, reemplazar, reordenar)
 │   │           ├── Cuenta existente          → usa el nombre y el logo de la Cuenta
 │   │           └── Empresa con logo propio   → nombre + logo
 │   └── Rotación automática
 │
 └── Video (columna derecha)
     ├── Video (MP4/WebM)
-    ├── Formato del video (vertical / cuadrado / horizontal)
+    ├── Ajuste del video en su columna (rellenar / completo)
     ├── Portada del video (opcional)
     └── Mostrar botón de sonido
 ```
@@ -116,9 +160,9 @@ Marketing Digital → Secciones → Clientes y casos de éxito
   Cuenta lo cambia en todo el sitio (marquesina, `/clientes` y este carrusel). "Empresa con
   logo propio" es para las que no son Cuentas.
 - **Cuentas desactivadas:** una Cuenta apagada no aparece en ningún giro.
-- **Giros reutilizados.** Los 5 que ya existían (Construcción, Belleza, Servicios, Comercio,
-  Emprendedores, con sus íconos) siguen ahí sin migrar nada. El campo conserva su nombre
-  interno `categorias`; en el Studio se ve como "Giros de negocio".
+- **Giros:** los 5 de ejemplo que yo había sembrado se quitaron en la corrección (ver arriba).
+  Hoy no hay giros hasta que los crees. El campo conserva su nombre interno `categorias`; en el
+  Studio se ve como "Giros de negocio".
 - **Quitado:**
   - "Caso destacado" de la sección y "Video del caso" de Cuenta. Pertenecían al panel de caso
     del sprint anterior, que este diseño reemplaza por el video de la sección.

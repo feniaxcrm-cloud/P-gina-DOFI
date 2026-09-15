@@ -2,7 +2,7 @@ import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { CarruselGiros } from "./CarruselGiros";
 import { VideoClientes } from "./VideoClientes";
-import type { ClienteMarquesina, FormatoVideo, SeccionClientes } from "@/lib/marketing-digital";
+import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital";
 
 /**
  * 5 · Clientes y casos de éxito (clientsBanner).
@@ -14,11 +14,16 @@ import type { ClienteMarquesina, FormatoVideo, SeccionClientes } from "@/lib/mar
  *   Marquesina continua de clientes (la de siempre)
  *   Botón (el de siempre)
  *
- * GIROS: cada giro es un panel del carrusel (CarruselGiros, reproduce el
- * video de referencia) con sus propias empresas, todo desde el Studio.
+ * DOS COLUMNAS REALES, SIEMPRE: carrusel ~55% y video ~45% desde tablet
+ * (en telefono se apilan: carrusel, logos, video). Ninguna de las dos se
+ * oculta por falta de datos: cada una tiene su estado vacio discreto, asi el
+ * carrusel nunca se estira a todo el ancho (con la columna al 55% el panel
+ * abierto tiene la misma proporcion que en el video de referencia).
  *
- * VIDEO: archivo, formato y portada desde el Studio (VideoClientes). Sin
- * video, el carrusel ocupa todo el ancho: nunca un recuadro vacio.
+ * GIROS: solo los que existen en el Studio, con sus empresas y logos
+ * (CarruselGiros). No hay giros de respaldo ni contenido de relleno.
+ *
+ * VIDEO: archivo, ajuste y portada desde el Studio (VideoClientes).
  *
  * MARQUESINA Y BOTON: sin cambios pedidos. FilaMarquesina, sus clases, su
  * velocidad, sus sentidos y el boton quedan exactamente como estaban.
@@ -73,21 +78,6 @@ function FilaMarquesina({ clientes, reverso }: { clientes: ClienteMarquesina[]; 
   );
 }
 
-/** Columnas en escritorio segun el formato del video. Vertical: columna fija
- *  angosta y el marco se estira al alto del carrusel. Cuadrado y horizontal:
- *  columna proporcional y el video centrado en alto, con su proporcion.
- *  Clases literales para que Tailwind las vea al compilar. */
-const COLUMNAS: Record<FormatoVideo, string> = {
-  vertical: "lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_340px]",
-  cuadrado: "lg:grid-cols-[minmax(0,1fr)_minmax(0,0.72fr)]",
-  horizontal: "lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)]",
-};
-const CELDA_VIDEO: Record<FormatoVideo, string> = {
-  vertical: "lg:h-full",
-  cuadrado: "lg:self-center",
-  horizontal: "lg:self-center",
-};
-
 export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes; id: string; nivel: "h1" | "h2" }) {
   const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, cta, animar, clientes } = seccion;
   const Titulo = nivel;
@@ -118,26 +108,15 @@ export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes
           )}
         </Anim>
 
-        {(giros.length > 0 || video) && (
-          <div className={`mt-12 grid grid-cols-1 gap-10 md:mt-16 ${video ? COLUMNAS[video.formato] : ""}`}>
-            {giros.length > 0 && (
-              <Anim animar={animar} delay={0.08} className="min-w-0">
-                <CarruselGiros giros={giros} rotacion={rotacionAutomatica} animar={animar} />
-              </Anim>
-            )}
-            {video && (
-              <Anim animar={animar} delay={0.16} className={`min-w-0 ${CELDA_VIDEO[video.formato]}`}>
-                <VideoClientes
-                  url={video.url}
-                  formato={video.formato}
-                  sonido={video.sonido}
-                  portada={imagen}
-                  titulo={titulo}
-                />
-              </Anim>
-            )}
-          </div>
-        )}
+        {/* 11fr / 9fr = 55% carrusel, 45% video. */}
+        <div className="mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] md:gap-8 lg:gap-10">
+          <Anim animar={animar} delay={0.08} className="min-w-0">
+            <CarruselGiros giros={giros} rotacion={rotacionAutomatica} animar={animar} />
+          </Anim>
+          <Anim animar={animar} delay={0.16} className="min-w-0 md:h-full">
+            <VideoClientes video={video} portada={imagen} titulo={titulo} />
+          </Anim>
+        </div>
 
         {clientes.length > 0 && (
           <Anim animar={animar} delay={0.12} className="mt-12 flex min-w-0 flex-col gap-4">

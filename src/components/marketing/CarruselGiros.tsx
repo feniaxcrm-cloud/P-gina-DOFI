@@ -77,14 +77,19 @@ const RELACION_ABIERTO = 2.9;
 const INTERVALO_MS = 4800;
 const VUELTAS_MAXIMAS = 2;
 
-/** Limites por panel. "compacto" = tira de menos de 560px (telefono): el
- *  abierto necesita 176px para que un nombre largo ("Emprendedores") entre
- *  entero en su etiqueta. Las clases del HTML del servidor (flexServidor y
- *  el margen) repiten estos numeros. */
+/** Limites por panel. "compacto" = tira de menos de 560px (telefono, o la
+ *  columna del carrusel en tablet): el abierto necesita 176px para que un
+ *  nombre largo entre en su etiqueta. Con la columna al 55% del ancho en
+ *  escritorio (~650px), el reparto da ~257px abierto y ~89px cerrados: la
+ *  misma geometria del video (255 / 88). Las clases del HTML del servidor
+ *  (flexServidor y el margen) repiten estos numeros. */
 const MEDIDAS = {
-  compacto: { separacion: 6, min: 34, max: 60, abiertoMin: 176 },
+  compacto: { separacion: 6, min: 34, max: 90, abiertoMin: 176 },
   amplio: { separacion: 10, min: 52, max: 124, abiertoMin: 240 },
 };
+
+/** Alto de la tira. Compartido por el carrusel y su estructura vacia. */
+const ALTO_TIRA = "h-[300px] sm:h-[360px] lg:h-[400px] xl:h-[440px]";
 
 type Distribucion = { inicio: number; visibles: number; plegado: number; abierto: number; separacion: number };
 
@@ -302,9 +307,28 @@ export function CarruselGiros({
     [totalEmpresas]
   );
 
-  if (!giro) return null;
+  // SIN GIROS EN SANITY: no se inventa ninguno. Se muestra la estructura del
+  // carrusel vacia (un panel ancho y cuatro angostos, sin nombres ni logos)
+  // para que la composicion de dos columnas se mantenga, y una linea discreta.
+  if (!giro) {
+    return (
+      <div data-giros="vacio" className="min-w-0">
+        <div aria-hidden="true" className={`flex gap-1.5 sm:gap-2.5 ${ALTO_TIRA}`}>
+          <span className="h-full flex-[2.9_1_0%] rounded-[22px] bg-[linear-gradient(165deg,rgba(109,75,201,0.16)_0%,rgba(75,42,147,0.07)_100%)]" />
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className="h-full flex-[1_1_0%] rounded-[22px] bg-brand/[0.05]" />
+          ))}
+        </div>
+        <p className="mt-6 font-sans text-[15px] text-ink-muted">
+          Pronto verás aquí a nuestros clientes por giro de negocio.
+        </p>
+      </div>
+    );
+  }
 
   const duracion = sinTransicion ? "0ms" : `${DURACION_MS}ms`;
+  // null = HTML del servidor (todavia sin medir): mandan las clases.
+  const compacto = distribucion ? distribucion.separacion === MEDIDAS.compacto.separacion : null;
   const retardoEtiqueta = sinTransicion ? "0ms" : "100ms";
   const retardoCerrado = sinTransicion ? "0ms" : "120ms";
 
@@ -332,11 +356,11 @@ export function CarruselGiros({
           role="tablist"
           aria-label="Giros de negocio"
           onKeyDown={alTeclear}
-          className="relative flex h-[300px] sm:h-[340px] lg:h-[380px] xl:h-[420px]"
+          className={`relative flex ${ALTO_TIRA}`}
         >
           {giros.map((g, i) => {
             const abierto = i === activo;
-            const Icono = ICONOS[g.icono];
+            const Icono = g.icono ? ICONOS[g.icono] : null;
             const visible = !distribucion || (i >= distribucion.inicio && i < distribucion.inicio + distribucion.visibles);
             const primero = distribucion ? i === distribucion.inicio : i === 0;
 
@@ -359,7 +383,7 @@ export function CarruselGiros({
               : `${i === 0 ? "" : "ml-1.5 sm:ml-2.5"} ${
                   abierto
                     ? "flex-[2.9_1_0%] min-w-[176px] sm:min-w-[240px]"
-                    : "flex-[1_1_0%] min-w-[34px] max-w-[60px] sm:min-w-[52px] sm:max-w-[124px]"
+                    : "flex-[1_1_0%] min-w-[34px] max-w-[90px] sm:min-w-[52px] sm:max-w-[124px]"
                 }`;
 
             return (
@@ -397,7 +421,10 @@ export function CarruselGiros({
                       className={`absolute inset-0 h-full w-full object-cover ${abierto ? "grayscale-0 brightness-100" : "grayscale brightness-[0.82]"}`}
                       style={{
                         objectPosition: posicionFoto(g.imagen.hotspot),
-                        transition: `filter ${duracion} ${CURVA}`,
+                        // Profundidad: al abrirse, la foto se asienta con un
+                        // zoom suave mientras gana color.
+                        scale: abierto ? "1" : "1.08",
+                        transition: `filter ${duracion} ${CURVA}, scale ${duracion} ${CURVA}`,
                       }}
                     />
                     <span
@@ -414,25 +441,31 @@ export function CarruselGiros({
                       className="absolute inset-0 bg-[radial-gradient(120%_80%_at_92%_108%,rgba(244,123,32,0.5)_0%,rgba(244,123,32,0)_58%),linear-gradient(165deg,#6D4BC9_0%,#4B2A93_52%,#281559_100%)]"
                       style={{ opacity: abierto ? 1 : 0, transition: `opacity ${duracion} ${CURVA}` }}
                     />
-                    <Icono
-                      aria-hidden="true"
-                      weight="duotone"
-                      className="absolute -bottom-10 -right-10 h-52 w-52 text-white/10"
-                      style={{ opacity: abierto ? 1 : 0, transition: `opacity ${duracion} ${CURVA}` }}
-                    />
+                    {Icono && (
+                      <Icono
+                        aria-hidden="true"
+                        weight="duotone"
+                        className="absolute -bottom-10 -right-10 h-52 w-52 text-white/10"
+                        style={{
+                          opacity: abierto ? 1 : 0,
+                          scale: abierto ? "1" : "0.85",
+                          transition: `opacity ${duracion} ${CURVA}, scale ${duracion} ${CURVA}`,
+                        }}
+                      />
+                    )}
                   </>
                 )}
 
                 {/* Cerrado: icono arriba y nombre en vertical. */}
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 flex flex-col items-center justify-between py-5"
+                  className={`absolute inset-0 flex flex-col items-center py-5 ${Icono ? "justify-between" : "justify-end"}`}
                   style={{
                     opacity: abierto ? 0 : 1,
                     transition: `opacity ${abierto ? "150ms" : duracion} ${CURVA} ${abierto ? "0ms" : retardoCerrado}`,
                   }}
                 >
-                  <Icono size={22} weight="duotone" className={g.imagen ? "text-white/90" : "text-brand"} />
+                  {Icono && <Icono size={22} weight="duotone" className={g.imagen ? "text-white/90" : "text-brand"} />}
                   <span
                     className={`rotate-180 whitespace-nowrap font-display text-[15px] font-semibold tracking-tight [writing-mode:vertical-rl] ${
                       g.imagen ? "text-white" : "text-brand"
@@ -445,21 +478,39 @@ export function CarruselGiros({
                 {/* Abierto: icono y etiqueta (barra + nombre), como en el video. */}
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 flex flex-col justify-between p-4 sm:p-6"
+                  className={`absolute inset-0 flex flex-col ${Icono ? "justify-between" : "justify-end"} ${compacto === null ? "p-4 sm:p-6" : ""}`}
                   style={{
+                    ...(compacto === null ? {} : { padding: compacto ? 16 : 24 }),
                     opacity: abierto ? 1 : 0,
                     translate: abierto ? "0 0" : "0 8px",
                     transition: `opacity ${abierto ? duracion : "200ms"} ${CURVA} ${abierto ? retardoEtiqueta : "0ms"}, translate ${duracion} ${CURVA}`,
                   }}
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm">
-                    <Icono size={20} weight="duotone" />
-                  </span>
+                  {Icono && (
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-sm">
+                      <Icono size={20} weight="duotone" />
+                    </span>
+                  )}
                   {/* Solo el nombre, como en la referencia: la cantidad de
-                      empresas va en el encabezado de los logos. */}
+                      empresas va en el encabezado de los logos. El ancho se
+                      fija al del panel ABIERTO: el texto no se reacomoda
+                      mientras el panel crece, solo se descubre (como en el
+                      video). Nombres largos pasan a dos lineas. */}
                   <span className="flex items-center gap-2.5 sm:gap-3">
-                    <span className="h-5 w-[3px] shrink-0 rounded-full bg-accent sm:h-6" />
-                    <span className="whitespace-nowrap font-display text-base font-bold leading-tight text-white sm:text-xl lg:text-2xl">
+                    <span className="min-h-5 w-[3px] shrink-0 self-stretch rounded-full bg-accent" />
+                    <span
+                      className={`line-clamp-2 font-display font-bold leading-tight text-white ${
+                        compacto === null ? "whitespace-nowrap text-base sm:text-xl lg:text-2xl" : ""
+                      }`}
+                      style={
+                        distribucion && compacto !== null
+                          ? {
+                              width: Math.max(0, distribucion.abierto - (compacto ? 32 + 13 : 48 + 15)),
+                              fontSize: compacto ? 16 : 22,
+                            }
+                          : undefined
+                      }
+                    >
                       {g.nombre}
                     </span>
                   </span>

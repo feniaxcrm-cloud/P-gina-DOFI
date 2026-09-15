@@ -65,18 +65,23 @@ export type EmpresaGiro = {
   logo: { url: string; ancho: number; alto: number } | null;
 };
 
-/** Giro de negocio: un panel del carrusel de Clientes y su lista de empresas. */
+/** Giro de negocio: un panel del carrusel de Clientes y su lista de empresas.
+ *  Solo existe si alguien lo creo en el Studio: no hay giros de respaldo. */
 export type GiroNegocio = {
   key: string;
   nombre: string;
-  icono: IconoCategoria;
+  /** Opcional: sin icono elegido, el panel no muestra ninguno. */
+  icono: IconoCategoria | null;
   imagen: ImagenSanity | null;
   empresas: EmpresaGiro[];
 };
 
-export const FORMATOS_VIDEO = ["vertical", "cuadrado", "horizontal"] as const;
-export type FormatoVideo = (typeof FORMATOS_VIDEO)[number];
-export type VideoSeccion = { url: string; formato: FormatoVideo; sonido: boolean };
+/** "rellenar": el video cubre toda su columna (puede recortar bordes).
+ *  "completo": se ve entero, sin recortes, sobre fondo de marca. En ningun
+ *  caso se deforma. */
+export const AJUSTES_VIDEO = ["rellenar", "completo"] as const;
+export type AjusteVideo = (typeof AJUSTES_VIDEO)[number];
+export type VideoSeccion = { url: string; ajuste: AjusteVideo; sonido: boolean };
 
 export type Resena = {
   id: string;
@@ -107,9 +112,11 @@ export type SeccionNavegacion = Base & { tipo: "navigationBanner" };
 export type SeccionMetodo = Base & { tipo: "methodBanner"; pasos: PasoMetodo[]; mostrarPasos: boolean };
 export type SeccionClientes = Base & {
   tipo: "clientsBanner";
+  /** Vacio mientras no se creen giros en el Studio: nunca se rellena. */
   giros: GiroNegocio[];
   rotacionAutomatica: boolean;
-  /** Columna derecha. La portada es `imagen` (campo comun de la seccion). */
+  /** Columna derecha. La portada es `imagen` (campo comun de la seccion).
+   *  Sin video, la columna igual existe, con su estado vacio. */
   video: VideoSeccion | null;
   /** Marquesina continua: todas las Cuentas activas. */
   clientes: ClienteMarquesina[];
@@ -201,16 +208,9 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
       cta: { texto: "Ver casos de éxito", enlace: "/clientes" },
     }),
     tipo: "clientsBanner",
-    // Los giros del Studio, sin empresas: asignarlas es decision editorial.
-    giros: (
-      [
-        ["Construcción", "construccion"],
-        ["Belleza", "belleza"],
-        ["Servicios", "servicios"],
-        ["Comercio", "comercio"],
-        ["Emprendedores", "emprendedores"],
-      ] as const
-    ).map(([nombre, icono]) => ({ key: `respaldo-${icono}`, nombre, icono, imagen: null, empresas: [] })),
+    // Sin giros de respaldo A PROPOSITO: los giros, sus empresas y sus logos
+    // existen solo si se crean en el Studio. Nada de contenido de relleno.
+    giros: [],
     rotacionAutomatica: true,
     video: null,
     clientes: [],
@@ -263,7 +263,7 @@ const QUERY_MARKETING = `{
           }
         },
         rotacionAutomatica,
-        "videoUrl": video.asset->url, formatoVideo, sonidoVideo
+        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
       },
       _type == "reviewsBanner" => { enlaceGoogle }
     }
@@ -327,7 +327,7 @@ type SeccionRaw = {
   giros?: GiroRaw[] | null;
   rotacionAutomatica?: boolean | null;
   videoUrl?: Txt;
-  formatoVideo?: Txt;
+  ajusteVideo?: Txt;
   sonidoVideo?: boolean | null;
   enlaceGoogle?: Txt;
 };
@@ -410,7 +410,7 @@ function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[] {
     .map((g, i) => ({
       key: t(g._key) || `giro-${i}`,
       nombre: t(g.nombre),
-      icono: unoDe(g.icono, ICONOS_CATEGORIA, "servicios"),
+      icono: (ICONOS_CATEGORIA as readonly string[]).includes(t(g.icono)) ? (t(g.icono) as IconoCategoria) : null,
       imagen: imagen(g.imagen, 1200, t(g.nombre)),
       empresas: (g.empresas ?? [])
         .filter((e): e is NonNullable<EmpresaRaw> => Boolean(e && t(e.nombre)) && e?.activa !== false)
@@ -428,7 +428,7 @@ function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[] {
 function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
   const url = t(raw.videoUrl);
   if (!url) return null;
-  return { url, formato: unoDe(raw.formatoVideo, FORMATOS_VIDEO, "vertical"), sonido: bool(raw.sonidoVideo, false) };
+  return { url, ajuste: unoDe(raw.ajusteVideo, AJUSTES_VIDEO, "rellenar"), sonido: bool(raw.sonidoVideo, false) };
 }
 
 function normalizarSeccion(

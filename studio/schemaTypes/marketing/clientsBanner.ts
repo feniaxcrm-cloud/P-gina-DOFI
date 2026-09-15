@@ -63,7 +63,7 @@ export const clientsBanner = defineType({
         type: "array",
         fieldset: "giros",
         description:
-          "Cada giro es un panel del carrusel, en este orden: arrastra para reordenar. Dentro de cada giro agregas sus empresas; sus logos aparecen al abrir el giro.",
+          "Cada giro es un panel del carrusel. El orden de esta lista es el orden del carrusel: arrastra para reordenar. Dentro de cada giro agregas sus empresas; sus logos aparecen al abrir el giro. Sin giros, la sección muestra la estructura vacía: nunca se inventan.",
         of: [
           defineArrayMember({
             type: "object",
@@ -78,11 +78,10 @@ export const clientsBanner = defineType({
               }),
               defineField({
                 name: "icono",
-                title: "Ícono",
+                title: "Ícono (opcional)",
                 type: "string",
-                description: "Se ve en el panel del giro.",
+                description: "Se ve en el panel del giro. Sin ícono, el panel muestra solo el nombre.",
                 options: { list: OPCIONES_ICONO },
-                validation: (Rule) => Rule.required(),
               }),
               campoImagen({
                 name: "imagen",
@@ -92,7 +91,7 @@ export const clientsBanner = defineType({
               }),
               defineField({
                 name: "empresas",
-                title: "Empresas de este giro",
+                title: "Empresas y logos de este giro",
                 type: "array",
                 description:
                   "Sus logos aparecen al abrir el giro, en este orden (arrastra para reordenar). Elige una Cuenta existente o, si la empresa no es Cuenta, agrégala con su logo.",
@@ -158,23 +157,22 @@ export const clientsBanner = defineType({
         fieldset: "video",
         options: { accept: "video/mp4,video/webm" },
         description:
-          "MP4 (H.264) liviano, idealmente de menos de 15 MB. Se reproduce en silencio y en bucle mientras está en pantalla. Sin video, el carrusel ocupa todo el ancho.",
+          "MP4 (H.264) liviano, idealmente de menos de 15 MB. Ocupa la columna derecha, al lado del carrusel, y se reproduce en silencio y en bucle mientras está en pantalla. Para cambiarlo, sube otro archivo aquí.",
       }),
       defineField({
-        name: "formatoVideo",
-        title: "Formato del video",
+        name: "ajusteVideo",
+        title: "Ajuste del video en su columna",
         type: "string",
         fieldset: "video",
-        description: "Elige el del archivo: así se muestra completo y sin deformarse.",
+        description: "En ningún caso se deforma.",
         options: {
           list: [
-            { title: "Vertical 9:16 (reel)", value: "vertical" },
-            { title: "Cuadrado 1:1", value: "cuadrado" },
-            { title: "Horizontal 16:9", value: "horizontal" },
+            { title: "Rellenar la columna (puede recortar los bordes)", value: "rellenar" },
+            { title: "Mostrar el video completo (sin recortes)", value: "completo" },
           ],
           layout: "radio",
         },
-        initialValue: "vertical",
+        initialValue: "rellenar",
       }),
       campoImagen({
         name: "imagen",

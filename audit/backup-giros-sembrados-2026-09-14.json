@@ -1,0 +1,37 @@
+{
+  "documento": "marketingDigitalPage",
+  "rev": "CPJDhWkzF3BZuMunxAnJZb",
+  "seccionKey": "70d2f7d61aca",
+  "categorias": [
+    {
+      "_key": "44bf2d5d9ec0",
+      "_type": "categoriaIcono",
+      "icono": "construccion",
+      "nombre": "Construcción"
+    },
+    {
+      "_key": "2309544e73bd",
+      "_type": "categoriaIcono",
+      "icono": "belleza",
+      "nombre": "Belleza"
+    },
+    {
+      "_key": "1507ea766b4a",
+      "_type": "categoriaIcono",
+      "icono": "servicios",
+      "nombre": "Servicios"
+    },
+    {
+      "_key": "9d09c694ef66",
+      "_type": "categoriaIcono",
+      "icono": "comercio",
+      "nombre": "Comercio"
+    },
+    {
+      "_key": "0ed080869edd",
+      "_type": "categoriaIcono",
+      "icono": "emprendedores",
+      "nombre": "Emprendedores"
+    }
+  ]
+}
