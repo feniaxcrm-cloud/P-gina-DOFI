@@ -433,6 +433,82 @@ body {
     transition-duration: 0ms !important;
     transition-delay: 0ms !important;
   }
+
+  /* Ornamentos nauticos de fondo (OrnamentoNautico.tsx): sin la animacion
+     ambiental continua. Quedan quietos en su posicion base; el hover
+     tambien queda anulado porque esas clases usan motion-safe:. */
+  [data-ornamento] {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   Ornamentos nauticos (OrnamentoNautico.tsx) — animacion ambiental
+   -----------------------------------------------------------------
+   Movimiento perpetuo, CASI imperceptible, para que los fondos claros de
+   Marketing Digital no se sientan estaticos incluso sin que nadie pase el
+   cursor. Cada @keyframes anima UNA sola propiedad (translate, rotate u
+   opacity -- nunca "transform"): en Tailwind v4 son propiedades CSS propias
+   e independientes, asi que la animacion ambiental (esta) y el hover
+   (motion-safe:group-hover/nautico:... en el propio componente) pueden
+   animar propiedades distintas del mismo elemento sin pisarse.
+   ============================================================ */
+@keyframes ornamento-flotar {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -14px;
+  }
+}
+
+@keyframes ornamento-derivar {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 16px 0;
+  }
+}
+
+@keyframes ornamento-girar {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes ornamento-pulsar {
+  0%,
+  100% {
+    opacity: var(--pulso-min, 0.5);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Duracion/retraso por instancia via variables CSS (mismo recurso que ya usa
+   .wall-track con animationDuration inline): asi varios ornamentos con el
+   mismo keyframe no laten sincronizados, que se veria mecanico. */
+[data-ornamento].anim-flotar {
+  animation: ornamento-flotar var(--dur, 7s) ease-in-out infinite;
+  animation-delay: var(--retraso, 0s);
+}
+[data-ornamento].anim-derivar {
+  animation: ornamento-derivar var(--dur, 9s) ease-in-out infinite;
+  animation-delay: var(--retraso, 0s);
+}
+[data-ornamento].anim-girar {
+  animation: ornamento-girar var(--dur, 60s) linear infinite;
+}
+[data-ornamento].anim-pulsar {
+  animation: ornamento-pulsar var(--dur, 4s) ease-in-out infinite;
+  animation-delay: var(--retraso, 0s);
 }
 
 @media (prefers-reduced-motion: reduce) {

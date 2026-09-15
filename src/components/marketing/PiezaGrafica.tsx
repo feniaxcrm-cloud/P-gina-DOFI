@@ -1,6 +1,6 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
-import { OrnamentoDelfin, OrnamentoRuta } from "./OrnamentoNautico";
+import { OrnamentoDelfin, OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
 import { PiezaCompleta } from "./PiezaCompleta";
 import type { CtaSimple, ImagenSanity, SeccionQueEs } from "@/lib/marketing-digital";
 
@@ -95,13 +95,34 @@ export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id
           <path d="M0 126 C 260 86, 520 166, 760 126 S 1220 86, 1440 120" stroke="rgba(244,123,32,0.22)" strokeWidth="1.5" />
         </svg>
       </div>
-      {/* El delfin es EL simbolo de DOFI (lo dice el propio texto de esta
-          seccion): sangra por el borde superior derecho, muy sutil. */}
-      {/* Arriba del todo, mayormente sobre el relleno superior de la seccion
+      {/* Composicion de "¿Qué es DOFI?": el delfin (el simbolo que el propio
+          texto menciona) arriba a la derecha, una brujula quieta abajo a la
+          izquierda, oleaje cruzando el fondo completo y una ruta punteada
+          en el aire que deja el titulo -- repartidos por TODA la seccion,
+          no apilados en una esquina. El delfin va en el relleno superior
           (por eso -top-*, no top-*): asi nunca cae sobre la columna de texto,
           que empieza mas abajo. */}
-      <OrnamentoDelfin className="-right-5 -top-4 h-24 w-24 text-brand/[0.09] sm:-right-6 sm:-top-6 sm:h-32 sm:w-32 lg:-right-8 lg:-top-8 lg:h-40 lg:w-40" />
-      <OrnamentoRuta className="left-[8%] top-[62%] hidden h-20 w-40 text-accent/20 md:block lg:h-24 lg:w-52" />
+      <OrnamentoDelfin
+        capa="principal"
+        ambiente="flotar"
+        duracion={8}
+        className="-right-6 -top-6 h-32 w-32 sm:-right-8 sm:-top-8 sm:h-48 sm:w-48 lg:-right-10 lg:-top-10 lg:h-64 lg:w-64"
+      />
+      <OrnamentoIcono
+        motivo="brujula"
+        capa="secundario"
+        ambiente="girar"
+        duracion={90}
+        className="-bottom-8 -left-6 hidden h-28 w-28 md:block lg:h-36 lg:w-36"
+      />
+      <OrnamentoOlas
+        ambiente="derivar"
+        duracion={11}
+        className="inset-x-0 bottom-16 h-16 opacity-90 md:bottom-20 md:h-24 lg:h-28"
+      />
+      <OrnamentoRuta ambiente="derivar" duracion={13} retraso={2} className="left-[4%] top-[58%] hidden h-24 w-[46%] md:block lg:h-28" />
+      <OrnamentoNodo className="left-[46%] top-[18%] hidden h-3 w-3 lg:block" retraso={1.2} />
+      <OrnamentoNodo className="right-[6%] bottom-[30%] h-3 w-3 sm:h-4 sm:w-4" retraso={2.6} />
 
       {/* 50% titulo / 50% contenido (6 + 6 columnas). items-center: si una
           columna es mas corta, se centra contra la otra en vez de dejar un

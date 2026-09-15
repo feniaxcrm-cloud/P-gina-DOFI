@@ -1,7 +1,7 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { CarruselGiros } from "./CarruselGiros";
-import { OrnamentoIcono } from "./OrnamentoNautico";
+import { OrnamentoIcono, OrnamentoNodo, OrnamentoRuta } from "./OrnamentoNautico";
 import { VideoClientes } from "./VideoClientes";
 import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital";
 
@@ -92,19 +92,27 @@ export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes
       aria-labelledby={`${id}-titulo`}
       className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F4EFFB_100%)] py-20 md:py-28"
     >
-      {/* Velero arriba (sobre fondo liso, antes del carrusel) y una brujula
-          chica abajo, cerca del boton: los dos siempre sobre fondo plano,
-          nunca detras del carrusel ni del video (que ya tienen su propio
-          fondo opaco). */}
+      {/* Velero arriba a la derecha, una ruta punteada cruzando el margen
+          entre el titulo y el carrusel, y una brujula girando muy despacio
+          abajo cerca del boton -- todas sobre fondo plano, nunca importa que
+          alguna linea quede "detras" del carrusel o del video: esos ya
+          tienen su propio fondo opaco encima. */}
       <OrnamentoIcono
         motivo="velero"
-        className="-right-6 top-0 h-24 w-24 rotate-6 text-brand/[0.08] sm:-right-8 sm:h-36 sm:w-36 lg:-right-10 lg:h-44 lg:w-44"
+        capa="principal"
+        ambiente="flotar"
+        duracion={7}
+        className="-right-8 -top-6 h-32 w-32 rotate-6 sm:-right-10 sm:h-44 sm:w-44 lg:-right-12 lg:h-56 lg:w-56"
       />
       <OrnamentoIcono
         motivo="brujula"
-        deriva="asentar"
-        className="-left-4 bottom-10 hidden h-20 w-20 -rotate-6 text-accent/[0.14] md:block lg:h-28 lg:w-28"
+        capa="secundario"
+        ambiente="girar"
+        duracion={100}
+        className="-left-6 bottom-6 hidden h-24 w-24 md:block lg:h-32 lg:w-32"
       />
+      <OrnamentoRuta ambiente="derivar" duracion={12} retraso={1.5} className="right-[6%] top-[10%] hidden h-20 w-[55%] md:block lg:h-24" />
+      <OrnamentoNodo className="left-[30%] top-[6%] h-3 w-3 sm:h-4 sm:w-4" retraso={2} />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <Anim animar={animar}>
           {subtitulo && (

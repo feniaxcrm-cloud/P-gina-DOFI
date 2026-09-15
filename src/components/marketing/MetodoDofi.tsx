@@ -1,6 +1,6 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
-import { OrnamentoIcono, OrnamentoRuta } from "./OrnamentoNautico";
+import { OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
 import { PiezaCompleta } from "./PiezaCompleta";
 import { RutaMetodo } from "./RutaMetodo";
 import type { SeccionMetodo } from "@/lib/marketing-digital";
@@ -31,13 +31,27 @@ export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id:
       className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)] py-20 md:py-28"
     >
       {/* El Metodo es el tramo del viaje: timon guiando desde arriba a la
-          izquierda, y una ruta punteada chica cerca del boton, abajo. */}
+          izquierda, un barco chico que se mece del otro lado, oleaje y ruta
+          cruzando el fondo completo, y un nodo de acento -- toda la seccion,
+          no solo una esquina. */}
       <OrnamentoIcono
         motivo="timon"
-        deriva="asentar"
-        className="-left-8 top-2 h-32 w-32 -rotate-12 text-brand/[0.08] sm:-left-10 sm:h-48 sm:w-48 lg:-left-14 lg:top-4 lg:h-64 lg:w-64"
+        capa="principal"
+        ambiente="flotar"
+        duracion={7.5}
+        className="-left-10 -top-6 h-36 w-36 -rotate-12 sm:-left-12 sm:h-52 sm:w-52 lg:-left-16 lg:-top-8 lg:h-72 lg:w-72"
       />
-      <OrnamentoRuta className="bottom-6 right-[6%] hidden h-16 w-36 text-accent/[0.22] md:block lg:h-20 lg:w-48" />
+      <OrnamentoIcono
+        motivo="barco"
+        capa="secundario"
+        ambiente="flotar"
+        duracion={6}
+        retraso={1.4}
+        className="-right-4 bottom-6 hidden h-24 w-24 rotate-6 sm:block sm:h-32 sm:w-32 lg:right-[4%] lg:h-40 lg:w-40"
+      />
+      <OrnamentoRuta ambiente="derivar" duracion={12} className="left-[8%] top-[8%] hidden h-24 w-[70%] md:block lg:h-28" />
+      <OrnamentoOlas ambiente="derivar" duracion={10} retraso={1} className="inset-x-0 bottom-0 h-14 opacity-80 md:h-20 lg:h-24" />
+      <OrnamentoNodo className="right-[16%] top-[14%] h-3 w-3 sm:h-4 sm:w-4" retraso={0.6} />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="mx-auto max-w-[820px] text-center">
           {subtitulo && (
