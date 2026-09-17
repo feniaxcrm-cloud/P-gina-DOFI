@@ -1,5 +1,6 @@
 import { sanityQuery } from "@/lib/sanity";
 import { company } from "@/config/company";
+import { obtenerResenasGoogle } from "@/lib/google-places";
 
 /**
  * Datos de la pagina /marketing-digital.
@@ -11,7 +12,15 @@ import { company } from "@/config/company";
  * el Studio. No hay un campo numerico "orden" aparte a proposito -- dos
  * fuentes de orden terminan contradiciendose.
  *
- * UNA sola consulta trae las secciones y las reseñas activas.
+ * UNA sola consulta trae las secciones y las reseñas activas de Sanity; en
+ * paralelo se pide tambien a Google (ver src/lib/google-places.ts).
+ *
+ * RESEÑAS, PRIORIDAD Y NUNCA MEZCLAR: si Google esta configurado y devuelve
+ * al menos una reseña, la seccion muestra ESAS (reales, de la ficha de
+ * Google). Si no -- sin credenciales, Google no responde, o responde vacio
+ * -- se muestran las reseñas cargadas a mano en Sanity. Jamas las dos fuentes
+ * a la vez: mezclar reseñas reales con reseñas manuales (aunque tambien sean
+ * reales) daria una cantidad inconsistente entre visitas.
  *
  * RESPALDO: si Sanity no responde o el documento no tiene secciones, la
  * pagina se arma con SECCIONES_RESPALDO (el copy del brief). Si el documento
@@ -125,7 +134,16 @@ export type SeccionClientes = Base & {
   /** Marquesina continua: todas las Cuentas activas. */
   clientes: ClienteMarquesina[];
 };
-export type SeccionResenas = Base & { tipo: "reviewsBanner"; enlaceGoogle: string; resenas: Resena[] };
+export type SeccionResenas = Base & {
+  tipo: "reviewsBanner";
+  enlaceGoogle: string;
+  resenas: Resena[];
+  /** Tope de tarjetas a mostrar. `null`: sin tope, se muestran todas. */
+  cantidadMostrada: number | null;
+  autoplay: boolean;
+  /** Segundos entre avances automaticos. Solo importa si `autoplay` esta activo. */
+  velocidadAutoplay: number;
+};
 export type SeccionCierre = Base & { tipo: "ctaBanner"; alineacion: Alineacion; overlay: Overlay };
 
 export type SeccionMarketing =
@@ -224,6 +242,9 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
     tipo: "reviewsBanner",
     enlaceGoogle: company.location.mapsUrl,
     resenas: [],
+    cantidadMostrada: null,
+    autoplay: false,
+    velocidadAutoplay: 6,
   },
   {
     ...base("respaldo-cierre", {
@@ -269,7 +290,7 @@ const QUERY_MARKETING = `{
         rotacionAutomatica,
         "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
       },
-      _type == "reviewsBanner" => { enlaceGoogle }
+      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
     }
   },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
@@ -331,6 +352,9 @@ type SeccionRaw = {
   ajusteVideo?: Txt;
   sonidoVideo?: boolean | null;
   enlaceGoogle?: Txt;
+  cantidadMostrada?: number | null;
+  autoplay?: boolean | null;
+  velocidadAutoplay?: number | null;
 };
 
 type RespuestaRaw = {
@@ -487,13 +511,22 @@ function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing
         clientes: logosDeGiros(giros),
       };
     }
-    case "reviewsBanner":
+    case "reviewsBanner": {
+      const cantidadMostrada =
+        typeof raw.cantidadMostrada === "number" && raw.cantidadMostrada > 0
+          ? Math.round(raw.cantidadMostrada)
+          : null;
       return {
         ...camposBase(raw, false),
         tipo: "reviewsBanner",
         enlaceGoogle: t(raw.enlaceGoogle) || company.location.mapsUrl,
-        resenas,
+        resenas: cantidadMostrada ? resenas.slice(0, cantidadMostrada) : resenas,
+        cantidadMostrada,
+        autoplay: bool(raw.autoplay, false),
+        velocidadAutoplay:
+          typeof raw.velocidadAutoplay === "number" && raw.velocidadAutoplay > 0 ? raw.velocidadAutoplay : 6,
       };
+    }
     default:
       // Un tipo que este codigo todavia no sabe pintar se ignora sin romper.
       return null;
@@ -524,8 +557,12 @@ function conDatos(s: SeccionMarketing, resenas: Resena[]): SeccionMarketing {
 }
 
 export async function getPaginaMarketingDigital(): Promise<{ secciones: SeccionMarketing[] }> {
-  const respuesta = await sanityQuery<RespuestaRaw>(QUERY_MARKETING);
-  const resenas = normalizarResenas(respuesta?.resenas);
+  const [respuesta, resenasGoogle] = await Promise.all([
+    sanityQuery<RespuestaRaw>(QUERY_MARKETING),
+    obtenerResenasGoogle(),
+  ]);
+  const resenas =
+    resenasGoogle && resenasGoogle.length > 0 ? resenasGoogle : normalizarResenas(respuesta?.resenas);
 
   const crudas = respuesta?.pagina?.sections ?? [];
   if (crudas.length === 0) {

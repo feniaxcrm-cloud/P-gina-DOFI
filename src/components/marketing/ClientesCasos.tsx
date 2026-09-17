@@ -1,7 +1,7 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { CarruselGiros } from "./CarruselGiros";
-import { OrnamentoIcono, OrnamentoNodo, OrnamentoRuta } from "./OrnamentoNautico";
+import { OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
 import { VideoClientes } from "./VideoClientes";
 import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital";
 
@@ -92,11 +92,16 @@ export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes
       aria-labelledby={`${id}-titulo`}
       className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F4EFFB_100%)] py-20 md:py-28"
     >
-      {/* Velero arriba a la derecha, una ruta punteada cruzando el margen
-          entre el titulo y el carrusel, y una brujula girando muy despacio
-          abajo cerca del boton -- todas sobre fondo plano, nunca importa que
-          alguna linea quede "detras" del carrusel o del video: esos ya
-          tienen su propio fondo opaco encima. */}
+      {/* Velero arriba a la derecha, timon entrando arriba a la izquierda,
+          brujula girando muy despacio abajo cerca del boton, una ruta
+          punteada cruzando el margen entre el titulo y el carrusel, oleaje
+          chico cerrando el fondo y varios nodos sueltos -- distribuido por
+          toda la seccion, nunca sobre la marquesina ni el carrusel/video:
+          esos ya tienen su propio fondo opaco encima, y las piezas grandes
+          quedan siempre en el margen exterior. Lineas primero (quedan
+          "atras"), piezas despues. */}
+      <OrnamentoRuta ambiente="derivar" duracion={12} retraso={1.5} className="right-[6%] top-[10%] hidden h-20 w-[55%] md:block lg:h-24" />
+      <OrnamentoOlas ambiente="derivar" duracion={11} retraso={0.6} className="inset-x-0 bottom-0 h-12 opacity-70 md:h-16 lg:h-20" />
       <OrnamentoIcono
         motivo="velero"
         capa="principal"
@@ -111,8 +116,17 @@ export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes
         duracion={100}
         className="-left-6 bottom-6 hidden h-24 w-24 md:block lg:h-32 lg:w-32"
       />
-      <OrnamentoRuta ambiente="derivar" duracion={12} retraso={1.5} className="right-[6%] top-[10%] hidden h-20 w-[55%] md:block lg:h-24" />
+      <OrnamentoIcono
+        motivo="timon"
+        capa="secundario"
+        ambiente="flotar"
+        duracion={8}
+        retraso={0.5}
+        className="-left-10 -top-8 hidden h-28 w-28 rotate-[8deg] lg:block lg:h-36 lg:w-36"
+      />
       <OrnamentoNodo className="left-[30%] top-[6%] h-3 w-3 sm:h-4 sm:w-4" retraso={2} />
+      <OrnamentoNodo className="right-[24%] top-3 hidden h-3 w-3 sm:block" ambiente="pulsar" retraso={1} />
+      <OrnamentoNodo className="left-[8%] bottom-3 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.4} />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <Anim animar={animar}>
           {subtitulo && (

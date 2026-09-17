@@ -31,9 +31,14 @@ export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id:
       className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)] py-20 md:py-28"
     >
       {/* El Metodo es el tramo del viaje: timon guiando desde arriba a la
-          izquierda, un barco chico que se mece del otro lado, oleaje y ruta
-          cruzando el fondo completo, y un nodo de acento -- toda la seccion,
-          no solo una esquina. */}
+          izquierda, un barco chico que se mece del otro lado, una brujula
+          chica arriba a la derecha, oleaje y ruta cruzando el fondo
+          completo, y varios nodos de acento -- toda la seccion, no solo una
+          esquina. Lineas primero (quedan "atras"), piezas despues. Todo
+          pegado al borde superior o inferior: el tramo intermedio es de
+          RutaMetodo (mas abajo en el DOM) y no debe compartirse con nada. */}
+      <OrnamentoRuta ambiente="derivar" duracion={12} className="left-[8%] top-[8%] hidden h-24 w-[70%] md:block lg:h-28" />
+      <OrnamentoOlas ambiente="derivar" duracion={10} retraso={1} className="inset-x-0 bottom-0 h-14 opacity-80 md:h-20 lg:h-24" />
       <OrnamentoIcono
         motivo="timon"
         capa="principal"
@@ -49,9 +54,16 @@ export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id:
         retraso={1.4}
         className="-right-4 bottom-6 hidden h-24 w-24 rotate-6 sm:block sm:h-32 sm:w-32 lg:right-[4%] lg:h-40 lg:w-40"
       />
-      <OrnamentoRuta ambiente="derivar" duracion={12} className="left-[8%] top-[8%] hidden h-24 w-[70%] md:block lg:h-28" />
-      <OrnamentoOlas ambiente="derivar" duracion={10} retraso={1} className="inset-x-0 bottom-0 h-14 opacity-80 md:h-20 lg:h-24" />
+      <OrnamentoIcono
+        motivo="brujula"
+        capa="secundario"
+        ambiente="girar"
+        duracion={85}
+        className="-right-6 top-4 hidden h-16 w-16 sm:block lg:h-20 lg:w-20"
+      />
       <OrnamentoNodo className="right-[16%] top-[14%] h-3 w-3 sm:h-4 sm:w-4" retraso={0.6} />
+      <OrnamentoNodo className="left-[22%] top-4 hidden h-3 w-3 sm:block" ambiente="pulsar" retraso={1.8} />
+      <OrnamentoNodo className="left-[10%] bottom-4 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.2} />
       <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="mx-auto max-w-[820px] text-center">
           {subtitulo && (

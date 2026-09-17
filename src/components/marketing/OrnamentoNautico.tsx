@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { Anchor, Boat, CompassRose, Crosshair, Sailboat, SteeringWheel } from "@phosphor-icons/react/dist/ssr";
+import { Anchor, Boat, CompassRose, Crosshair, Sailboat, Star, SteeringWheel } from "@phosphor-icons/react/dist/ssr";
 
 /**
  * Composicion grafica de fondo para las secciones de fondo claro de
@@ -25,7 +25,8 @@ import { Anchor, Boat, CompassRose, Crosshair, Sailboat, SteeringWheel } from "@
  *   - "principal"  -- la pieza grande de cada composicion. 30% de opacidad,
  *     trazo "light" (no "thin": a este tamaño y opacidad un trazo mas grueso
  *     es lo que hace que se LEA, no solo se intuya).
- *   - "secundario" -- una segunda pieza mas chica, mas atras. 20%, "thin".
+ *   - "secundario" -- una segunda pieza mas chica, mas atras. 20%, "thin",
+ *     con un blur casi imperceptible (0.5px) que la hunde un poco mas.
  *   - "linea"      -- rutas y oleaje. 24%, siempre trazo fino.
  *   - "acento"     -- detalles chicos en naranja: nodos, el trazo del logo.
  *     36-40%: el acento tiene que notarse, es lo que da el golpe de color.
@@ -56,7 +57,15 @@ type Ambiente = "flotar" | "derivar" | "girar" | "pulsar";
 type Hover = "mover" | "crecer" | "deslizar";
 type Color = "brand" | "accent";
 
-const ICONOS = { timon: SteeringWheel, velero: Sailboat, brujula: CompassRose, ancla: Anchor, barco: Boat, coordenadas: Crosshair };
+const ICONOS = {
+  timon: SteeringWheel,
+  velero: Sailboat,
+  brujula: CompassRose,
+  ancla: Anchor,
+  barco: Boat,
+  coordenadas: Crosshair,
+  estrella: Star,
+};
 
 /** Clases COMPLETAS y literales (Tailwind escanea el texto del archivo, no
  *  el resultado de concatenar en tiempo de ejecucion): por eso es una tabla,
@@ -81,6 +90,16 @@ const PESO_CAPA: Record<Capa, "thin" | "light"> = {
   secundario: "thin",
   linea: "thin",
   acento: "light",
+};
+
+/** Profundidad real, no solo opacidad: la capa secundaria queda un poco
+ *  desenfocada, como si estuviera mas atras que la principal. Muy leve a
+ *  proposito -- a esta opacidad, un blur fuerte la borraria del todo. */
+const FILTRO_CAPA: Record<Capa, string> = {
+  principal: "",
+  secundario: "blur-[0.5px]",
+  linea: "",
+  acento: "",
 };
 
 // motion-safe: con "reducir movimiento" activado, ni el hover mueve nada --
@@ -137,7 +156,7 @@ function Base({
       aria-hidden="true"
       data-ornamento={motivo}
       style={estilo}
-      className={`pointer-events-none absolute select-none transition-[transform,opacity] duration-[850ms] ease-out ${claseAmbiente} ${HOVER[hoverPorDefecto(ambiente, hover)]} ${COLOR_CAPA[color][capa]} ${className}`}
+      className={`pointer-events-none absolute select-none transition-[transform,opacity] duration-[850ms] ease-out ${claseAmbiente} ${HOVER[hoverPorDefecto(ambiente, hover)]} ${COLOR_CAPA[color][capa]} ${FILTRO_CAPA[capa]} ${className}`}
     >
       {children}
     </span>

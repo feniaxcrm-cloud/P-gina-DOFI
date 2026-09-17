@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "motion/react";
 import { ArrowUpRight, CaretLeft, CaretRight, Star } from "@phosphor-icons/react";
 import { Reveal } from "@/components/Reveal";
 import type { Resena } from "@/lib/marketing-digital";
@@ -8,12 +9,14 @@ import type { Resena } from "@/lib/marketing-digital";
 /**
  * Carrusel de reseñas: una fila horizontal con scroll-snap y dos flechas.
  *
- * SIN AUTOPLAY
+ * AUTOPLAY OPCIONAL, APAGADO POR DEFECTO
  * -----------------------------------------------------------------
- * No avanza solo. El brief pide evitar el movimiento infinito, y un
- * carrusel que se mueve mientras alguien lee una reseña es el caso de
- * libro. Se recorre con las flechas, con el dedo (snap nativo) o con el
- * teclado: la pista es enfocable y las flechas del teclado la desplazan.
+ * Configurable desde el Studio (sección Reseñas). Cuando está activo nunca
+ * debe impedir la lectura: se pausa al pasar el cursor o enfocar con
+ * teclado (la pista ya era enfocable), no corre con movimiento reducido, y
+ * no arranca si todas las reseñas entran en pantalla sin desbordar. Fuera de
+ * eso, se sigue recorriendo igual que siempre con las flechas, el dedo
+ * (snap nativo) o el teclado.
  *
  * Las flechas se desactivan en cada extremo y desaparecen si todas las
  * reseñas entran en pantalla.
@@ -88,10 +91,22 @@ function Tarjeta({ r }: { r: Resena }) {
   );
 }
 
-export function ResenasCarrusel({ resenas, animar }: { resenas: Resena[]; animar: boolean }) {
+export function ResenasCarrusel({
+  resenas,
+  animar,
+  autoplay = false,
+  velocidadSegundos = 6,
+}: {
+  resenas: Resena[];
+  animar: boolean;
+  autoplay?: boolean;
+  velocidadSegundos?: number;
+}) {
   const pista = useRef<HTMLUListElement>(null);
+  const reducido = useReducedMotion();
   const [enInicio, setEnInicio] = useState(true);
   const [enFin, setEnFin] = useState(false);
+  const [pausado, setPausado] = useState(false);
 
   const actualizar = useCallback(() => {
     const el = pista.current;
@@ -120,12 +135,27 @@ export function ResenasCarrusel({ resenas, animar }: { resenas: Resena[]; animar
 
   const hayDesborde = !(enInicio && enFin);
 
+  useEffect(() => {
+    if (!autoplay || reducido || pausado || !hayDesborde) return;
+    const id = setInterval(() => {
+      const el = pista.current;
+      if (!el) return;
+      const alFinal = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+      el.scrollTo({ left: alFinal ? 0 : el.scrollLeft + el.clientWidth * 0.85, behavior: "smooth" });
+    }, velocidadSegundos * 1000);
+    return () => clearInterval(id);
+  }, [autoplay, reducido, pausado, hayDesborde, velocidadSegundos]);
+
   return (
     <div className="mt-12">
       <ul
         ref={pista}
         tabIndex={0}
         aria-label="Reseñas de clientes"
+        onMouseEnter={() => setPausado(true)}
+        onMouseLeave={() => setPausado(false)}
+        onFocus={() => setPausado(true)}
+        onBlur={() => setPausado(false)}
         className="-mx-5 flex snap-x snap-mandatory scroll-px-5 gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 md:-mx-10 md:scroll-px-10 md:px-10 lg:-mx-12 lg:scroll-px-12 lg:px-12 [&::-webkit-scrollbar]:hidden"
       >
         {resenas.map((r, i) => (

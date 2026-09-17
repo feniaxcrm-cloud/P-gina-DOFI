@@ -34,9 +34,9 @@ export function camposBase({
   textos?: Textos;
   extras?: Campo[];
   diseno?: Campo[];
-  /** Campos de texto que la seccion no muestra: un campo que no hace nada
-   *  solo confunde a quien edita. */
-  omitir?: Array<"subtitulo" | "descripcion" | "destacado">;
+  /** Campos que la seccion no muestra: un campo que no hace nada solo
+   *  confunde a quien edita. */
+  omitir?: Array<"subtitulo" | "descripcion" | "destacado" | "cta">;
 } = {}): Campo[] {
   return [
     defineField({
