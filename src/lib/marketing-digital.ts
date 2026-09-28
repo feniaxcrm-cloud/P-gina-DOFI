@@ -261,8 +261,10 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
 // Consulta
 // ============================================================
 
-/** Imagen con su alt, que vive DENTRO del campo imagen en el Studio. */
-const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
+/** Imagen con su alt, que vive DENTRO del campo imagen en el Studio.
+ *  Exportada: la reutiliza src/lib/pagina-servicio.ts (mismo fragmento,
+ *  mismas paginas de banners). */
+export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
 
 /** Logo de una empresa de giro, con sus dimensiones reales (object-contain
  *  necesita la proporcion para reservar el espacio sin deformar). */
@@ -330,7 +332,9 @@ type GiroRaw = {
   empresas?: EmpresaRaw[] | null;
 } | null;
 
-type SeccionRaw = {
+/** Exportado: src/lib/pagina-servicio.ts reutiliza esta misma forma cruda
+ *  (es un superconjunto de lo que esas paginas necesitan). */
+export type SeccionRaw = {
   _type?: Txt;
   _key?: Txt;
   activo?: boolean | null;
@@ -377,11 +381,11 @@ type RespuestaRaw = {
 // Normalizado
 // ============================================================
 
-const t = (v: Txt): string => (typeof v === "string" ? v.trim() : "");
-const bool = (v: boolean | null | undefined, porDefecto: boolean) =>
+export const t = (v: Txt): string => (typeof v === "string" ? v.trim() : "");
+export const bool = (v: boolean | null | undefined, porDefecto: boolean) =>
   typeof v === "boolean" ? v : porDefecto;
 
-function unoDe<T extends string>(v: Txt, validos: readonly T[], porDefecto: T): T {
+export function unoDe<T extends string>(v: Txt, validos: readonly T[], porDefecto: T): T {
   return (validos as readonly string[]).includes(v ?? "") ? (v as T) : porDefecto;
 }
 
@@ -407,8 +411,12 @@ function cta(raw: CtaRaw): CtaSimple {
 
 /** `altFoto`: en las fotos de fondo el titulo es un buen alt por defecto.
  *  En las piezas graficas no: su alt lo arma el componente con el texto que
- *  la pieza trae dibujado. */
-function camposBase(raw: SeccionRaw, altFoto: boolean): Base {
+ *  la pieza trae dibujado.
+ *
+ *  Exportada: resuelve TODOS los campos comunes (imagen, cta, animar, etc.)
+ *  de una sola vez, asi src/lib/pagina-servicio.ts no reimplementa nada de
+ *  esto para sus propios tipos de seccion (son el mismo `Base`). */
+export function camposBase(raw: SeccionRaw, altFoto: boolean): Base {
   const titulo = t(raw.titulo);
   return {
     key: t(raw._key) || t(raw._type),
@@ -423,8 +431,8 @@ function camposBase(raw: SeccionRaw, altFoto: boolean): Base {
   };
 }
 
-const ALINEACIONES = ["izquierda", "centro", "derecha"] as const;
-const OVERLAYS = ["ninguno", "suave", "medio", "fuerte"] as const;
+export const ALINEACIONES = ["izquierda", "centro", "derecha"] as const;
+export const OVERLAYS = ["ninguno", "suave", "medio", "fuerte"] as const;
 
 /** Giros con sus empresas, en el orden del Studio. Se descartan: giros sin
  *  nombre, empresas sin nombre (referencia a una Cuenta borrada) y Cuentas

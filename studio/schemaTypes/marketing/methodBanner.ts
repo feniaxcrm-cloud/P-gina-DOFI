@@ -1,10 +1,15 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
 import { camposBase } from "./camposBase";
 
-/** Sección "Método DOFI": el recorrido de pasos hasta el resultado final. */
+/**
+ * Sección de recorrido: pasos numerados hasta un resultado final.
+ * Reutilizable en cualquier página de sections[] (Marketing Digital la usa
+ * como "Método DOFI en 5 pasos"; el título real sale del campo "Título" de
+ * cada instancia).
+ */
 export const methodBanner = defineType({
   name: "methodBanner",
-  title: "Método DOFI",
+  title: "Método en pasos",
   type: "object",
   fields: camposBase({
     imagenRecortable: false,
@@ -51,8 +56,8 @@ export const methodBanner = defineType({
   preview: {
     select: { titulo: "titulo", activo: "activo", media: "imagen" },
     prepare: ({ titulo, activo, media }) => ({
-      title: titulo || "Método DOFI",
-      subtitle: `Método DOFI${activo === false ? " · Oculta" : ""}`,
+      title: titulo || "Método en pasos",
+      subtitle: `Método en pasos${activo === false ? " · Oculta" : ""}`,
       media,
     }),
   },

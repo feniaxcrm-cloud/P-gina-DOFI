@@ -1,10 +1,15 @@
 import { defineType } from "sanity";
 import { camposBase } from "./camposBase";
 
-/** Sección "¿Qué es DOFI?": título a la izquierda, texto a la derecha. */
+/**
+ * Sección "Introducción": título a la izquierda, texto a la derecha.
+ * Reutilizable en cualquier página de sections[] (Marketing Digital la usa
+ * como "¿Qué es DOFI?"; el título real siempre sale del campo "Título" de
+ * cada instancia, este es solo el nombre del tipo en el Studio).
+ */
 export const aboutBanner = defineType({
   name: "aboutBanner",
-  title: "¿Qué es DOFI?",
+  title: "Introducción",
   type: "object",
   fields: camposBase({
     imagenRecortable: false,
@@ -18,8 +23,8 @@ export const aboutBanner = defineType({
   preview: {
     select: { titulo: "titulo", activo: "activo", media: "imagen" },
     prepare: ({ titulo, activo, media }) => ({
-      title: titulo || "¿Qué es DOFI?",
-      subtitle: `¿Qué es DOFI?${activo === false ? " · Oculta" : ""}`,
+      title: titulo || "Introducción",
+      subtitle: `Introducción${activo === false ? " · Oculta" : ""}`,
       media,
     }),
   },

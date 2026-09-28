@@ -6,14 +6,17 @@ import type { StructureResolver } from "sanity/structure";
  * de documento nuevo que se agregue mas adelante aparece igual, debajo del
  * divisor, para no tener que tocar este archivo cada vez.
  */
-/** paginaInicio y hero son singleton: un solo documento con id fijo, se
+/** Todos estos son singleton: un solo documento con id fijo por tipo, se
  *  abren directo en su formulario en vez de una lista con un "Crear nuevo"
- *  que invitaria a crear duplicados que src/lib/sanity.ts no busca (la
- *  query siempre trae el documento con ese _id fijo). */
+ *  que invitaria a crear duplicados que el codigo del sitio no busca (cada
+ *  pagina siempre trae el documento de su _type, el primero que encuentra). */
 const ID_PAGINA_INICIO = "paginaInicio";
 const ID_HERO = "hero";
 const ID_BANNERS = "banners";
 const ID_MARKETING = "marketingDigitalPage";
+const ID_TRAFICO = "traficoAdsPage";
+const ID_CRM = "chatbotsCrmPage";
+const ID_ASESORIAS = "asesoriasPage";
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
@@ -65,6 +68,35 @@ export const deskStructure: StructureResolver = (S) =>
             .documentId(ID_MARKETING)
             .title("Marketing Digital")
         ),
+      // Mismo sistema que Marketing Digital (sections[] singleton), sin
+      // Clientes ni Reseñas -- ver la nota en cada schemaType.
+      S.listItem()
+        .title("Tráfico / Ads")
+        .schemaType("traficoAdsPage")
+        .child(
+          S.document()
+            .schemaType("traficoAdsPage")
+            .documentId(ID_TRAFICO)
+            .title("Tráfico / Ads")
+        ),
+      S.listItem()
+        .title("ChatBots / CRM")
+        .schemaType("chatbotsCrmPage")
+        .child(
+          S.document()
+            .schemaType("chatbotsCrmPage")
+            .documentId(ID_CRM)
+            .title("ChatBots / CRM")
+        ),
+      S.listItem()
+        .title("Asesorías")
+        .schemaType("asesoriasPage")
+        .child(
+          S.document()
+            .schemaType("asesoriasPage")
+            .documentId(ID_ASESORIAS)
+            .title("Asesorías")
+        ),
       // Reseñas de Google cargadas a mano (las usa Marketing Digital).
       S.listItem()
         .title("Reseñas")
@@ -86,6 +118,18 @@ export const deskStructure: StructureResolver = (S) =>
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) =>
-          !["cuenta", "contenido", "servicio", "paginaInicio", "hero", "banners", "marketingDigitalPage", "resena"].includes(item.getId() ?? "")
+          ![
+            "cuenta",
+            "contenido",
+            "servicio",
+            "paginaInicio",
+            "hero",
+            "banners",
+            "marketingDigitalPage",
+            "traficoAdsPage",
+            "chatbotsCrmPage",
+            "asesoriasPage",
+            "resena",
+          ].includes(item.getId() ?? "")
       ),
     ]);

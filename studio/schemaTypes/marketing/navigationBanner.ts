@@ -1,10 +1,15 @@
 import { defineType } from "sanity";
 import { camposBase } from "./camposBase";
 
-/** Sección "¿Cómo navegamos contigo?": composición editorial sobre morado. */
+/**
+ * Sección editorial de fondo oscuro: composición con brújula sobre morado.
+ * Reutilizable en cualquier página de sections[] (Marketing Digital la usa
+ * como "¿Cómo navegamos contigo?"; el título real sale del campo "Título"
+ * de cada instancia).
+ */
 export const navigationBanner = defineType({
   name: "navigationBanner",
-  title: "¿Cómo navegamos contigo?",
+  title: "Bloque editorial (fondo oscuro)",
   type: "object",
   fields: camposBase({
     imagenRecortable: false,
@@ -20,8 +25,8 @@ export const navigationBanner = defineType({
   preview: {
     select: { titulo: "titulo", activo: "activo", media: "imagen" },
     prepare: ({ titulo, activo, media }) => ({
-      title: titulo || "¿Cómo navegamos contigo?",
-      subtitle: `Cómo navegamos${activo === false ? " · Oculta" : ""}`,
+      title: titulo || "Bloque editorial",
+      subtitle: `Fondo oscuro${activo === false ? " · Oculta" : ""}`,
       media,
     }),
   },

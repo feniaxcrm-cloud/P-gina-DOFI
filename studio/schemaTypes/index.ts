@@ -4,6 +4,9 @@ import { servicio } from "./servicio";
 import { paginaInicio } from "./paginaInicio";
 import { banners } from "./banners";
 import { marketingDigitalPage } from "./marketingDigitalPage";
+import { traficoAdsPage } from "./traficoAdsPage";
+import { chatbotsCrmPage } from "./chatbotsCrmPage";
+import { asesoriasPage } from "./asesoriasPage";
 import { resena } from "./resena";
 import { ctaSimple } from "./objects/ctaSimple";
 import { teamBanner } from "./marketing/teamBanner";
@@ -28,6 +31,9 @@ export const schemaTypes = [
   paginaInicio,
   banners,
   marketingDigitalPage,
+  traficoAdsPage,
+  chatbotsCrmPage,
+  asesoriasPage,
   resena,
   hero,
   resultado,

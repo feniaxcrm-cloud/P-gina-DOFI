@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import { Nav } from "@/components/Nav";
-import { Footer } from "@/components/Footer";
-import { PaginaEnConstruccion } from "@/components/PaginaEnConstruccion";
+import { PaginaServicio } from "@/components/marketing/PaginaServicio";
 
 export const metadata: Metadata = {
   title: "ChatBots / CRM | DOFI Agencia Creativa",
 };
 
 export default function ChatbotsCrmPage() {
-  return (
-    <>
-      <Nav />
-      <main>
-        <PaginaEnConstruccion titulo="ChatBots / CRM" />
-      </main>
-      <Footer />
-    </>
-  );
+  return <PaginaServicio tipo="chatbotsCrmPage" titulo="ChatBots / CRM" />;
 }
