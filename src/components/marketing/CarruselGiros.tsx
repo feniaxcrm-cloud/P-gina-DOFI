@@ -10,11 +10,15 @@ import {
   type Variants,
 } from "motion/react";
 import {
+  AirplaneTilt,
   Buildings,
+  Car,
   Cpu,
   ForkKnife,
+  GraduationCap,
   Handshake,
   Heartbeat,
+  HouseLine,
   RocketLaunch,
   Sparkle,
   Storefront,
@@ -66,6 +70,10 @@ const ICONOS: Record<IconoCategoria, Icon> = {
   salud: Heartbeat,
   gastronomia: ForkKnife,
   tecnologia: Cpu,
+  automotriz: Car,
+  inmobiliaria: HouseLine,
+  educacion: GraduationCap,
+  turismo: AirplaneTilt,
 };
 
 /** Medidas del video de referencia. */
@@ -175,10 +183,30 @@ export function CarruselGiros({
   giros,
   rotacion,
   animar,
+  activo: activoControlado,
+  onCambio,
+  seleccionPorCursor = true,
+  intermedio,
 }: {
   giros: GiroNegocio[];
   rotacion: boolean;
   animar: boolean;
+  /** MODO CONTROLADO (FENIAX): el giro abierto lo decide el padre, que lo
+   *  comparte con la demo de WhatsApp de al lado. Sin esta prop, el carrusel
+   *  maneja su propio estado como siempre (Marketing Digital). */
+  activo?: number;
+  /** Avisa cada cambio. `porVisitante`: lo eligio una persona (cursor, clic,
+   *  teclado o dedo), no la rotacion automatica. */
+  onCambio?: (indice: number, porVisitante: boolean) => void;
+  /** true (Marketing Digital): el giro sigue al cursor, como el video de
+   *  referencia. false (FENIAX): solo clic, toque, teclado o deslizar --
+   *  ahi cada cambio reinicia la demo de WhatsApp de al lado, y llevar el
+   *  mouse hacia el telefono no puede ir abriendo giros en el camino. */
+  seleccionPorCursor?: boolean;
+  /** Contenido entre la tira de giros y sus logos. FENIAX lo usa en
+   *  telefono para poner la demo de WhatsApp justo debajo del giro elegido
+   *  (si fuera despues de los logos, quedaria a 18 logos de distancia). */
+  intermedio?: React.ReactNode;
 }) {
   const id = useId();
   const n = giros.length;
@@ -188,10 +216,16 @@ export function CarruselGiros({
   // hidratacion. Las transiciones las apaga globals.css ([data-giros]).
   const reducido = useReducedMotion() ?? false;
 
-  const [activoGuardado, setActivo] = useState(0);
+  const [activoInterno, setActivoInterno] = useState(0);
+  const activoGuardado = activoControlado ?? activoInterno;
   // Acotado: si desde el Studio se borran giros, el indice guardado puede
   // quedar afuera de la lista.
   const activo = Math.min(activoGuardado, Math.max(0, n - 1));
+
+  function cambiar(indice: number, porVisitante: boolean) {
+    if (activoControlado === undefined) setActivoInterno(indice);
+    onCambio?.(indice, porVisitante);
+  }
   const [direccion, setDireccion] = useState(1);
   const [ancho, setAncho] = useState<number | null>(null);
   // Sin transicion al medir por primera vez y al redimensionar: solo los
@@ -242,7 +276,7 @@ export function CarruselGiros({
       pasosAutomaticos.current += 1;
       if (pasosAutomaticos.current >= n * VUELTAS_MAXIMAS) setDetenido(true);
       setDireccion(1);
-      setActivo((a) => (a + 1) % n);
+      cambiar((activo + 1) % n, false);
     }, INTERVALO_MS);
     return () => window.clearTimeout(t);
   }, [rotando, activo, n]);
@@ -253,7 +287,7 @@ export function CarruselGiros({
     setDetenido(true);
     if (destino === activo) return;
     setDireccion(dir ?? (destino > activo ? 1 : -1));
-    setActivo(destino);
+    cambiar(destino, true);
   }
 
   /** Patron de pestañas accesible: flechas (circular), Inicio y Fin. */
@@ -402,7 +436,7 @@ export function CarruselGiros({
                 data-giro={abierto ? "abierto" : "cerrado"}
                 onClick={() => elegir(i)}
                 onPointerEnter={(e) => {
-                  if (e.pointerType === "mouse") elegir(i);
+                  if (seleccionPorCursor && e.pointerType === "mouse") elegir(i);
                 }}
                 style={estilo}
                 className={`relative h-full shrink-0 cursor-pointer overflow-hidden rounded-[22px] text-left outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas ${flexServidor} ${
@@ -435,11 +469,23 @@ export function CarruselGiros({
                   </>
                 ) : (
                   <>
-                    <span aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,#F3EEFB_0%,#E7DEF6_100%)]" />
+                    {/* Colores por variable: la pagina FENIAX define
+                        --giro-cerrado / --giro-abierto (globals.css,
+                        .tema-feniax); sin ellas, los de DOFI de siempre. */}
                     <span
                       aria-hidden="true"
-                      className="absolute inset-0 bg-[radial-gradient(120%_80%_at_92%_108%,rgba(244,123,32,0.5)_0%,rgba(244,123,32,0)_58%),linear-gradient(165deg,#6D4BC9_0%,#4B2A93_52%,#281559_100%)]"
-                      style={{ opacity: abierto ? 1 : 0, transition: `opacity ${duracion} ${CURVA}` }}
+                      className="absolute inset-0"
+                      style={{ backgroundImage: "var(--giro-cerrado, linear-gradient(180deg,#F3EEFB 0%,#E7DEF6 100%))" }}
+                    />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage:
+                          "var(--giro-abierto, radial-gradient(120% 80% at 92% 108%,rgba(244,123,32,0.5) 0%,rgba(244,123,32,0) 58%),linear-gradient(165deg,#6D4BC9 0%,#4B2A93 52%,#281559 100%))",
+                        opacity: abierto ? 1 : 0,
+                        transition: `opacity ${duracion} ${CURVA}`,
+                      }}
                     />
                     {Icono && (
                       <Icono
@@ -531,6 +577,8 @@ export function CarruselGiros({
             );
           })}
         </div>
+
+        {intermedio}
 
         {/* Logos del giro abierto. La capa invisible reserva el alto del giro
             con mas empresas: al cambiar de giro la pagina no salta. */}

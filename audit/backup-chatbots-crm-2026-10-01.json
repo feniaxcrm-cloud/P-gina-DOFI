@@ -1,0 +1,35 @@
+{
+  "_createdAt": "2026-09-28T21:23:58Z",
+  "_id": "chatbotsCrmPage",
+  "_rev": "flqZNGp7VQ6a1CboDfq7kX",
+  "_type": "chatbotsCrmPage",
+  "_updatedAt": "2026-09-28T21:23:58Z",
+  "sections": [
+    {
+      "_key": "crm-equipo",
+      "_type": "teamBanner",
+      "activo": false
+    },
+    {
+      "_key": "crm-intro",
+      "_type": "aboutBanner",
+      "activo": false
+    },
+    {
+      "_key": "crm-editorial",
+      "_type": "navigationBanner",
+      "activo": false
+    },
+    {
+      "_key": "crm-metodo",
+      "_type": "methodBanner",
+      "activo": false
+    },
+    {
+      "_key": "crm-cierre",
+      "_type": "ctaBanner",
+      "activo": false
+    }
+  ],
+  "titulo": "ChatBots / CRM"
+}

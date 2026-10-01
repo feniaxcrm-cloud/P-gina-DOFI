@@ -16,7 +16,7 @@ import {
 } from "./marketing-digital";
 
 /**
- * Páginas de servicio (Tráfico/Ads, ChatBots/CRM, Asesorías): mismo sistema
+ * Páginas de servicio (Tráfico/Ads y Asesorías): mismo sistema
  * que /marketing-digital -- documento singleton con `sections[]` ordenable
  * en Sanity, los mismos componentes de sección, los mismos fondos
  * decorativos -- pero SOLO con los 5 tipos que no dependen de datos
@@ -25,7 +25,7 @@ import {
  * mismos giros de negocio a mano en cada página).
  *
  * SIN RESPALDO A PROPÓSITO: a diferencia de Marketing Digital (que partió de
- * un brief con copy real), estas 3 páginas todavía no tienen contenido
+ * un brief con copy real), estas páginas todavía no tienen contenido
  * escrito. Con el documento sin crear o `sections[]` vacío,
  * getPaginaServicio devuelve `secciones: []` y la página muestra
  * PaginaEnConstruccion -- nunca texto inventado.
@@ -33,7 +33,9 @@ import {
 
 export type SeccionServicio = SeccionEquipo | SeccionQueEs | SeccionNavegacion | SeccionMetodo | SeccionCierre;
 
-export type TipoPaginaServicio = "traficoAdsPage" | "chatbotsCrmPage" | "asesoriasPage";
+/** ChatBots / CRM ya no pasa por aca: es la pagina FENIAX, con su propio
+ *  diseño y sus secciones de Clientes y Reseñas (src/lib/feniax.ts). */
+export type TipoPaginaServicio = "traficoAdsPage" | "asesoriasPage";
 
 const QUERY_SECCIONES = `sections[]{
   _type, _key, activo, subtitulo, titulo, descripcion, destacado, animar,

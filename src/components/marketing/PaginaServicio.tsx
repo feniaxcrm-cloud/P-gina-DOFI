@@ -8,8 +8,8 @@ import { MetodoDofi } from "./MetodoDofi";
 import { getPaginaServicio, type SeccionServicio, type TipoPaginaServicio } from "@/lib/pagina-servicio";
 
 /**
- * Cascarón compartido por las páginas de servicio (Tráfico/Ads, ChatBots/CRM,
- * Asesorías): mismo patrón que /marketing-digital/page.tsx -- secciones
+ * Cascarón compartido por las páginas de servicio (Tráfico/Ads y Asesorías;
+ * ChatBots/CRM pasó a ser la página FENIAX, src/components/feniax/): mismo patrón que /marketing-digital/page.tsx -- secciones
  * dinámicas según `sections[]` en Sanity, h1 en la primera y h2 en el resto,
  * anclas estables por tipo -- factorizado acá porque las 3 páginas son
  * idénticas salvo el tipo de documento y el título. Sin secciones cargadas

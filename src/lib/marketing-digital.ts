@@ -57,6 +57,10 @@ export const ICONOS_CATEGORIA = [
   "salud",
   "gastronomia",
   "tecnologia",
+  "automotriz",
+  "inmobiliaria",
+  "educacion",
+  "turismo",
 ] as const;
 export type IconoCategoria = (typeof ICONOS_CATEGORIA)[number];
 
@@ -107,6 +111,7 @@ export type Resena = {
 };
 
 /** Campos comunes a todas las secciones (los del brief). */
+export type BaseSeccion = Base;
 type Base = {
   key: string;
   imagen: ImagenSanity | null;
@@ -227,7 +232,6 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
   {
     ...base("respaldo-clientes", {
       titulo: "Clientes y casos de éxito",
-      cta: { texto: "Ver casos de éxito", enlace: "/clientes" },
     }),
     tipo: "clientsBanner",
     // Sin giros de respaldo A PROPOSITO: los giros, sus empresas y sus logos
@@ -268,7 +272,7 @@ export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width
 
 /** Logo de una empresa de giro, con sus dimensiones reales (object-contain
  *  necesita la proporcion para reservar el espacio sin deformar). */
-const LOGO = `"logo": logo.asset->url, "ancho": logo.asset->metadata.dimensions.width, "alto": logo.asset->metadata.dimensions.height`;
+export const LOGO = `"logo": logo.asset->url, "ancho": logo.asset->metadata.dimensions.width, "alto": logo.asset->metadata.dimensions.height`;
 
 const QUERY_MARKETING = `{
   "pagina": *[_type == "marketingDigitalPage"][0]{
@@ -324,7 +328,8 @@ type EmpresaRaw = {
   alto?: number | null;
 } | null;
 
-type GiroRaw = {
+/** Exportada: la reutiliza src/lib/feniax.ts (mismos giros, misma forma). */
+export type GiroRaw = {
   _key?: Txt;
   nombre?: Txt;
   icono?: Txt;
@@ -361,7 +366,7 @@ export type SeccionRaw = {
   velocidadAutoplay?: number | null;
 };
 
-type RespuestaRaw = {
+export type RespuestaRaw = {
   pagina: { sections?: SeccionRaw[] | null } | null;
   resenas:
     | {
@@ -437,7 +442,7 @@ export const OVERLAYS = ["ninguno", "suave", "medio", "fuerte"] as const;
 /** Giros con sus empresas, en el orden del Studio. Se descartan: giros sin
  *  nombre, empresas sin nombre (referencia a una Cuenta borrada) y Cuentas
  *  desactivadas -- una Cuenta apagada no aparece en ningun lado del sitio. */
-function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[] {
+export function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[] {
   return (raw ?? [])
     .filter((g): g is NonNullable<GiroRaw> => Boolean(g && t(g.nombre)))
     .map((g, i) => ({
@@ -470,7 +475,7 @@ function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
  *  tengan logo, sin repetir el mismo logo dos veces si la misma empresa
  *  quedo asignada a mas de un giro. Sin logo, una empresa no entra aca --
  *  nunca se muestra su nombre como reemplazo. */
-function logosDeGiros(giros: GiroNegocio[]): ClienteMarquesina[] {
+export function logosDeGiros(giros: GiroNegocio[]): ClienteMarquesina[] {
   const vistos = new Set<string>();
   const lista: ClienteMarquesina[] = [];
   for (const g of giros) {
@@ -483,7 +488,7 @@ function logosDeGiros(giros: GiroNegocio[]): ClienteMarquesina[] {
   return lista;
 }
 
-function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
+export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
   if (!raw || raw.activo === false) return null;
 
   switch (raw._type) {
@@ -511,7 +516,9 @@ function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing
       const giros = normalizarGiros(raw.giros);
       return {
         // En Clientes, `imagen` es la portada del video: alt vacio (decorativa).
+        // Sin boton: "Ver casos de éxito" se quito de Clientes (2026-10-01).
         ...camposBase(raw, false),
+        cta: null,
         tipo: "clientsBanner",
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
@@ -544,7 +551,7 @@ function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing
 /** Reseñas: SOLO las que alguien cargo a mano en el Studio, copiadas de
  *  Google. Nunca hay reseñas de respaldo en el codigo -- una reseña inventada
  *  es publicidad engañosa. */
-function normalizarResenas(raw: RespuestaRaw["resenas"] | undefined): Resena[] {
+export function normalizarResenas(raw: RespuestaRaw["resenas"] | undefined): Resena[] {
   return (raw ?? [])
     .filter((r) => t(r.nombre) && t(r.comentario) && typeof r.estrellas === "number")
     .map((r) => ({

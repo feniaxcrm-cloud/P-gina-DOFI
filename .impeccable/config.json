@@ -1,0 +1,50 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#ed6d19",
+        "createdAt": "2026-10-01T13:26:53.004Z",
+        "reason": "Paleta oficial del BRANDBOOK FENIAX (seccion 03) entregado por el usuario para la pagina FENIAX/ChatBots-CRM"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#e5352a",
+        "createdAt": "2026-10-01T13:26:53.124Z",
+        "reason": "Paleta oficial del BRANDBOOK FENIAX (seccion 03) entregado por el usuario para la pagina FENIAX/ChatBots-CRM"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#792883",
+        "createdAt": "2026-10-01T13:26:53.221Z",
+        "reason": "Paleta oficial del BRANDBOOK FENIAX (seccion 03) entregado por el usuario para la pagina FENIAX/ChatBots-CRM"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#2a1638",
+        "createdAt": "2026-10-01T13:26:53.339Z",
+        "reason": "Paleta oficial del BRANDBOOK FENIAX (seccion 03) entregado por el usuario para la pagina FENIAX/ChatBots-CRM"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "createdAt": "2026-10-01T13:38:55.498Z",
+        "reason": "Claude: #000 en mask-image es la parada opaca de la mascara (alfa), no un color visible"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "1.75rem",
+        "createdAt": "2026-10-01T13:40:01.452Z",
+        "reason": "Claude: paso ya usado en los componentes publicados de Marketing Digital (PiezaGrafica, RutaMetodo, ResenasCarrusel), replicado en la pagina FENIAX"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "15px",
+        "createdAt": "2026-10-01T13:40:01.560Z",
+        "reason": "Claude: paso ya usado en los componentes publicados de Marketing Digital (PiezaGrafica, RutaMetodo, ResenasCarrusel), replicado en la pagina FENIAX"
+      }
+    ]
+  }
+}

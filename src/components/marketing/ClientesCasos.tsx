@@ -1,4 +1,3 @@
-import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { CarruselGiros } from "./CarruselGiros";
 import { OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
@@ -13,7 +12,6 @@ import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital
  *   │ Carrusel de giros + logos │    Video     │
  *   └──────────────────────────┴──────────────┘
  *   Marquesina continua de clientes (la de siempre)
- *   Botón (el de siempre)
  *
  * DOS COLUMNAS REALES, SIEMPRE: carrusel ~55% y video ~45% desde tablet
  * (en telefono se apilan: carrusel, logos, video). Ninguna de las dos se
@@ -35,7 +33,9 @@ import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital
  * sustituto. Se pausa con el cursor y, con movimiento reducido, pasa a
  * desplazamiento manual (.wall-track / .wall-viewport en globals.css).
  *
- * BOTON: sin cambios.
+ * SIN BOTÓN: el "Ver casos de éxito" que cerraba la sección se quitó por
+ * pedido explícito (2026-10-01), en esta página y en la de FENIAX. El campo
+ * tampoco existe ya en el Studio (clientsBanner omite "cta").
  */
 
 /** Ancho medio de un elemento (tile 168px + separacion 16px) y velocidad
@@ -44,7 +44,8 @@ import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital
 const ANCHO_ELEMENTO = 184;
 const PX_POR_SEGUNDO = 38;
 
-function FilaMarquesina({ clientes, reverso }: { clientes: ClienteMarquesina[]; reverso: boolean }) {
+/** Exportada: la reutiliza la seccion Clientes de FENIAX (misma marquesina). */
+export function FilaMarquesina({ clientes, reverso }: { clientes: ClienteMarquesina[]; reverso: boolean }) {
   const duracion = `${Math.max(18, Math.round((clientes.length * ANCHO_ELEMENTO) / PX_POR_SEGUNDO))}s`;
   const tira = [...clientes, ...clientes];
 
@@ -81,7 +82,7 @@ function FilaMarquesina({ clientes, reverso }: { clientes: ClienteMarquesina[]; 
 }
 
 export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes; id: string; nivel: "h1" | "h2" }) {
-  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, cta, animar, clientes } = seccion;
+  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, animar, clientes } = seccion;
   const Titulo = nivel;
   const filaA = clientes.filter((_, i) => i % 2 === 0);
   const filaB = clientes.filter((_, i) => i % 2 === 1);
@@ -159,12 +160,6 @@ export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes
           <Anim animar={animar} delay={0.12} className="mt-12 flex min-w-0 flex-col gap-4">
             {filaA.length > 0 && <FilaMarquesina clientes={filaA} reverso={false} />}
             {filaB.length > 0 && <FilaMarquesina clientes={filaB} reverso />}
-          </Anim>
-        )}
-
-        {cta && (
-          <Anim animar={animar} className="mt-12 lg:mt-10">
-            <BotonCta texto={cta.texto} enlace={cta.enlace} />
           </Anim>
         )}
       </div>

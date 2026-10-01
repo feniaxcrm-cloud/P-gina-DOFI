@@ -1,0 +1,1452 @@
+{
+  "_createdAt": "2026-09-28T21:23:58Z",
+  "_id": "chatbotsCrmPage",
+  "_rev": "RpzMk6FoReI3v7SdsztMVi",
+  "_type": "chatbotsCrmPage",
+  "_updatedAt": "2026-10-01T14:27:48Z",
+  "chatPortada": {
+    "_type": "chatDemo",
+    "aviso": {
+      "texto": "Restaurante · Demo mañana 10:00",
+      "titulo": "Nuevo lead en tu CRM"
+    },
+    "estado": "en línea",
+    "mensajes": [
+      {
+        "_key": "d32d35b598d4",
+        "_type": "mensajeChat",
+        "de": "cliente",
+        "texto": "Hola, quiero integrar un CRM en mi empresa"
+      },
+      {
+        "_key": "7c8a3c14b235",
+        "_type": "mensajeChat",
+        "de": "negocio",
+        "texto": "¡Hola! 👋 Soy el asistente de FENIAX. Te ayudamos a que ningún mensaje se quede sin respuesta y cada cliente llegue a tu CRM. ¿Qué tipo de negocio tienes?"
+      },
+      {
+        "_key": "857293ee43ba",
+        "_type": "mensajeChat",
+        "de": "cliente",
+        "texto": "Tengo un restaurante y me escriben muchísimo por WhatsApp e Instagram"
+      },
+      {
+        "_key": "8c5ea8458513",
+        "_type": "mensajeChat",
+        "de": "negocio",
+        "texto": "¡Perfecto! Unimos WhatsApp, Instagram y Facebook en un solo CRM con IA que responde al instante, agenda reservas y le da seguimiento a cada cliente 🔥"
+      },
+      {
+        "_key": "153b74fbd961",
+        "_type": "mensajeChat",
+        "de": "cliente",
+        "texto": "¿Y puedo ver cuánto vende cada vendedor?"
+      },
+      {
+        "_key": "74a8bab9c509",
+        "_type": "mensajeChat",
+        "de": "negocio",
+        "texto": "Sí: embudos de venta, reportes y el control de tu equipo en tiempo real 📊 ¿Te agendo una demo con un asesor?"
+      },
+      {
+        "_key": "c7a9bf4ed9cf",
+        "_type": "mensajeChat",
+        "de": "cliente",
+        "texto": "Sí, mañana a las 10"
+      },
+      {
+        "_key": "bf3d4dfc4d25",
+        "_type": "mensajeChat",
+        "de": "negocio",
+        "texto": "¡Listo! Demo agendada para mañana a las 10:00 ✅ Tus ventas están por renacer 🔥"
+      }
+    ],
+    "negocio": "FENIAX"
+  },
+  "sections": [
+    {
+      "_key": "427cf8c80646",
+      "_type": "teamBanner",
+      "activo": true,
+      "alineacion": "izquierda",
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "https://wa.me/593984472869?text=Hola%2C%20quiero%20integrar%20un%20CRM%20en%20mi%20empresa",
+        "texto": "Quiero integrar FENIAX"
+      },
+      "descripcion": "Conectamos tu WhatsApp, Instagram y Facebook a un CRM con inteligencia artificial que responde al instante, ordena cada conversación y le da seguimiento a cada cliente.",
+      "destacado": "Tus ventas renacen con IA.",
+      "overlay": "medio",
+      "subtitulo": "CRM con IA · Ventas inteligentes",
+      "titulo": "Renace tu manera de vender"
+    },
+    {
+      "_key": "39b12d7f2cd2",
+      "_type": "aboutBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Renovamos la eficiencia comercial digital de empresas de todo sector con herramientas de inteligencia artificial que optimizan su flujo de ventas y aportan crecimiento continuo.\n\nSomos más que un software: te acompañamos con estrategia y atención personalizada para que tu empresa renazca en el mercado actual.",
+      "destacado": "Somos más que un software.",
+      "subtitulo": "Ventas inteligentes",
+      "titulo": "¿Qué es FENIAX?"
+    },
+    {
+      "_key": "346657a287c1",
+      "_type": "navigationBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Clientes que preguntan y nadie responde a tiempo. Prospectos sin seguimiento. Vendedores sin control. Redes llenas de mensajes que no se convierten en ventas.\n\nFENIAX une todos tus canales en un solo CRM con IA: cada mensaje recibe respuesta en segundos, cada prospecto entra a tu embudo y tú ves en tiempo real lo que vende tu equipo.",
+      "destacado": "Tus ventas renacen.",
+      "subtitulo": "¿Te suena familiar?",
+      "titulo": "¿Demasiados mensajes, pocas ventas?"
+    },
+    {
+      "_key": "06ea74a45eef",
+      "_type": "methodBanner",
+      "activo": true,
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "https://wa.me/593984472869?text=Hola%2C%20quiero%20integrar%20un%20CRM%20en%20mi%20empresa",
+        "texto": "Agendar una demo"
+      },
+      "descripcion": "De la primera conversación a la venta cerrada, con un sistema que trabaja por ti las 24 horas.",
+      "destacado": "Ventas Inteligentes",
+      "mostrarPasos": true,
+      "pasos": [
+        {
+          "_key": "4039fa787d29",
+          "_type": "pasoMetodo",
+          "descripcion": "Analizamos cómo llegan, se atienden y se cierran tus ventas hoy.",
+          "titulo": "Diagnóstico comercial"
+        },
+        {
+          "_key": "83568147e3f2",
+          "_type": "pasoMetodo",
+          "descripcion": "WhatsApp, Instagram, Facebook y tu web en un solo CRM.",
+          "titulo": "Integración de canales"
+        },
+        {
+          "_key": "e9bd606bdb9a",
+          "_type": "pasoMetodo",
+          "descripcion": "Tu asistente aprende tus productos, precios y forma de atender.",
+          "titulo": "Entrenamiento de tu IA"
+        },
+        {
+          "_key": "18d9dad064b3",
+          "_type": "pasoMetodo",
+          "descripcion": "Embudos y recordatorios para que ningún prospecto se enfríe.",
+          "titulo": "Automatización y seguimiento"
+        },
+        {
+          "_key": "cf318743fde1",
+          "_type": "pasoMetodo",
+          "descripcion": "Reportes en tiempo real de tu equipo y de tus ventas.",
+          "titulo": "Control y optimización"
+        }
+      ],
+      "titulo": "Método FENIAX en 5 pasos"
+    },
+    {
+      "_key": "bbd3b0f621b5",
+      "_type": "chatClientsBanner",
+      "activo": true,
+      "animar": true,
+      "categorias": [
+        {
+          "_key": "05f5244aaece",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Departamento 3 dormitorios · Jueves 16:00",
+              "titulo": "Visita agendada"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "7d5f274e34bf",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Hola, vi el proyecto de departamentos. ¿Todavía hay disponibles?"
+              },
+              {
+                "_key": "22cb03f3159e",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-a32532539c355c821024f156eae5ba6e215fd8c0-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "¡Hola! Sí 🏡 Quedan unidades de 2 y 3 dormitorios con vista a la ciudad."
+              },
+              {
+                "_key": "92011394fd70",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "¿El de 3 dormitorios tiene parqueadero?"
+              },
+              {
+                "_key": "377d21a97364",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "Sí, incluye parqueadero y bodega. ¿Te gustaría visitar el departamento modelo esta semana?"
+              },
+              {
+                "_key": "542b16be4b73",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "El jueves por la tarde"
+              },
+              {
+                "_key": "8b4ccb5c161a",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "Agendado: jueves 16:00 ✅ Te envío la ubicación y la ficha técnica por aquí 📎"
+              }
+            ],
+            "negocio": "Tu inmobiliaria"
+          },
+          "empresas": [
+            {
+              "_key": "2b8e42373a5e",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-169099e9c020819023891e32538c2ed96ab910c8-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cámara de la Construcción de Cuenca"
+            },
+            {
+              "_key": "e53e2e23fb3b",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b898d6450603c263de85f2f0322fb4765ce78972-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Adelca"
+            },
+            {
+              "_key": "36245a703eac",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f0509effa2ce320893750a206ec2b9630af2f048-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "CEMIX"
+            },
+            {
+              "_key": "d03a06d2df38",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-eb89ccf94798e1b404d35e086ff82769d42c8a33-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial Luna Pazmiño"
+            },
+            {
+              "_key": "b37294d5f795",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f434637d916094636ff1a4ffbb6a5bbdc8ae56cc-500x500-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Construgypsum"
+            },
+            {
+              "_key": "6f7fba4dce62",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-9bef08afcf62d693b56e6a3de2ef8cdc54aa7338-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ecuaceramica"
+            },
+            {
+              "_key": "15a9dbd9de03",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cad2f1fdb4d8c1d8d7ef14a8359d06ec1eec46d9-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Electro Comercial MZ"
+            },
+            {
+              "_key": "6c87a6a847df",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-16aaf7af0146acadebb601db90ffa58092a9fe92-450x150-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Eternit Ecuador"
+            },
+            {
+              "_key": "a4fcfcc2b5ba",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cb4b535a25d4ae9a5c42298e3e7729cad2b66a57-596x335-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Fabián Pintado S.A."
+            },
+            {
+              "_key": "3368aad454de",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-a3ebc81f49a06b153896f87819dc24f06fa9e813-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ferricenter Arenal"
+            },
+            {
+              "_key": "80d332d49ecd",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-20746ef4242e769d937af65c323ac41304cf8712-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Guapan"
+            },
+            {
+              "_key": "87c28299f016",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-216c389f06b86a002a7571396f17aee4d889db8a-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dar Ceramics"
+            },
+            {
+              "_key": "86e5392ce527",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-220482103b5eae7814ec966d37f5a47fe37d04e3-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ferreteria Vasquez Brito"
+            },
+            {
+              "_key": "c9ef7fc0c157",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-80fcdeee25483e147b69553f2d2f06f79155692e-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Italpisos"
+            },
+            {
+              "_key": "06cb3856fa9d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-2cf6ffeb1e5d05457115248bd5cb6d6bda1e9afb-1200x600-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Casa Del Calefón"
+            },
+            {
+              "_key": "88c94555f7a7",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-c5b074cc1e125cb699b0d5e848df328888b83128-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Macosa"
+            },
+            {
+              "_key": "a78fdfbab204",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ffb0d8311f31909ccb753e4ed505288a5e81b2ad-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "MEGAHIERRO"
+            },
+            {
+              "_key": "f420c33b2525",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f1f3f88476edabd81a4af4732a0f0cfccab54eda-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "VESBO"
+            }
+          ],
+          "icono": "construccion",
+          "nombre": "Construcción"
+        },
+        {
+          "_key": "18609a6cd093",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Inglés online · Horario 18:00",
+              "titulo": "Inscripción en curso"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "bb7f4297c6de",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Hola, ¿cuándo empieza el próximo curso de inglés?"
+              },
+              {
+                "_key": "327a0308067b",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Hola! 📚 El próximo nivel inicia el lunes, con horarios de 7:00, 18:00 y sábados."
+              },
+              {
+                "_key": "00da6265014d",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "¿Es presencial?"
+              },
+              {
+                "_key": "a5e5d5d99810",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-dd12e73b2ee57a6bdf141893a4a61b2d78c4df5b-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "Puedes elegir presencial u online, con el mismo docente y material 🎓"
+              },
+              {
+                "_key": "481f3b1cddce",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Me interesa el de las 18:00 online"
+              },
+              {
+                "_key": "dd5ecbe5906e",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Excelente elección! Te envío el formulario de inscripción por aquí ✅ ¿Tienes alguna otra duda?"
+              }
+            ],
+            "negocio": "Tu academia"
+          },
+          "empresas": [
+            {
+              "_key": "fe8baae54884",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8f4986e477b55274c0045532b8d324c887d65f4d-844x844-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Universidad Católica de Cuenca"
+            },
+            {
+              "_key": "9784f151bfd8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-bdef9de957fecedc2e70880e095b780d019ead75-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Academia Cuenca"
+            },
+            {
+              "_key": "e0b9cd48d966",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-55be6c7f4f836c882d4ec9fbb4316cb67c4a8fc6-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Clap Clap Kinder Kids"
+            },
+            {
+              "_key": "9dea8b1141e0",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e1546ec857a9e34b545537c93ecbce32b07d6733-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cosbell School"
+            },
+            {
+              "_key": "d957d1433fbb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-7a3107062c52d89a1c84db79d81e8fda3c8cf3e1-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Estudia Inteligente"
+            },
+            {
+              "_key": "ca4f0455bf13",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e179f013523945a0e7a0ab3368f76763a1bfb8c3-512x512-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Inntrade"
+            },
+            {
+              "_key": "a63137104cb8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-496cbe6501965a9b99a3aa865991ff27ee63c26b-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Unitec Discovery"
+            }
+          ],
+          "icono": "servicios",
+          "nombre": "Educación y Servicios"
+        },
+        {
+          "_key": "a9394f6006e9",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Spinning · Miércoles 19:00",
+              "titulo": "Clase de prueba reservada"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "54b0a8bc11d4",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Hola, ¿cuánto cuesta la mensualidad?"
+              },
+              {
+                "_key": "d3d88ff63218",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Hola! 💪 La mensualidad incluye máquinas y todas las clases grupales. ¿Qué te gustaría entrenar?"
+              },
+              {
+                "_key": "4160695e9e63",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "¿Tienen clases de spinning en la noche?"
+              },
+              {
+                "_key": "dd994a672490",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-1b92332a8c1a1fd3125d4d0f14b61c3e80f0da3e-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "Sí: lunes, miércoles y viernes a las 19:00 y 20:00. ¿Te reservo una clase de prueba?"
+              },
+              {
+                "_key": "77dc384e5e42",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Sí, el miércoles a las 7"
+              },
+              {
+                "_key": "bf2da6e01d7f",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Listo! Clase de prueba el miércoles 19:00 ✅ Trae ropa cómoda y agua. ¡Nos vemos!"
+              }
+            ],
+            "negocio": "Tu gimnasio"
+          },
+          "empresas": [
+            {
+              "_key": "f26717b0d4c7",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-c75f79452be9258faa0548d025529e52d617bf53-512x512-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "DS"
+            },
+            {
+              "_key": "3302f0f08b61",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fd8c7e837066b42d83608f6961737824b6e1e359-204x204-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Atemporal"
+            },
+            {
+              "_key": "77339ff10f47",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8191de2a6e55c01f68563ccb653fd5f8a9554aba-655x655-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Baby Dance Vayoleth"
+            },
+            {
+              "_key": "18c31d3cf328",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f7cc42fdfa493a9a1e282a24ac94666f7fe0eab7-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dental Estudio"
+            },
+            {
+              "_key": "c8464f1b417a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-16c1284cc3ddcd086e46417841f29ed51e1ec7bb-784x784-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dentine Odontología"
+            },
+            {
+              "_key": "216b1a233d13",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-71b22cce2d262b8ca86363d4929cd26621028f57-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Gimnasio Dorian"
+            },
+            {
+              "_key": "3b0c5bd0562c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-495526964a6826e0160b903e07be25485014c8fe-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "GS Ópticas"
+            },
+            {
+              "_key": "1fb913d57756",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-558b156d511af29b69bc3adafc187c5999153743-735x272-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Catedral del Futbol"
+            },
+            {
+              "_key": "547f10f2e1dd",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6965e9878f6f0860375c8fb4767973a5e4d71bc1-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Pesa Artesana"
+            },
+            {
+              "_key": "aee3bd37eb22",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-378173d501096839d6e95f677831f6322650fa31-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Scan 3D"
+            },
+            {
+              "_key": "c4dcc7ed88af",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8ea030db24150bdd5f0fd8382fe6776c71d49bc2-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Derma Stethic"
+            },
+            {
+              "_key": "240233909687",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6bce7bd1c2f0390f4a155a73189f90cd6aad40a3-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Spazio Sthetic Center"
+            },
+            {
+              "_key": "ff9987078876",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-3ba0916645816efa1685ebf3ac2a127941d38cda-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Sparta Gym"
+            },
+            {
+              "_key": "591767efffe8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ed5511431c67c5edea55ce2a5df36f92bae493e4-192x192-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Sport Center"
+            },
+            {
+              "_key": "1b1008474b5a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-9f741773b338cdea4cb2d44d8e1a4114f08aa6e4-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "X Ray Solution"
+            }
+          ],
+          "icono": "belleza",
+          "nombre": "Fitness, salud y belleza"
+        },
+        {
+          "_key": "2172c90bf992",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Andrea · 4 personas · Hoy 20:00",
+              "titulo": "Reserva registrada"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "3393f5a1a80d",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Hola 👋 ¿tienen mesa para 4 personas hoy a las 8 pm?"
+              },
+              {
+                "_key": "d9482937c51f",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Hola! Sí, tenemos disponibilidad a las 8:00 pm para 4 personas 🙌 ¿A nombre de quién hago la reserva?"
+              },
+              {
+                "_key": "8b0dc94ffdb4",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "A nombre de Andrea. ¿Qué me recomiendas?"
+              },
+              {
+                "_key": "c6dde7788f0c",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-d7f911dc8272f1f4fdd45fb6e0a8222cf1a065b8-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "¡Listo, Andrea! Tu mesa quedó reservada ✅ El plato estrella de la semana es el lomo a la parrilla con papas rústicas y chimichurri."
+              },
+              {
+                "_key": "4662743db46b",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Se ve increíble 😍 ¿Tienen opciones vegetarianas?"
+              },
+              {
+                "_key": "2b5f7f98044e",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Claro! Risotto de hongos y bowl de quinua. ¿Te envío un recordatorio una hora antes de tu reserva?"
+              },
+              {
+                "_key": "100c77f0cbd7",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Sí, porfa 🙏"
+              },
+              {
+                "_key": "089bdc46814c",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "Hecho. Te escribo a las 7:00 pm. ¡Te esperamos! 🍽️"
+              }
+            ],
+            "negocio": "Tu restaurante"
+          },
+          "empresas": [
+            {
+              "_key": "c056f131dbde",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-40cfe32d3a24d18fc02a697fbd6e5ddea97ee6d0-1000x1000-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Bondia"
+            },
+            {
+              "_key": "72015019ff34",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ac15e13446fb1f879c8803b4a55338f20237a389-2017x2017-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Buffalo Steak House"
+            },
+            {
+              "_key": "6e19bf9913e7",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-36599b1be1be753ceff9f193be0683cbd0513ecf-1000x1000-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Carbonazo"
+            },
+            {
+              "_key": "f4a28a575b91",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-aee3c54355488f43b72e7a94e2220ff905d8efdc-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Casona del Zam"
+            },
+            {
+              "_key": "bcfc9597384f",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-1002fddafb266eaf0ff3ae93884561a3760a4c43-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Los Ceviches de la Huayna Capac"
+            },
+            {
+              "_key": "805c31c8b700",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cc264a413d71adff507dcadf45113fa47700610d-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Chico Gato"
+            },
+            {
+              "_key": "0ff303e3cd6e",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b25de139346276d2733d2e93bb55d8999ac0c6df-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Cobayo"
+            },
+            {
+              "_key": "a6f6081db9a1",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ff0684fffb537287dd57f7a555d14f1da3ffbfb1-447x447-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Horno"
+            },
+            {
+              "_key": "a641ab22dde3",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-34d41714664b2d4d50b44e7737187e686bba827a-700x700-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Hornero"
+            },
+            {
+              "_key": "1a3b9fe48bbb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6958462cfbaab3317e204c26c17aedf5033feb6d-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Parce"
+            },
+            {
+              "_key": "4354fb110c65",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-50ae33194b3549371bd73a20e80f78d8125880af-512x485-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Mi Escondite"
+            },
+            {
+              "_key": "7c0c4eca86cb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-2729ab048beb869f4d6704c4ca7dfd5438e56b4b-437x457-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Silvestra"
+            },
+            {
+              "_key": "87fd3c55cf9b",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fd2a4678787e3f84bc112196f8a72acc8404d09b-500x241-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Taitico"
+            }
+          ],
+          "icono": "gastronomia",
+          "nombre": "Gastronomía"
+        },
+        {
+          "_key": "bf027a0bda79",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Pedido con envío a Quito · Pagado",
+              "titulo": "Venta cerrada"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "15ba208fd9de",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-08c5581fe180925ff88579715c4f5c2465a94e48-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "Hola, ¿tienen estos en talla 38?"
+              },
+              {
+                "_key": "7e65967c402b",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Hola! Sí, nos quedan en talla 38 👟 ¿Los quieres para retirar en tienda o con envío?"
+              },
+              {
+                "_key": "28fe2864c3d5",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Con envío. ¿Llegan a Quito?"
+              },
+              {
+                "_key": "265dd2314175",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Sí! Enviamos a todo el país en 24 a 48 horas. Te dejo el enlace de pago seguro 💳"
+              },
+              {
+                "_key": "f41b6fd2b69e",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Listo, ya pagué"
+              },
+              {
+                "_key": "f6cc79904e27",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Pago recibido! ✅ Tu pedido sale hoy y te comparto la guía de rastreo apenas esté lista 📦"
+              }
+            ],
+            "negocio": "Tu tienda"
+          },
+          "empresas": [
+            {
+              "_key": "b52ed0193cf3",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b83d91474d1f2d934fa83c04305e91e7ec1f314f-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Abus"
+            },
+            {
+              "_key": "c2ec67cd4bc8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-09f079e6810a64af17f79e8fc2e45588ba27a018-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Almacenes Lolita"
+            },
+            {
+              "_key": "855f7ae2ca25",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fae6acfcf99c51fd7674a924e80e8348b6e27112-801x801-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Anto Carboné"
+            },
+            {
+              "_key": "5afbed4e39a8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b1651d7f3a5bd6618e5e826e3012967e4b0eb1e8-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Casa del Repuesto Japonés"
+            },
+            {
+              "_key": "5f4866f92a50",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-396138c34ea89bff05178cd80886086b9c24428f-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial JyC"
+            },
+            {
+              "_key": "b63273be068c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-95dd3260a2180e8a360a310bc2401e4b4a903aad-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial Solís"
+            },
+            {
+              "_key": "209e93014c71",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ea0304e39241f5477722c57fa3f4640499de5b2e-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dukare"
+            },
+            {
+              "_key": "8fa3c012c4a9",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e4412d9919ee5efbe2adf14799ecd29da219d69a-807x807-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Frada Sport"
+            },
+            {
+              "_key": "3ecd0e03478a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-deadebfd6540f7e3d3c5c46b9b196d3b0b0a29b6-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Home Solis"
+            },
+            {
+              "_key": "4b8398ad436d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-5f0ece3ed8caafea52bdcf9d0d6148279e59792a-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Importadora GP"
+            },
+            {
+              "_key": "7cb0a32b3163",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ef5977084fd755efd03bf929aedf4c171ddfbcbd-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Universal"
+            },
+            {
+              "_key": "8fa3e4359c5a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8bdb056d7df1ae9a0f5558d06d54e910b94d2f63-2042x527-webp",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Marcimex"
+            },
+            {
+              "_key": "a670c79ffaa9",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-caaccd66c7239d0499dc400430d9fca4865fb145-554x554-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Muebles Vera Vázquez"
+            },
+            {
+              "_key": "bf8a1166996f",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-7abf204540c84f33a62ef729dda3fa7fc1978d1f-445x449-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Royal Enfield"
+            },
+            {
+              "_key": "bcb84b505777",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6eae30f888629bc32689c1c650f495fad0aa0e4d-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Blu 360"
+            }
+          ],
+          "icono": "comercio",
+          "nombre": "Retail"
+        },
+        {
+          "_key": "88a0fee7f022",
+          "_type": "categoriaIcono",
+          "chat": {
+            "_type": "chatDemo",
+            "aviso": {
+              "texto": "Galápagos · 2 adultos · 13 de diciembre",
+              "titulo": "Cupos separados"
+            },
+            "estado": "en línea",
+            "mensajes": [
+              {
+                "_key": "c5b68928abde",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Hola, ¿tienen paquetes para Galápagos en diciembre?"
+              },
+              {
+                "_key": "8cf7368a03bf",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "imagen": {
+                  "_type": "image",
+                  "asset": {
+                    "_ref": "image-bb442f639351f474a030375829a9c055a21f6cd6-960x540-jpg",
+                    "_type": "reference"
+                  }
+                },
+                "texto": "¡Hola! 🌊 Sí: 4 días y 3 noches con vuelos, hotel y tours incluidos."
+              },
+              {
+                "_key": "5b8dfe3ddcef",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "Somos 2 adultos. ¿Qué fechas tienen?"
+              },
+              {
+                "_key": "b0cdb9de4d5c",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "Hay salidas el 6, 13 y 20 de diciembre. ¿Te separo cupos para alguna fecha?"
+              },
+              {
+                "_key": "36d73d85f409",
+                "_type": "mensajeChat",
+                "de": "cliente",
+                "texto": "El 13 porfa"
+              },
+              {
+                "_key": "246e368a1345",
+                "_type": "mensajeChat",
+                "de": "negocio",
+                "texto": "¡Hecho! Cupos separados para el 13 de diciembre ✅ Te envío el itinerario y las formas de pago 📎"
+              }
+            ],
+            "negocio": "Tu agencia de viajes"
+          },
+          "empresas": [
+            {
+              "_key": "d53e8f62200a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-5822718142b5773b45a03077d762beaf3e535cb3-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cuenca Tour 360"
+            },
+            {
+              "_key": "e3472cbfd5eb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-172dd8b39a67f85435405e95a8f409ebbdd066e7-881x881-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Hotel Cisne"
+            },
+            {
+              "_key": "651fd163338c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-51251ecedd6dbc945e2ebd3645e9f914aa86c375-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Mallki Hostel"
+            },
+            {
+              "_key": "d65e579173d8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e5847bbff936029b828a55495cce7955e11abc1d-447x447-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cooperativa Loja"
+            },
+            {
+              "_key": "6821993f6e52",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-0a8368740d56d1755b05248417ba5d0e86fb72f0-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Easy Trip"
+            }
+          ],
+          "icono": "emprendedores",
+          "nombre": "Turismo"
+        }
+      ],
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/clientes",
+        "texto": "Ver casos de éxito"
+      },
+      "descripcion": "Elige un giro de negocio y mira cómo la IA de FENIAX atiende a sus clientes por WhatsApp.",
+      "rotacionAutomatica": true,
+      "temaChat": "claro",
+      "titulo": "Clientes y casos de éxito"
+    },
+    {
+      "_key": "a0f0a42ce8d5",
+      "_type": "reviewsBanner",
+      "activo": true,
+      "animar": true,
+      "titulo": "Reseñas en Google"
+    },
+    {
+      "_key": "fde7fb529bd8",
+      "_type": "ctaBanner",
+      "activo": true,
+      "alineacion": "centro",
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "https://wa.me/593984472869?text=Hola%2C%20quiero%20integrar%20un%20CRM%20en%20mi%20empresa",
+        "texto": "Quiero integrar FENIAX"
+      },
+      "descripcion": "Escríbenos y descubre cómo FENIAX convierte tus conversaciones en ventas.",
+      "overlay": "medio",
+      "titulo": "¿Listo para que tus ventas renazcan?"
+    }
+  ],
+  "titulo": "ChatBots / CRM"
+}

@@ -1,6 +1,7 @@
-import { defineType, defineField, defineArrayMember } from "sanity";
+import { defineType, defineField } from "sanity";
 import { camposBase } from "./camposBase";
 import { campoImagen } from "../objects/campoImagen";
+import { miembroGiro } from "./giroNegocio";
 
 /**
  * Sección "Clientes y casos de éxito".
@@ -18,17 +19,6 @@ import { campoImagen } from "../objects/campoImagen";
  * (así se llamaba cuando solo eran íconos). Se conservó para no migrar el
  * contenido ya cargado; en el Studio se ve como "Giros de negocio".
  */
-
-const OPCIONES_ICONO = [
-  { title: "Edificio — construcción", value: "construccion" },
-  { title: "Destello — belleza", value: "belleza" },
-  { title: "Apretón de manos — servicios", value: "servicios" },
-  { title: "Tienda — comercio", value: "comercio" },
-  { title: "Cohete — emprendedores", value: "emprendedores" },
-  { title: "Pulso — salud", value: "salud" },
-  { title: "Cubiertos — gastronomía", value: "gastronomia" },
-  { title: "Chip — tecnología", value: "tecnologia" },
-];
 
 export const clientsBanner = defineType({
   name: "clientsBanner",
@@ -50,7 +40,8 @@ export const clientsBanner = defineType({
   ],
   fields: camposBase({
     conImagen: false,
-    omitir: ["destacado"],
+    // Sin "cta": la sección ya no tiene botón (se quitó "Ver casos de éxito").
+    omitir: ["destacado", "cta"],
     textos: {
       titulo: "Se muestra en una sola línea en escritorio.",
       subtitulo: "Opcional: etiqueta chica arriba del título.",
@@ -65,79 +56,9 @@ export const clientsBanner = defineType({
         description:
           "Cada giro es un panel del carrusel. El orden de esta lista es el orden del carrusel: arrastra para reordenar. Dentro de cada giro agregas sus empresas; sus logos aparecen al abrir el giro. Sin giros, la sección muestra la estructura vacía: nunca se inventan.",
         of: [
-          defineArrayMember({
-            type: "object",
-            name: "categoriaIcono",
-            title: "Giro de negocio",
-            fields: [
-              defineField({
-                name: "nombre",
-                title: "Nombre del giro",
-                type: "string",
-                validation: (Rule) => Rule.required(),
-              }),
-              defineField({
-                name: "icono",
-                title: "Ícono (opcional)",
-                type: "string",
-                description: "Se ve en el panel del giro. Sin ícono, el panel muestra solo el nombre.",
-                options: { list: OPCIONES_ICONO },
-              }),
-              campoImagen({
-                name: "imagen",
-                title: "Foto del giro (opcional)",
-                description:
-                  "Llena el panel: a color cuando el giro está abierto y en gris cuando no. Sin foto, el panel usa los colores DOFI.",
-              }),
-              defineField({
-                name: "empresas",
-                title: "Empresas y logos de este giro",
-                type: "array",
-                description:
-                  "Sus logos aparecen al abrir el giro, en este orden (arrastra para reordenar). Elige una Cuenta existente o, si la empresa no es Cuenta, agrégala con su logo.",
-                of: [
-                  defineArrayMember({
-                    type: "reference",
-                    title: "Cuenta existente",
-                    to: [{ type: "cuenta" }],
-                    options: { disableNew: true },
-                  }),
-                  defineArrayMember({
-                    type: "object",
-                    name: "empresaGiro",
-                    title: "Empresa con logo propio",
-                    fields: [
-                      defineField({
-                        name: "nombre",
-                        title: "Nombre de la empresa",
-                        type: "string",
-                        validation: (Rule) => Rule.required(),
-                      }),
-                      defineField({
-                        name: "logo",
-                        title: "Logo",
-                        type: "image",
-                        description:
-                          "PNG o SVG, idealmente con fondo transparente. Se muestra completo, sin recortes ni deformación.",
-                        validation: (Rule) => Rule.required(),
-                      }),
-                    ],
-                    preview: { select: { title: "nombre", media: "logo" } },
-                  }),
-                ],
-              }),
-            ],
-            preview: {
-              select: { nombre: "nombre", empresas: "empresas", media: "imagen" },
-              prepare: ({ nombre, empresas, media }) => {
-                const total = Array.isArray(empresas) ? empresas.length : 0;
-                return {
-                  title: nombre || "Giro sin nombre",
-                  subtitle: total === 1 ? "1 empresa" : `${total} empresas`,
-                  media,
-                };
-              },
-            },
+          miembroGiro({
+            descripcionImagen:
+              "Llena el panel: a color cuando el giro está abierto y en gris cuando no. Sin foto, el panel usa los colores DOFI.",
           }),
         ],
       }),

@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="es" data-resolution="square">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Sora";
+        src: url("assets/sora-variable.woff2") format("woff2");
+        font-weight: 100 800;
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: #160a20;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Sora", system-ui, sans-serif;
+        color: #fbf4fc;
+      }
+      #escena {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* Capa 1: fondo de la portada del brandbook */
+      .fondo {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(55% 45% at 92% 0%, rgba(237, 109, 25, 0.34) 0%, rgba(229, 53, 42, 0.1) 45%, transparent 75%),
+          radial-gradient(60% 55% at 0% 100%, rgba(121, 40, 131, 0.6) 0%, transparent 70%),
+          linear-gradient(160deg, #2a1638 0%, #1c0e27 55%, #160a20 100%);
+      }
+      .puntos {
+        position: absolute;
+        right: -60px;
+        top: -60px;
+        width: 520px;
+        height: 420px;
+        background-image: radial-gradient(rgba(237, 109, 25, 0.5) 1.6px, transparent 2.2px);
+        background-size: 20px 20px;
+        -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+        mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+        opacity: 0.7;
+      }
+      .ondas {
+        position: absolute;
+        left: 0;
+        top: 430px;
+        width: 2160px;
+        height: 200px;
+        opacity: 0.5;
+      }
+
+      /* Capa 2: canales */
+      .canal {
+        position: absolute;
+        left: 56px;
+        width: 250px;
+        height: 88px;
+        border-radius: 44px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 14px;
+        font-size: 29px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .canal .ico {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .canal svg {
+        width: 32px;
+        height: 32px;
+        fill: #ffffff;
+      }
+
+      /* Capa 2: el nodo de la IA */
+      .nodo {
+        position: absolute;
+        left: 645px;
+        top: 147px;
+        width: 230px;
+        height: 230px;
+      }
+      .nodo .aro {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 3px solid rgba(237, 109, 25, 0.75);
+      }
+      .nodo .halo {
+        position: absolute;
+        inset: -40px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(237, 109, 25, 0.45) 0%, rgba(121, 40, 131, 0.3) 45%, transparent 70%);
+      }
+      .nodo .cuerpo {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #4a2560 0%, #2a1638 70%);
+        border: 2px solid rgba(255, 255, 255, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.6);
+      }
+      .nodo .cuerpo svg {
+        width: 128px;
+        height: 90px;
+      }
+      .etiqueta-nodo {
+        position: absolute;
+        left: 560px;
+        width: 400px;
+        top: 410px;
+        text-align: center;
+      }
+      .etiqueta-nodo .t1 {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        color: #f38a3f;
+      }
+
+      /* Mensajes que viajan y respuestas */
+      .burbuja {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 14px 22px;
+        border-radius: 22px 22px 22px 6px;
+        background: #ffffff;
+        color: #2a1638;
+        font-size: 27px;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 16px 34px -14px rgba(0, 0, 0, 0.55);
+        opacity: 0;
+      }
+      .respuesta {
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: #00a884;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 14px 30px -12px rgba(0, 168, 132, 0.7);
+        opacity: 0;
+      }
+
+      /* Capa 3: el CRM */
+      .tablero {
+        position: absolute;
+        left: 48px;
+        top: 540px;
+        width: 984px;
+        height: 500px;
+        border-radius: 36px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .columna {
+        position: absolute;
+        top: 616px;
+        width: 300px;
+        height: 400px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.045);
+      }
+      .titulo-col {
+        position: absolute;
+        top: 566px;
+        width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 10px;
+        font-size: 23px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        color: rgba(251, 244, 252, 0.85);
+      }
+      .titulo-col i {
+        display: block;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+      }
+      .tarjeta {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 276px;
+        height: 128px;
+        border-radius: 20px;
+        background: #ffffff;
+        color: #2a1638;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 16px;
+        box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.7);
+        opacity: 0;
+      }
+      .tarjeta .avatar {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(150deg, #9a3fa7 0%, #792883 50%, #2a1638 100%);
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .tarjeta .nombre {
+        font-size: 27px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+      }
+      .tarjeta .tag {
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 21px;
+        font-weight: 500;
+        color: #5e5068;
+        white-space: nowrap;
+      }
+      .tarjeta .tag svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .tarjeta .brillo {
+        position: absolute;
+        inset: -3px;
+        border-radius: 23px;
+        border: 3px solid #ed6d19;
+        box-shadow: 0 0 0 6px rgba(237, 109, 25, 0.18), 0 22px 48px -14px rgba(229, 53, 42, 0.8);
+        opacity: 0;
+      }
+      .tarjeta .sello {
+        position: absolute;
+        right: -8px;
+        top: -22px;
+        padding: 7px 14px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #f38a3f 0%, #ed6d19 50%, #e5352a 100%);
+        color: #2a1638;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        opacity: 0;
+      }
+      .chispa {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #f38a3f;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1080" data-height="1080">
+      <div id="escena">
+        <div class="fondo"></div>
+        <div class="puntos"></div>
+        <svg id="ondas" class="ondas" viewBox="0 0 2160 200" preserveAspectRatio="none" fill="none"></svg>
+
+        <!-- Canales -->
+        <div class="canal" id="canal-a" style="top: 78px">
+          <span class="ico" style="background: #25d366"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg></span>
+          WhatsApp
+        </div>
+        <div class="canal" id="canal-b" style="top: 184px">
+          <span class="ico" style="background: linear-gradient(45deg, #feda75, #fa7e1e 30%, #d62976 60%, #962fbf 80%, #4f5bd5)"
+            ><svg viewBox="0 0 24 24"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077" /></svg
+          ></span>
+          Instagram
+        </div>
+        <div class="canal" id="canal-c" style="top: 290px">
+          <span class="ico" style="background: #0866ff"><svg viewBox="0 0 24 24"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z" /></svg></span>
+          Facebook
+        </div>
+        <div class="canal" id="canal-d" style="top: 396px">
+          <span class="ico" style="background: #792883"
+            ><svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" style="fill: none"
+              ><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" /></svg
+          ></span>
+          Web
+        </div>
+
+        <!-- Nodo IA -->
+        <div class="nodo" id="nodo">
+          <div class="halo" id="nodo-halo"></div>
+          <div class="aro" id="pulso-1"></div>
+          <div class="aro" id="pulso-2"></div>
+          <div class="aro" id="pulso-3"></div>
+          <div class="aro" id="pulso-4"></div>
+          <div class="cuerpo" id="nodo-cuerpo">
+            <svg viewBox="161.10 0.00 67.30 47.00"><defs><linearGradient id="fx-ia-flujo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ED6D19"/><stop offset="1" stop-color="#E5352A"/></linearGradient></defs><g fill="url(#fx-ia-flujo)"><path d="M198.57 24.21C199.25 24.34 199.94 24.48 200.62 24.62C201.17 23.88 201.70 23.14 202.25 22.40C200.76 22.74 199.54 23.36 198.57 24.21"/><path d="M227.86 44.98L203.45 1.04C203.10 0.41 202.43 0.02 201.71 0.02L199.26 0.02C199.00 -0.01 198.74 -0.01 198.48 0.02L195.82 0.02C195.07 0.02 194.38 0.44 194.04 1.11L172.47 43.91L172.47 1.42C172.47 0.66 171.85 0.04 171.09 0.04L162.53 0.04C161.76 0.04 161.15 0.66 161.15 1.42L161.15 46.90L169.87 46.90L169.98 46.90L170.52 46.90L171.04 46.90L171.44 46.90C174.84 46.60 179.18 45.11 183.57 41.39C183.57 41.39 183.57 41.38 183.58 41.38C183.71 41.27 183.84 41.15 183.98 41.04C183.98 41.03 183.99 41.03 184.00 41.02C184.40 40.66 184.81 40.28 185.21 39.87C185.22 39.86 185.24 39.85 185.25 39.84C185.37 39.72 185.48 39.60 185.60 39.48C185.62 39.46 185.64 39.44 185.66 39.42C185.78 39.29 185.89 39.17 186.01 39.04C186.02 39.03 186.03 39.02 186.04 39.00C186.30 38.72 186.56 38.43 186.81 38.13C186.83 38.10 186.85 38.08 186.87 38.06C186.97 37.94 187.08 37.81 187.18 37.69C187.21 37.65 187.24 37.61 187.27 37.57C187.37 37.46 187.46 37.34 187.56 37.21C187.58 37.18 187.61 37.14 187.64 37.11C187.75 36.96 187.87 36.81 187.98 36.66C187.99 36.65 187.99 36.64 188.00 36.63C188.12 36.47 188.24 36.30 188.36 36.13C188.38 36.10 188.40 36.07 188.42 36.04C188.52 35.91 188.61 35.78 188.70 35.64C188.74 35.59 188.77 35.54 188.81 35.49C188.89 35.37 188.97 35.24 189.05 35.12C189.09 35.06 189.12 35.01 189.16 34.96C189.24 34.82 189.33 34.69 189.41 34.55C189.44 34.51 189.47 34.47 189.49 34.43C189.60 34.25 189.71 34.07 189.82 33.88C189.84 33.85 189.86 33.82 189.88 33.79C189.97 33.64 190.06 33.49 190.15 33.33C190.18 33.27 190.21 33.21 190.25 33.14C190.32 33.01 190.39 32.88 190.47 32.75C190.50 32.69 190.54 32.62 190.58 32.55C190.65 32.41 190.72 32.28 190.79 32.14C190.82 32.08 190.86 32.02 190.89 31.96C190.99 31.76 191.09 31.56 191.19 31.35C191.19 31.35 187.74 32.61 183.46 31.28C183.46 31.28 187.83 30.51 193.75 25.57C201.32 19.25 206.00 17.85 209.91 19.87C208.13 19.83 204.35 22.85 201.90 31.66C200.74 35.84 200.94 40.44 203.69 44.15C202.67 41.42 202.39 37.68 204.82 33.19C204.82 33.19 205.77 46.01 224.64 46.91L226.77 46.91C227.76 46.91 228.37 45.83 227.86 44.98"/></g></svg>
+          </div>
+        </div>
+        <div class="etiqueta-nodo"><div class="t1">IA FENIAX</div></div>
+
+        <!-- Mensajes -->
+        <div class="burbuja" id="burbuja-a">¿Tienen mesa hoy?</div>
+        <div class="burbuja" id="burbuja-b">¿Precio de la SUV?</div>
+        <div class="burbuja" id="burbuja-c">¿Hacen envíos?</div>
+        <div class="burbuja" id="burbuja-d">Quiero cotizar</div>
+        <div class="respuesta" id="respuesta-a">✓ Respondido</div>
+        <div class="respuesta" id="respuesta-b">✓ Respondido</div>
+        <div class="respuesta" id="respuesta-c">✓ Respondido</div>
+        <div class="respuesta" id="respuesta-d">✓ Respondido</div>
+
+        <!-- CRM -->
+        <div class="tablero"></div>
+        <div class="titulo-col" style="left: 72px"><i style="background: #c9b3d3"></i>NUEVO</div>
+        <div class="titulo-col" style="left: 390px"><i style="background: #9a3fa7"></i>SEGUIMIENTO</div>
+        <div class="titulo-col" style="left: 708px"><i style="background: #ed6d19"></i>VENTA</div>
+        <div class="columna" style="left: 72px"></div>
+        <div class="columna" style="left: 390px"></div>
+        <div class="columna" style="left: 708px"></div>
+
+        <div class="tarjeta" id="tarjeta-a">
+          <div class="brillo"></div>
+          <div class="avatar">AG</div>
+          <div>
+            <div class="nombre">Andrea G.</div>
+            <div class="tag"><svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg>Reserva</div>
+          </div>
+          <div class="sello">VENTA CERRADA</div>
+        </div>
+        <div class="tarjeta" id="tarjeta-b">
+          <div class="brillo"></div>
+          <div class="avatar">CM</div>
+          <div>
+            <div class="nombre">Carlos M.</div>
+            <div class="tag"><svg viewBox="0 0 24 24" fill="#d62976"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077" /></svg>Crédito</div>
+          </div>
+          <div class="sello">VENTA CERRADA</div>
+        </div>
+        <div class="tarjeta" id="tarjeta-c">
+          <div class="brillo"></div>
+          <div class="avatar">LP</div>
+          <div>
+            <div class="nombre">Lucía P.</div>
+            <div class="tag"><svg viewBox="0 0 24 24" fill="#0866ff"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z" /></svg>Pedido</div>
+          </div>
+          <div class="sello">VENTA CERRADA</div>
+        </div>
+        <div class="tarjeta" id="tarjeta-d">
+          <div class="brillo"></div>
+          <div class="avatar">DR</div>
+          <div>
+            <div class="nombre">Diego R.</div>
+            <div class="tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#792883" stroke-width="2"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" /></svg>Cotización
+            </div>
+          </div>
+          <div class="sello">VENTA CERRADA</div>
+        </div>
+        <div id="chispas"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const DURACION = 10;
+        const tl = gsap.timeline({ paused: true });
+
+        // ---------- Cinta de lineas (bucle exacto: un periodo en 10 s) ----------
+        const ondas = document.getElementById("ondas");
+        const NS = "http://www.w3.org/2000/svg";
+        const defs = document.createElementNS(NS, "defs");
+        defs.innerHTML =
+          '<linearGradient id="g-ondas" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1080" y2="0" spreadMethod="repeat">' +
+          '<stop offset="0" stop-color="#ED6D19"/><stop offset="0.3" stop-color="#E5352A"/><stop offset="0.62" stop-color="#792883"/><stop offset="1" stop-color="#ED6D19"/></linearGradient>';
+        ondas.appendChild(defs);
+        const LINEAS = 20;
+        for (let k = 0; k < LINEAS; k++) {
+          const t = k / (LINEAS - 1);
+          const amp = 46 * Math.cos(Math.PI * t) || 1;
+          const fase = t * 216;
+          const y0 = 100 + (t - 0.5) * 22;
+          let d = "";
+          for (let x = 0; x <= 2160; x += 20) {
+            const y = y0 - amp * Math.sin((2 * Math.PI * (x + fase)) / 1080);
+            d += (x === 0 ? "M" : "L") + x + " " + y.toFixed(1);
+          }
+          const p = document.createElementNS(NS, "path");
+          p.setAttribute("d", d);
+          p.setAttribute("stroke", "url(#g-ondas)");
+          p.setAttribute("stroke-width", "1.4");
+          p.setAttribute("stroke-opacity", (0.3 + 0.7 * Math.sin(Math.PI * t)).toFixed(2));
+          ondas.appendChild(p);
+        }
+        tl.fromTo(ondas, { x: 0 }, { x: -1080, duration: DURACION, ease: "none" }, 0);
+
+        // ---------- Nodo: respira todo el tiempo (8 medios ciclos = 10 s) ----------
+        tl.fromTo("#nodo-halo", { scale: 0.92, opacity: 0.75 }, { scale: 1.06, opacity: 1, duration: 1.25, ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+
+        // ---------- Mensajes -> IA -> respuesta ----------
+        const CENTRO = { x: 760, y: 262 };
+        const canales = { a: 78, b: 184, c: 290, d: 396 };
+        const llegadas = { a: 1.05, b: 2.45, c: 3.85, d: 6.35 };
+        const VIAJE = 0.8;
+        ["a", "b", "c", "d"].forEach((id, i) => {
+          const b = document.getElementById("burbuja-" + id);
+          const llega = llegadas[id];
+          const sale = llega - VIAJE;
+          const yCanal = canales[id] + 44 - 30;
+          // Aparece junto a su canal, viaja en arco hasta el nodo y se absorbe.
+          tl.fromTo(b, { x: 290, y: yCanal, opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(1.7)" }, sale);
+          tl.to(b, { x: CENTRO.x - 150, duration: VIAJE, ease: "power2.inOut" }, sale + 0.05);
+          tl.to(b, { y: CENTRO.y - 30, duration: VIAJE, ease: "power1.in" }, sale + 0.05);
+          tl.to(b, { scale: 0.3, opacity: 0, duration: 0.22, ease: "power2.in" }, llega - 0.12);
+
+          // El nodo late al recibirlo.
+          const pulso = "#pulso-" + (i + 1);
+          tl.fromTo(pulso, { scale: 1, opacity: 0.9 }, { scale: 1.45, opacity: 0, duration: 0.9, ease: "power2.out" }, llega);
+          tl.fromTo("#nodo-cuerpo", { scale: 1 }, { scale: 1.07, duration: 0.14, ease: "power2.out", yoyo: true, repeat: 1 }, llega);
+
+          // Respuesta al instante.
+          const r = document.getElementById("respuesta-" + id);
+          tl.fromTo(r, { x: 790, y: 120, opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, y: 96, duration: 0.3, ease: "back.out(2)" }, llega + 0.12);
+          tl.to(r, { opacity: 0, y: 70, duration: 0.25, ease: "power2.in" }, llega + 1.0);
+        });
+
+        // ---------- Embudo del CRM ----------
+        // Cada evento mueve una tarjeta a una columna; dentro de la columna el
+        // orden es por llegada y los huecos se cierran solos.
+        const COL_X = [72 + 12, 390 + 12, 708 + 12];
+        const SLOT_Y = [632, 794];
+        const eventos = [
+          [1.3, "a", 0],
+          [2.7, "b", 0],
+          [3.4, "a", 1],
+          [4.1, "c", 0],
+          [5.0, "b", 1],
+          [5.6, "a", 2],
+          [6.6, "d", 0],
+          [7.5, "c", 1],
+          [8.0, "b", 2],
+        ];
+        const estado = {};
+        const posicion = {};
+        function slots() {
+          const res = {};
+          [0, 1, 2].forEach((c) => {
+            Object.keys(estado)
+              .filter((k) => estado[k].col === c)
+              .sort((p, q) => estado[p].desde - estado[q].desde)
+              .forEach((k, s) => (res[k] = { x: COL_X[c], y: SLOT_Y[s] }));
+          });
+          return res;
+        }
+        eventos.forEach(([t, id, col]) => {
+          const nuevo = !(id in estado);
+          estado[id] = { col, desde: t };
+          const res = slots();
+          Object.keys(res).forEach((k) => {
+            const destino = res[k];
+            const antes = posicion[k];
+            const el = "#tarjeta-" + k;
+            if (k === id && nuevo) {
+              // Nace en el nodo y cae al CRM.
+              tl.fromTo(
+                el,
+                { x: CENTRO.x - 138, y: CENTRO.y - 64, scale: 0.4, opacity: 0 },
+                { x: destino.x, y: destino.y, scale: 1, opacity: 1, duration: 0.75, ease: "power3.out" },
+                t
+              );
+            } else if (!antes || antes.x !== destino.x || antes.y !== destino.y) {
+              tl.to(el, { x: destino.x, y: destino.y, duration: 0.6, ease: "power3.inOut" }, t);
+            }
+            posicion[k] = destino;
+          });
+          if (col === 2) {
+            // Venta: brillo, sello y chispas.
+            const fin = t + 0.6;
+            tl.to(el(id, ".brillo"), { opacity: 1, duration: 0.3, ease: "power2.out" }, fin);
+            tl.fromTo(el(id, ".sello"), { opacity: 0, scale: 0.6, y: 10 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2.2)" }, fin + 0.05);
+            const centro = { x: res[id].x + 138, y: res[id].y + 64 };
+            const cont = document.getElementById("chispas");
+            for (let n = 0; n < 10; n++) {
+              const ch = document.createElement("div");
+              ch.className = "chispa";
+              cont.appendChild(ch);
+              const ang = (n / 10) * Math.PI * 2 + 0.3;
+              const dist = 120 + (n % 3) * 26;
+              tl.fromTo(
+                ch,
+                { x: centro.x - 6, y: centro.y - 6, opacity: 0, scale: 1 },
+                { x: centro.x - 6 + Math.cos(ang) * dist, y: centro.y - 6 + Math.sin(ang) * dist * 0.7, opacity: 1, scale: 0.4, duration: 0.7, ease: "power3.out" },
+                fin + 0.02
+              );
+              tl.to(ch, { opacity: 0, duration: 0.3, ease: "power1.in" }, fin + 0.45);
+            }
+          }
+        });
+        function el(id, sel) {
+          return "#tarjeta-" + id + " " + sel;
+        }
+
+        // ---------- Salida: el tablero vuelve a quedar vacio (cuadro 0 = ultimo) ----------
+        ["a", "b", "c", "d"].forEach((id, i) => {
+          tl.to("#tarjeta-" + id, { opacity: 0, scale: 0.92, duration: 0.45, ease: "power2.in" }, 9.2 + i * 0.06);
+        });
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

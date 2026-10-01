@@ -31,11 +31,18 @@ import type { ColorCta } from "@/lib/sanity";
  * El foco tiene regla propia (globals.css): el contorno naranja global
  * seria invisible sobre un boton naranja.
  */
-export const PALETAS_CTA: Record<ColorCta, { bg: string; bgHover: string; fg: string; aro: string }> = {
+/** Las 4 de Sanity + las 2 de la pagina FENIAX (brandbook FENIAX: naranja
+ *  #ED6D19 con texto berenjena, 5,35:1; morado #792883 con texto blanco,
+ *  8,6:1). Las de FENIAX no se ofrecen en el Studio: son del codigo. */
+export type ColorBoton = ColorCta | "feniax" | "feniax-morado";
+
+export const PALETAS_CTA: Record<ColorBoton, { bg: string; bgHover: string; fg: string; aro: string }> = {
   naranja: { bg: "#F47B20", bgHover: "#FF9440", fg: "#1A0F3D", aro: "#FFFFFF" },
   morado: { bg: "#4B2A93", bgHover: "#6D4BC9", fg: "#FFFFFF", aro: "#FFFFFF" },
   blanco: { bg: "#FFFFFF", bgHover: "#F4F0FE", fg: "#1A0F3D", aro: "#4B2A93" },
   oscuro: { bg: "#120A26", bgHover: "#241553", fg: "#FFFFFF", aro: "#F47B20" },
+  feniax: { bg: "#ED6D19", bgHover: "#F38A3F", fg: "#2A1638", aro: "#FFFFFF" },
+  "feniax-morado": { bg: "#792883", bgHover: "#9A3FA7", fg: "#FFFFFF", aro: "#FFFFFF" },
 };
 
 export function BotonCta({
@@ -47,7 +54,7 @@ export function BotonCta({
 }: {
   texto: string;
   enlace: string;
-  color?: ColorCta;
+  color?: ColorBoton;
   /** Si no se indica, se deduce del enlace: una ruta del sitio empieza con
    *  "/"; todo lo demas (https://, mailto:, tel:) sale del sitio. */
   esExterno?: boolean;

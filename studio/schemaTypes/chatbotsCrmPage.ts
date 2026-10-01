@@ -1,20 +1,24 @@
 import { defineType, defineField, defineArrayMember } from "sanity";
 
 /**
- * Página /chatbots-crm. Documento único (singleton, _id fijo
- * "chatbotsCrmPage"), con su propia entrada en el menú.
+ * Página /chatbots-crm: FENIAX, el CRM con IA. Documento único (singleton,
+ * _id fijo "chatbotsCrmPage"), con su propia entrada en el menú.
  *
- * Mismo sistema que Marketing Digital: todo el contenido es la lista
+ * MISMA ESTRUCTURA QUE MARKETING DIGITAL: todo el contenido es la lista
  * `sections[]`, en ESE orden -- se cambia arrastrando. Para ocultar una
- * sección sin borrarla, se apaga "Mostrar en la página" dentro de ella.
+ * sección sin borrarla, se apaga "Mostrar en la página" dentro de ella. Los
+ * campos de cada sección son los mismos; lo que cambia es el diseño (marca
+ * FENIAX, según su brandbook).
  *
- * Sin Clientes ni Reseñas a propósito: esos dos tipos dependen de datos que
- * se cargan a mano dentro de la propia sección (giros de negocio), y
- * repetirlos en varias páginas obligaría a recargarlos en cada una. Se
- * quedan exclusivos de Marketing Digital.
+ * Diferencias con Marketing Digital:
+ *  - Clientes es "Clientes + demo de WhatsApp": en vez de video, un teléfono
+ *    con la IA atendiendo a un cliente del giro abierto.
+ *  - "Demo de WhatsApp de la portada": la conversación del teléfono de la
+ *    primera sección (alguien escribiéndole a FENIAX).
  *
- * Mientras `sections[]` esté vacío, la página muestra "Página en
- * construcción" -- nunca contenido inventado.
+ * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
+ * respaldo armado con el brandbook de FENIAX. Con una sola sección activa,
+ * manda lo que esté acá.
  */
 export const chatbotsCrmPage = defineType({
   name: "chatbotsCrmPage",
@@ -40,8 +44,17 @@ export const chatbotsCrmPage = defineType({
         defineArrayMember({ type: "aboutBanner" }),
         defineArrayMember({ type: "navigationBanner" }),
         defineArrayMember({ type: "methodBanner" }),
+        defineArrayMember({ type: "chatClientsBanner" }),
+        defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),
       ],
+    }),
+    defineField({
+      name: "chatPortada",
+      title: "Demo de WhatsApp de la portada",
+      type: "chatDemo",
+      description:
+        "La conversación del teléfono de la primera sección: alguien escribiéndole a FENIAX («Hola, quiero integrar un CRM en mi empresa»...). Vacía: se usa la conversación por defecto.",
     }),
   ],
   preview: {

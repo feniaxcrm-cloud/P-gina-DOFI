@@ -14,6 +14,8 @@ import { aboutBanner } from "./marketing/aboutBanner";
 import { navigationBanner } from "./marketing/navigationBanner";
 import { methodBanner } from "./marketing/methodBanner";
 import { clientsBanner } from "./marketing/clientsBanner";
+import { chatClientsBanner } from "./marketing/chatClientsBanner";
+import { chatDemo } from "./objects/chatDemo";
 import { reviewsBanner } from "./marketing/reviewsBanner";
 import { ctaBanner } from "./marketing/ctaBanner";
 import { hero } from "./hero";
@@ -48,6 +50,8 @@ export const schemaTypes = [
   navigationBanner,
   methodBanner,
   clientsBanner,
+  chatClientsBanner,
+  chatDemo,
   reviewsBanner,
   ctaBanner,
 ];

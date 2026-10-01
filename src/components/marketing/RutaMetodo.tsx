@@ -1,7 +1,19 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import { ChartLineUp, Compass, HandCoins, MapTrifold, RocketLaunch, Sailboat } from "@phosphor-icons/react";
+import {
+  ArrowsClockwise,
+  ChartLineUp,
+  Compass,
+  Fire,
+  HandCoins,
+  MagnifyingGlass,
+  MapTrifold,
+  PlugsConnected,
+  Robot,
+  RocketLaunch,
+  Sailboat,
+} from "@phosphor-icons/react";
 import type { PasoMetodo } from "@/lib/marketing-digital";
 
 /**
@@ -39,7 +51,20 @@ import type { PasoMetodo } from "@/lib/marketing-digital";
  * navegacion, resultados; y ventas para el destino.
  */
 
-const ICONOS = [Compass, MapTrifold, RocketLaunch, Sailboat, ChartLineUp] as const;
+/** Juegos de iconos por marca. Se elige con una clave (no se pasan los
+ *  componentes) porque este es un componente de cliente y una funcion no
+ *  viaja del servidor al cliente como prop.
+ *  - dofi: el viaje nautico (exploracion, ruta, lanzamiento, navegacion,
+ *    resultados) y ventas en el destino.
+ *  - feniax: el sistema comercial (diagnostico, canales conectados, IA,
+ *    seguimiento automatico, reportes) y el fuego del fenix en el destino:
+ *    las ventas "renacen". */
+const JUEGOS = {
+  dofi: { pasos: [Compass, MapTrifold, RocketLaunch, Sailboat, ChartLineUp], destino: HandCoins },
+  feniax: { pasos: [MagnifyingGlass, PlugsConnected, Robot, ArrowsClockwise, ChartLineUp], destino: Fire },
+} as const;
+
+export type JuegoIconos = keyof typeof JUEGOS;
 
 const NODO = 64;
 const NODO_DESTINO = 88;
@@ -95,11 +120,14 @@ export function RutaMetodo({
   pasos,
   destino,
   animar,
+  iconos = "dofi",
 }: {
   pasos: PasoMetodo[];
   destino: string;
   animar: boolean;
+  iconos?: JuegoIconos;
 }) {
+  const { pasos: ICONOS, destino: IconoDestino } = JUEGOS[iconos];
   const n = pasos.length + (destino ? 1 : 0);
   if (n === 0) return null;
 
@@ -134,7 +162,7 @@ export function RutaMetodo({
             >
               <path
                 d={trazarRuta(n, Boolean(destino))}
-                stroke="rgba(75,42,147,0.42)"
+                style={{ stroke: "color-mix(in srgb, var(--color-brand) 42%, transparent)" }}
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeDasharray="0.5 11"
@@ -166,7 +194,7 @@ export function RutaMetodo({
                   className="absolute -bottom-10 left-[31px] top-16 w-0 origin-top border-l-2 border-dashed border-brand/30 xl:hidden"
                 />
               )}
-              <span className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-brand/15 bg-white text-brand shadow-[0_12px_30px_-14px_rgba(75,42,147,0.5)]">
+              <span className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-brand/15 bg-white text-brand shadow-[0_12px_30px_-14px_color-mix(in_srgb,var(--color-brand)_50%,transparent)]">
                 <Icono size={26} weight="duotone" aria-hidden="true" />
                 <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-accent px-1.5 font-display text-[11px] font-bold text-fg-on-accent">
                   {String(i + 1).padStart(2, "0")}
@@ -191,7 +219,7 @@ export function RutaMetodo({
             }`}
           >
             <span className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand via-brand-lift to-accent text-white shadow-[0_0_0_6px_rgba(244,123,32,0.14),0_20px_44px_-14px_rgba(244,123,32,0.65)] xl:h-[88px] xl:w-[88px]">
-              <HandCoins size={34} weight="fill" aria-hidden="true" />
+              <IconoDestino size={34} weight="fill" aria-hidden="true" />
             </span>
             <p className="text-balance bg-gradient-to-r from-brand via-brand-lift to-accent bg-clip-text font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-transparent xl:mt-5 xl:text-[1.6rem]">
               {destino}

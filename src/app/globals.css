@@ -909,3 +909,104 @@ body {
   clip-path: polygon(70% 28%, 90% 20%, 96% 52%, 80% 62%);
   animation: hero-shape-drift-3 11s ease-in-out infinite alternate;
 }
+
+/* ============================================================
+   FENIAX — tema de la pagina /chatbots-crm
+   Paleta del BRANDBOOK FENIAX (seccion 03): morado #792883, berenjena
+   #2A1638, naranja #ED6D19, rojo #E5352A y blanco.
+
+   Va como CLASE y no como otro @theme: redefine los MISMOS tokens del
+   sistema (--color-brand, --color-accent, --color-ink...) solo dentro de
+   <div class="tema-feniax">. Asi las utilidades de Tailwind (bg-brand,
+   text-ink, bg-accent/15...) y los componentes compartidos con Marketing
+   Digital (carrusel de giros, ruta del metodo, tarjetas de reseñas) se
+   pintan con la marca FENIAX sin duplicar un solo componente. El Nav y el
+   Footer quedan afuera de la clase: siguen siendo DOFI, que es el sitio.
+
+   Contrastes (calculados con la formula WCAG): ink sobre canvas 15,9:1;
+   ink-muted 7,2:1; ink-subtle 5,1:1; brand sobre blanco 8,6:1; texto
+   berenjena sobre el naranja del boton 5,35:1 (6,7:1 en hover).
+   ============================================================ */
+.tema-feniax {
+  --color-brand: #792883;
+  --color-brand-lift: #9A3FA7;
+  --color-accent: #ED6D19;
+  --color-accent-lift: #F38A3F;
+  --color-abyss: #160A20;
+  --color-deep: #2A1638;
+  --color-surface: #3A1E4D;
+  --color-surface-2: #4A2560;
+  --color-foam: #FBF4FC;
+  --color-mist: #C9B3D3;
+  --color-canvas: #FCFAFD;
+  --color-ink: #2A1638;
+  --color-ink-muted: #5E5068;
+  --color-ink-subtle: #75667F;
+  --color-fg-on-accent: #2A1638;
+  /* Paneles del carrusel de giros sin foto (CarruselGiros.tsx). */
+  --giro-cerrado: linear-gradient(180deg, #F7EFF9 0%, #EEDFF2 100%);
+  --giro-abierto: radial-gradient(120% 80% at 92% 108%, rgba(229, 53, 42, 0.55) 0%, rgba(237, 109, 25, 0.25) 35%, rgba(237, 109, 25, 0) 62%),
+    linear-gradient(165deg, #9A3FA7 0%, #792883 45%, #2A1638 100%);
+}
+
+/* Texto con el degradado del isotipo "IA" (naranja -> rojo). Solo en
+   tamaños grandes: sobre fondo claro el rojo/naranja no llega a 4,5:1 en
+   texto chico. */
+.texto-ia {
+  background-image: linear-gradient(180deg, #F38A3F 0%, #ED6D19 45%, #E5352A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ondas de lineas de la marca (OndasFeniax.tsx): el haz de curvas que
+   recorre el brandbook. Se desplaza muy despacio en horizontal (la tira es
+   el doble de ancha y vuelve a su punto: bucle sin costura). */
+@keyframes feniax-ondas {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.feniax-ondas {
+  animation: feniax-ondas var(--ondas-duracion, 40s) linear infinite;
+  will-change: transform;
+}
+
+/* Brillo del nodo de la IA (isotipo grande de "¿Qué es FENIAX?" y cierre). */
+@keyframes feniax-pulso {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.feniax-pulso {
+  animation: feniax-pulso 5.5s ease-in-out infinite;
+}
+
+@keyframes feniax-orbita {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.feniax-orbita {
+  animation: feniax-orbita var(--orbita-duracion, 60s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feniax-ondas,
+  .feniax-pulso,
+  .feniax-orbita {
+    animation: none;
+  }
+}

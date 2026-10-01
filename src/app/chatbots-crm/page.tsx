@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { PaginaServicio } from "@/components/marketing/PaginaServicio";
+import { PaginaFeniax } from "@/components/feniax/PaginaFeniax";
 
 export const metadata: Metadata = {
-  title: "ChatBots / CRM | DOFI Agencia Creativa",
+  title: "FENIAX · ChatBots / CRM con IA | DOFI Agencia Creativa",
+  description:
+    "FENIAX conecta tu WhatsApp, Instagram y Facebook a un CRM con inteligencia artificial que responde al instante y le da seguimiento a cada cliente. Ventas inteligentes, Cuenca - Ecuador.",
 };
 
 export default function ChatbotsCrmPage() {
-  return <PaginaServicio tipo="chatbotsCrmPage" titulo="ChatBots / CRM" />;
+  return <PaginaFeniax />;
 }
