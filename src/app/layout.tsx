@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { GeistSans } from "geist/font/sans";
 import { company } from "@/config/company";
 import { site } from "@/config/site";
+import { BotonWhatsApp } from "@/components/BotonWhatsApp";
 import "./globals.css";
 
 /**
@@ -121,6 +122,7 @@ export default function RootLayout({
         </noscript>
         <div className="grain-layer" aria-hidden="true" />
         {children}
+        <BotonWhatsApp />
       </body>
     </html>
   );

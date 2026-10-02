@@ -29,6 +29,9 @@
   /* Positivo: SOLO para una cifra que mejora (▲/▼ de una metrica) en los
      paneles de Trafico/Ads. Semantico, no de marca: no se usa como acento. */
   --color-positive: #4ADE80;
+  /* WhatsApp: SOLO el boton flotante. Verde de la marca, un tono mas hondo que
+     el #25D366 de la app para que el icono blanco llegue a 3:1 (3,1:1). */
+  --color-whatsapp: #1DA851;
 
   /* Texto */
   --color-foam: #F4F0FE;

@@ -1,3 +1,4 @@
+import { TEXTO_CTA, enlaceFormulario } from "@/lib/cta";
 import { sanityQuery } from "@/lib/sanity";
 import { company } from "@/config/company";
 import { obtenerResenasGoogle } from "@/lib/google-places";
@@ -166,7 +167,7 @@ export type TipoSeccion = SeccionMarketing["tipo"];
 // Respaldo: el copy del brief, textual
 // ============================================================
 
-const CTA_VENTAS: CtaSimple = { texto: "Quiero Mejorar mis Ventas", enlace: "/contactanos" };
+const CTA_VENTAS: CtaSimple = { texto: TEXTO_CTA, enlace: enlaceFormulario("marketing-360") };
 
 function base(key: string, parcial: Partial<Base>): Base {
   return {

@@ -79,6 +79,8 @@ export type Plataforma = {
 
 export type SeccionPlataformas = BaseSeccion & { tipo: "platformsBanner"; plataformas: Plataforma[] };
 export type SeccionEcosistema = BaseSeccion & { tipo: "ecosystemBanner" };
+/** El cierre de esta pagina: la imagen va a la derecha, completa (no de fondo). */
+export type SeccionCierreImagen = BaseSeccion & { tipo: "ctaImageBanner" };
 
 export type GiroConMetricas = GiroNegocio & { metricas: MetricasDemo };
 
@@ -99,7 +101,7 @@ export type SeccionTrafico =
   | SeccionEcosistema
   | SeccionClientesMetricas
   | SeccionResenas
-  | SeccionCierre;
+  | SeccionCierreImagen;
 
 export type TipoSeccionTrafico = SeccionTrafico["tipo"];
 
@@ -131,7 +133,7 @@ function respaldo(girosMarketing: GiroConMetricas[], resenas: SeccionResenas["re
     { ...base("trafico-sistema", c.sistema), tipo: "aboutBanner" },
     { ...base("trafico-mapa", c.mapa), tipo: "navigationBanner" },
     {
-      ...base("trafico-metodo", { subtitulo: c.metodo.subtitulo, titulo: c.metodo.titulo, descripcion: c.metodo.descripcion, destacado: c.metodo.destacado }),
+      ...base("trafico-metodo", { subtitulo: c.metodo.subtitulo, titulo: c.metodo.titulo, descripcion: c.metodo.descripcion, destacado: c.metodo.destacado, cta: { ...c.metodo.cta } }),
       tipo: "methodBanner",
       mostrarPasos: true,
       pasos: c.metodo.pasos.map((titulo) => ({ titulo, descripcion: "" })),
@@ -158,7 +160,7 @@ function respaldo(girosMarketing: GiroConMetricas[], resenas: SeccionResenas["re
       autoplay: false,
       velocidadAutoplay: 6,
     },
-    { ...base("trafico-cierre", { ...c.cierre, cta: { ...c.cierre.cta } }), tipo: "ctaBanner", alineacion: "centro", overlay: "medio" },
+    { ...base("trafico-cierre", { ...c.cierre, cta: { ...c.cierre.cta } }), tipo: "ctaImageBanner" },
   ];
 }
 
@@ -255,6 +257,9 @@ function normalizarSeccionTrafico(
     case "ecosystemBanner":
       return { ...camposBase(raw, true), tipo: "ecosystemBanner" };
 
+    case "ctaImageBanner":
+      return { ...camposBase(raw, true), tipo: "ctaImageBanner" };
+
     case "metricsClientsBanner": {
       const propios = girosConMetricas(raw.giros);
       const giros = propios.length > 0 ? propios : girosMarketing;
@@ -273,7 +278,15 @@ function normalizarSeccionTrafico(
       // Los demas tipos son los de Marketing Digital, con la misma
       // normalizacion. clientsBanner (el del video) no forma parte de esta pagina.
       const s = normalizarSeccion(raw, resenas);
-      return s && s.tipo !== "clientsBanner" ? s : null;
+      if (!s || s.tipo === "clientsBanner") return null;
+      // Un cierre del tipo de las demas paginas ("ctaBanner", foto de fondo) se
+      // muestra como el de esta (imagen a la derecha): misma seccion, mismos
+      // textos y boton. Cubre un documento anterior al cambio.
+      if (s.tipo === "ctaBanner") {
+        const { alineacion: _alineacion, overlay: _overlay, ...resto } = s;
+        return { ...resto, tipo: "ctaImageBanner" };
+      }
+      return s;
     }
   }
 }

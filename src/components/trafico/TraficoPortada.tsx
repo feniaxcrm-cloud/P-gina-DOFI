@@ -4,7 +4,17 @@ import { AtmosferaMar } from "@/components/marketing/AtmosferaMar";
 import { FotoFondo } from "@/components/marketing/FotoFondo";
 import { parrafosDe } from "@/components/marketing/PiezaGrafica";
 import type { SeccionEquipo } from "@/lib/marketing-digital";
+import { siGoogleads, siMeta, siTiktok } from "simple-icons";
 import { HeroProblema } from "./HeroProblema";
+
+/** Los logos de las tres plataformas viajan como trazos (el paquete de
+ *  simple-icons se queda en el servidor). Uso nominativo, como las tarjetas de
+ *  "¿Dónde traficamos?". */
+const MARCAS = {
+  meta: { path: siMeta.path, hex: siMeta.hex },
+  tiktok: { path: siTiktok.path, hex: siTiktok.hex },
+  google: { path: siGoogleads.path, hex: siGoogleads.hex },
+};
 
 /**
  * 1 · Portada de Tráfico/Ads: "El problema" (tipo teamBanner, el mismo que
@@ -12,8 +22,9 @@ import { HeroProblema } from "./HeroProblema";
  *
  * Mismo fondo que usa BannerFoto cuando no hay foto (AtmosferaMar: el mar de
  * ideas de DOFI, morado profundo con oleaje) y mismo texto blanco sobre
- * oscuro. A la derecha, la composicion del problema (HeroProblema): me gusta
- * y visualizaciones que suben, ventas que no.
+ * oscuro. A la derecha, la composicion del problema (HeroProblema): un panel
+ * por plataforma (Meta, TikTok y Google Ads) con las cifras contando desde
+ * cero; en el de ventas, la conexion que falta.
  *
  * SI SE SUBE UNA FOTO en el Studio, la foto pasa al fondo con su velo (como
  * en Marketing Digital) y la composicion se retira: la foto ya tiene la suya.
@@ -95,7 +106,7 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
         {!imagen && (
           <div className="min-w-0 lg:col-span-5">
             <Anim animar={animar} y={24} delay={0.2} duration={0.8}>
-              <HeroProblema />
+              <HeroProblema marcas={MARCAS} />
             </Anim>
           </div>
         )}

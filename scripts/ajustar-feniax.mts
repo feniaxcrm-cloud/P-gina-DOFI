@@ -21,7 +21,7 @@
 import { createClient } from "@sanity/client";
 import fs from "node:fs";
 import path from "node:path";
-import { TEXTO_CTA_FENIAX } from "../src/lib/feniax-respaldo";
+import { TEXTO_CTA as TEXTO_CTA_FENIAX } from "../src/lib/cta";
 
 const projectId = process.env.SANITY_PROJECT_ID;
 const dataset = process.env.SANITY_DATASET;

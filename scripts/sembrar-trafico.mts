@@ -5,7 +5,8 @@
  *
  *  - Las 9 secciones, en orden: Portada, Nuestro sistema, El mapa, Método
  *    (los 7 frentes), ¿Dónde traficamos? (Meta, TikTok, Google, web),
- *    Ecosistema, Clientes + métricas de Meta Ads, Reseñas y Cierre, con los
+ *    Ecosistema, Clientes + métricas de Meta Ads, Reseñas y Cierre (con la
+ *    imagen a la derecha: tipo ctaImageBanner), con los
  *    textos de src/lib/trafico-respaldo.ts (resumidos del documento del
  *    equipo: poco texto y enfocado en vender).
  *  - En Clientes: los MISMOS giros de Marketing Digital (nombre, ícono, foto
@@ -125,6 +126,7 @@ const doc = {
       titulo: c.metodo.titulo,
       descripcion: c.metodo.descripcion,
       destacado: c.metodo.destacado,
+      cta: cta(c.metodo.cta),
       mostrarPasos: true,
       pasos: c.metodo.pasos.map((titulo) => ({ _key: clave(), _type: "pasoMetodo", titulo, descripcion: "" })),
     },
@@ -144,7 +146,7 @@ const doc = {
       rotacionAutomatica: true,
     },
     { _type: "reviewsBanner", ...c.resenas },
-    { _type: "ctaBanner", ...c.cierre, cta: cta(c.cierre.cta), alineacion: "centro", overlay: "medio" },
+    { _type: "ctaImageBanner", ...c.cierre, cta: cta(c.cierre.cta) },
   ].map((s) => ({ _key: clave(), activo: true, animar: true, ...s })),
 };
 

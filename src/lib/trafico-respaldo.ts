@@ -19,7 +19,9 @@
  * en el Studio para que se editen ahi). Datos planos, sin dependencias.
  */
 
-const CTA_MARCA = { texto: "Quiero impulsar mi marca", enlace: "/contactanos" };
+import { TEXTO_CTA, enlaceFormulario } from "@/lib/cta";
+
+const CTA_MARCA = { texto: TEXTO_CTA, enlace: enlaceFormulario("pauta") };
 
 export const COPY_TRAFICO = {
   /** 01 · El problema */
@@ -35,8 +37,10 @@ export const COPY_TRAFICO = {
   sistema: {
     subtitulo: "Nuestro sistema",
     titulo: "Tráfico inteligente. Estrategias que se adaptan.",
+    // Dos frases cortas: estrategia a la medida (y para vender y posicionar) y
+    // datos para decidir. Parte del texto que dio el equipo el 2026-10-02.
     descripcion:
-      "Cada marca es distinta. Diseñamos la campaña según tu objetivo y tu momento, y la mejoramos con datos.",
+      "Ninguna marca se parece a otra, ni siquiera en el mismo nicho. Diseñamos campañas a la medida de tus objetivos, con la mirada puesta en vender y posicionar tu marca.\n\nNuestra ciencia son los datos: los medimos e interpretamos para tomar las decisiones correctas.",
     destacado: "Cada campaña tiene un rumbo.",
   },
   /** 03 · ¿Cómo lo hacemos? (1/2): el mapa */
@@ -51,6 +55,7 @@ export const COPY_TRAFICO = {
     titulo: "Para nosotros, todo son datos.",
     descripcion: "Medimos cada campaña y ajustamos sobre la marcha para que tu inversión rinda más.",
     destacado: "Medir. Analizar. Optimizar.",
+    cta: CTA_MARCA,
     // Los siete frentes del documento, sin descripcion: el documento no la da.
     pasos: ["Objetivo", "Audiencia", "Oferta", "Canal", "Creatividad", "Conversión", "Datos"],
   },

@@ -17,6 +17,8 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  *    KPIs de una campaña de ejemplo por giro (CPR, CTR, CPA, alcance,
  *    visualizaciones, frecuencia). Los logos, fotos y empresas de cada giro
  *    se cargan dentro del giro, igual que en Marketing Digital.
+ *  - Cierre con imagen a la derecha: el cierre de esta página lleva una imagen
+ *    completa al lado del texto (no de fondo).
  *
  * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
  * respaldo armado con el documento «SECCION DE TRAFICO». Con una sola sección
@@ -50,7 +52,7 @@ export const traficoAdsPage = defineType({
         defineArrayMember({ type: "ecosystemBanner" }),
         defineArrayMember({ type: "metricsClientsBanner" }),
         defineArrayMember({ type: "reviewsBanner" }),
-        defineArrayMember({ type: "ctaBanner" }),
+        defineArrayMember({ type: "ctaImageBanner" }),
       ],
     }),
   ],

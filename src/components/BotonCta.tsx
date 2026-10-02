@@ -45,6 +45,29 @@ export const PALETAS_CTA: Record<ColorBoton, { bg: string; bgHover: string; fg: 
   "feniax-morado": { bg: "#792883", bgHover: "#9A3FA7", fg: "#FFFFFF", aro: "#FFFFFF" },
 };
 
+/** Clases y variables del boton, para quien necesite el MISMO boton pero como
+ *  <button> (el envio del formulario de /contactanos) y no como enlace. */
+export function clasesBoton(tamano: "normal" | "grande" = "normal"): string {
+  return (
+    "banner-cta-boton group/cta inline-flex items-center justify-center rounded-full text-center font-display font-bold leading-tight " +
+    "transition-[background-color,box-shadow,scale] duration-300 ease-out " +
+    "motion-safe:hover:scale-[1.04] active:scale-[0.99] " +
+    (tamano === "grande"
+      ? "min-h-[60px] gap-3 px-9 py-3.5 text-[17px] md:min-h-[76px] md:px-12 md:text-[21px]"
+      : "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]")
+  );
+}
+
+export function estiloBoton(color: ColorBoton = "naranja"): React.CSSProperties {
+  const paleta = PALETAS_CTA[color];
+  return {
+    "--cta-bg": paleta.bg,
+    "--cta-bg-hover": paleta.bgHover,
+    "--cta-fg": paleta.fg,
+    "--cta-aro": paleta.aro,
+  } as React.CSSProperties;
+}
+
 export function BotonCta({
   texto,
   enlace,
@@ -61,21 +84,8 @@ export function BotonCta({
   tamano?: "normal" | "grande";
 }) {
   const externo = esExterno ?? !enlace.startsWith("/");
-  const paleta = PALETAS_CTA[color];
-  const clases =
-    "banner-cta-boton group/cta inline-flex items-center justify-center rounded-full text-center font-display font-bold leading-tight " +
-    "transition-[background-color,box-shadow,scale] duration-300 ease-out " +
-    "motion-safe:hover:scale-[1.04] active:scale-[0.99] " +
-    (tamano === "grande"
-      ? "min-h-[60px] gap-3 px-9 py-3.5 text-[17px] md:min-h-[76px] md:px-12 md:text-[21px]"
-      : "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]");
-
-  const estilo = {
-    "--cta-bg": paleta.bg,
-    "--cta-bg-hover": paleta.bgHover,
-    "--cta-fg": paleta.fg,
-    "--cta-aro": paleta.aro,
-  } as React.CSSProperties;
+  const clases = clasesBoton(tamano);
+  const estilo = estiloBoton(color);
 
   const contenido = (
     <>

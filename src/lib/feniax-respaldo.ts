@@ -1,3 +1,4 @@
+import { TEXTO_CTA, enlaceFormulario } from "@/lib/cta";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
 
 /**
@@ -15,10 +16,11 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
 /** El CTA principal abre WhatsApp con el mensaje ya escrito. */
 export const WHATSAPP_FENIAX = createWhatsAppUrl({ message: "Hola, quiero integrar un CRM en mi empresa" });
 
-/** TODOS los botones de la pagina dicen lo mismo (pedido del 2026-10-01). */
-export const TEXTO_CTA_FENIAX = "Quiero mejorar mis ventas";
-
-const CTA_WHATSAPP = { texto: TEXTO_CTA_FENIAX, enlace: WHATSAPP_FENIAX };
+/** Portada y metodo abren WhatsApp con el mensaje del CRM; el CIERRE, como el
+ *  de todas las paginas, lleva al formulario (con "CRM" ya marcado). El texto
+ *  es el mismo en todos (src/lib/cta.ts). */
+const CTA_WHATSAPP = { texto: TEXTO_CTA, enlace: WHATSAPP_FENIAX };
+const CTA_FORMULARIO = { texto: TEXTO_CTA, enlace: enlaceFormulario("crm") };
 
 export const COPY_FENIAX = {
   portada: {
@@ -64,6 +66,6 @@ export const COPY_FENIAX = {
   cierre: {
     titulo: "¿Listo para que tus ventas renazcan?",
     descripcion: "Escríbenos y descubre cómo FENIAX convierte tus conversaciones en ventas.",
-    cta: CTA_WHATSAPP,
+    cta: CTA_FORMULARIO,
   },
 } as const;
