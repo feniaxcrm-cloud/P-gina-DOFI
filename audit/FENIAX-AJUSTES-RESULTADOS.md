@@ -70,3 +70,16 @@ copia de seguridad previa).
 - `src/lib/feniax.ts`, `chat-demo.ts`, `feniax-respaldo.ts`, `studio/schemaTypes/chatbotsCrmPage.ts`.
 - `scripts/ajustar-feniax.mts` (un solo uso, simulación por defecto) y `sembrar-feniax.mts`
   actualizado (ya no carga la demo de la portada).
+
+## Publicado (2026-10-01)
+
+- Código en `main` (commit 0896e9b), verificado en
+  <https://pagina-dofi.feniax-crm.workers.dev/chatbots-crm>: el hero con el motion, el botón
+  «Quiero mejorar mis ventas» (portada, método y cierre), sin errores de consola ni de red.
+  `/marketing-digital`, `/asesorias`, `/` y `/clientes` siguen en 200.
+- **Studio redesplegado** y **Sanity ajustado** con `scripts/ajustar-feniax.mts` (3 botones y
+  el campo `chatPortada` borrado). Copia previa en
+  `audit/backup-chatbotsCrmPage-antes-de-cta-y-portada-2026-10-02.json`.
+- Build de producción: `/chatbots-crm` 213 kB de carga inicial (antes 205 kB: el motion del
+  hero es un video, no suma JavaScript; lo que suma es el recorrido vivo del método).
+  Marketing Digital 210 kB, Asesorías 186 kB.

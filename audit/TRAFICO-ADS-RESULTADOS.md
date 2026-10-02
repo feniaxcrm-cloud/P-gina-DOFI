@@ -102,3 +102,16 @@ por eso la nota es un campo editable.
 - **Licencia de Remotion**: es gratis solo para empresas de hasta 3 personas. Si no aplica, la
   alternativa es rehacer el panel con Motion (ya está en el proyecto) sin cambiar nada de lo
   que ve el visitante ni de lo que se edita en el Studio.
+
+## Publicado (2026-10-01)
+
+- Código en `main` (commit 0896e9b); Cloudflare desplegó en ~3 min y se verificó en
+  <https://pagina-dofi.feniax-crm.workers.dev/trafico-ads>: las 9 secciones, el panel de Meta
+  Ads cambiando con el giro, el video del ecosistema y sin errores de consola ni de red.
+- **Studio redesplegado** (<https://dofi-cms.sanity.studio/>) con los tipos nuevos.
+- **Contenido cargado en Sanity** con `scripts/sembrar-trafico.mts` (sesión de la CLI de
+  Sanity): las 9 secciones y los 6 giros de Marketing Digital con sus empresas y su campaña de
+  ejemplo. Copia del documento anterior en `audit/backup-traficoAdsPage-2026-10-02.json`.
+- Build de producción: `/trafico-ads` 216 kB de carga inicial (Marketing Digital 210 kB).
+  `opennextjs-cloudflare build` sigue sin funcionar en Windows (conocido); se verificó con
+  `npm run build:next` y el deploy lo hace Cloudflare.

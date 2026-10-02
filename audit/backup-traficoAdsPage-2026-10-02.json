@@ -1,0 +1,35 @@
+{
+  "_createdAt": "2026-09-28T21:23:56Z",
+  "_id": "traficoAdsPage",
+  "_rev": "jFGCd09lO5Q5FStScn2bwi",
+  "_type": "traficoAdsPage",
+  "_updatedAt": "2026-09-28T21:23:56Z",
+  "sections": [
+    {
+      "_key": "trafico-equipo",
+      "_type": "teamBanner",
+      "activo": false
+    },
+    {
+      "_key": "trafico-intro",
+      "_type": "aboutBanner",
+      "activo": false
+    },
+    {
+      "_key": "trafico-editorial",
+      "_type": "navigationBanner",
+      "activo": false
+    },
+    {
+      "_key": "trafico-metodo",
+      "_type": "methodBanner",
+      "activo": false
+    },
+    {
+      "_key": "trafico-cierre",
+      "_type": "ctaBanner",
+      "activo": false
+    }
+  ],
+  "titulo": "Tráfico / Ads"
+}
