@@ -117,3 +117,17 @@ todas las páginas»; lo puse **también en Inicio**. Si no lo quieren ahí, es 
   (`clasesBoton` y `estiloBoton` para usar el mismo botón como `<button>`).
 - `src/components/trafico/`: `HeroProblema.tsx` (cifras que cuentan), `TraficoCierre.tsx`.
 - `studio/schemaTypes/marketing/ctaImageBanner.ts`.
+
+## Publicado (2026-10-02)
+
+- Código en `main` (commit 21f20ff); Cloudflare desplegó y se verificó en
+  <https://pagina-dofi.feniax-crm.workers.dev>: «Quiero mejorar mis ventas» en Marketing
+  Digital, Tráfico/Ads, ChatBots/CRM y el formulario (ningún «Quiero impulsar mi marca» ni
+  «Quiero Mejorar mis Ventas» restante), enlaces `?servicio=pauta` / `?servicio=crm`, botón
+  flotante en todas las páginas, y el texto nuevo de «Nuestro sistema» y el botón del método
+  en Tráfico, sin errores de consola ni de red.
+- **Studio redesplegado** (<https://dofi-cms.sanity.studio/>) con el tipo «Cierre con imagen a
+  la derecha».
+- **Sanity ajustado** con `scripts/ajustar-ctas.mts` (12 cambios en 3 documentos). Copias previas:
+  `audit/backup-{marketingDigitalPage,traficoAdsPage,chatbotsCrmPage}-antes-de-ctas-2026-10-02.json`.
+- Build de producción: `/contactanos` 166 kB, `/trafico-ads` 219 kB, Inicio 165 kB.
