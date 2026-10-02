@@ -1,4 +1,5 @@
 import type { IconoCategoria } from "@/lib/marketing-digital";
+import { claveDeGiro, type ClaveGiro } from "@/lib/giro-tipo";
 
 /**
  * Demos de WhatsApp de la pagina FENIAX / ChatBots-CRM.
@@ -52,19 +53,9 @@ const FOTO = (nombre: string) => `/feniax/demo/${nombre}.jpg`;
 
 /** Claves de plantilla. Mas finas que los iconos del Studio: "Fitness, salud
  *  y belleza" es un icono, pero un gimnasio y un consultorio no conversan
- *  igual. */
-export type ClavePlantilla =
-  | "restaurante"
-  | "autos"
-  | "inmobiliaria"
-  | "fitness"
-  | "belleza"
-  | "salud"
-  | "retail"
-  | "educacion"
-  | "turismo"
-  | "tecnologia"
-  | "servicios";
+ *  igual. Salen del resolvedor compartido (giro-tipo.ts); "construccion" no
+ *  tiene chat propio y usa el de inmobiliaria. */
+export type ClavePlantilla = Exclude<ClaveGiro, "construccion">;
 
 export const PLANTILLAS: Record<ClavePlantilla, ChatDemo> = {
   restaurante: {
@@ -239,64 +230,9 @@ export const PLANTILLAS: Record<ClavePlantilla, ChatDemo> = {
   },
 };
 
-/** La conversacion de la portada: alguien escribiendole a FENIAX. */
-export const CHAT_FENIAX: ChatDemo = {
-  negocio: "FENIAX",
-  estado: "en línea",
-  avatar: null,
-  icono: "feniax",
-  mensajes: [
-    c("Hola, quiero integrar un CRM en mi empresa"),
-    n(
-      "¡Hola! 👋 Soy el asistente de FENIAX. Te ayudamos a que ningún mensaje se quede sin respuesta y cada cliente llegue a tu CRM. ¿Qué tipo de negocio tienes?"
-    ),
-    c("Tengo un restaurante y me escriben muchísimo por WhatsApp e Instagram"),
-    n(
-      "¡Perfecto! Unimos WhatsApp, Instagram y Facebook en un solo CRM con IA que responde al instante, agenda reservas y le da seguimiento a cada cliente 🔥"
-    ),
-    c("¿Y puedo ver cuánto vende cada vendedor?"),
-    n("Sí: embudos de venta, reportes y el control de tu equipo en tiempo real 📊 ¿Te agendo una demo con un asesor?"),
-    c("Sí, mañana a las 10"),
-    n("¡Listo! Demo agendada para mañana a las 10:00 ✅ Tus ventas están por renacer 🔥"),
-  ],
-  aviso: { titulo: "Nuevo lead en tu CRM", texto: "Restaurante · Demo mañana 10:00" },
-};
-
-/** Palabras del NOMBRE del giro -> plantilla. El orden importa: "Fitness,
- *  salud y belleza" cae en fitness porque aparece primero en esta lista. */
-const POR_NOMBRE: Array<[RegExp, ClavePlantilla]> = [
-  [/gastr|restaur|comida|cafe|caf[eé]|bar\b|pizz|cocina|aliment/i, "restaurante"],
-  [/auto|carro|veh[ií]c|moto|concesion|llanta|taller/i, "autos"],
-  [/inmobil|bienes ra|departament|vivienda|constru|arquitect/i, "inmobiliaria"],
-  [/fitness|gym|gimnas|crossfit|deport|entrena/i, "fitness"],
-  [/belleza|spa|est[eé]tic|sal[oó]n|u[ñn]as|barber/i, "belleza"],
-  [/salud|cl[ií]nic|m[eé]dic|odonto|dental|farmac|consult/i, "salud"],
-  [/retail|tienda|comercio|ropa|moda|calzado|boutique|e-?commerce/i, "retail"],
-  [/educa|curso|academ|escuela|colegio|capacita|idioma/i, "educacion"],
-  [/turis|viaj|hotel|hosped|tour/i, "turismo"],
-  [/tecno|software|digital|sistemas|inform[aá]t/i, "tecnologia"],
-  [/servicio|profesional|consult|asesor/i, "servicios"],
-];
-
-const POR_ICONO: Record<IconoCategoria, ClavePlantilla> = {
-  construccion: "inmobiliaria",
-  belleza: "belleza",
-  servicios: "servicios",
-  comercio: "retail",
-  emprendedores: "servicios",
-  salud: "salud",
-  gastronomia: "restaurante",
-  tecnologia: "tecnologia",
-  automotriz: "autos",
-  inmobiliaria: "inmobiliaria",
-  educacion: "educacion",
-  turismo: "turismo",
-};
-
 export function plantillaParaGiro(nombre: string, icono: IconoCategoria | null): ChatDemo {
-  const porNombre = POR_NOMBRE.find(([patron]) => patron.test(nombre))?.[1];
-  const clave = porNombre ?? (icono ? POR_ICONO[icono] : null) ?? "servicios";
-  const base = PLANTILLAS[clave];
+  const clave = claveDeGiro(nombre, icono);
+  const base = PLANTILLAS[clave === "construccion" ? "inmobiliaria" : clave];
   // El icono del giro manda en el avatar (es el que el editor eligio).
   return icono ? { ...base, icono } : base;
 }

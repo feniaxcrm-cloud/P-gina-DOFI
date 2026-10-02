@@ -15,7 +15,10 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
 /** El CTA principal abre WhatsApp con el mensaje ya escrito. */
 export const WHATSAPP_FENIAX = createWhatsAppUrl({ message: "Hola, quiero integrar un CRM en mi empresa" });
 
-const CTA_WHATSAPP = { texto: "Quiero integrar FENIAX", enlace: WHATSAPP_FENIAX };
+/** TODOS los botones de la pagina dicen lo mismo (pedido del 2026-10-01). */
+export const TEXTO_CTA_FENIAX = "Quiero mejorar mis ventas";
+
+const CTA_WHATSAPP = { texto: TEXTO_CTA_FENIAX, enlace: WHATSAPP_FENIAX };
 
 export const COPY_FENIAX = {
   portada: {
@@ -44,7 +47,7 @@ export const COPY_FENIAX = {
     titulo: "Método FENIAX en 5 pasos",
     descripcion: "De la primera conversación a la venta cerrada, con un sistema que trabaja por ti las 24 horas.",
     destacado: "Ventas Inteligentes",
-    cta: { texto: "Agendar una demo", enlace: WHATSAPP_FENIAX },
+    cta: CTA_WHATSAPP,
     pasos: [
       { titulo: "Diagnóstico comercial", descripcion: "Analizamos cómo llegan, se atienden y se cierran tus ventas hoy." },
       { titulo: "Integración de canales", descripcion: "WhatsApp, Instagram, Facebook y tu web en un solo CRM." },

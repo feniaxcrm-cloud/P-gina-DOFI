@@ -16,7 +16,7 @@ import {
 } from "./marketing-digital";
 
 /**
- * Páginas de servicio (Tráfico/Ads y Asesorías): mismo sistema
+ * Páginas de servicio (hoy solo Asesorías): mismo sistema
  * que /marketing-digital -- documento singleton con `sections[]` ordenable
  * en Sanity, los mismos componentes de sección, los mismos fondos
  * decorativos -- pero SOLO con los 5 tipos que no dependen de datos
@@ -33,9 +33,10 @@ import {
 
 export type SeccionServicio = SeccionEquipo | SeccionQueEs | SeccionNavegacion | SeccionMetodo | SeccionCierre;
 
-/** ChatBots / CRM ya no pasa por aca: es la pagina FENIAX, con su propio
- *  diseño y sus secciones de Clientes y Reseñas (src/lib/feniax.ts). */
-export type TipoPaginaServicio = "traficoAdsPage" | "asesoriasPage";
+/** ChatBots / CRM (la pagina FENIAX, src/lib/feniax.ts) y Tráfico / Ads
+ *  (src/lib/trafico.ts) ya no pasan por aca: tienen sus propias secciones de
+ *  Clientes y Reseñas, y su propio diseño. Queda Asesorías. */
+export type TipoPaginaServicio = "asesoriasPage";
 
 const QUERY_SECCIONES = `sections[]{
   _type, _key, activo, subtitulo, titulo, descripcion, destacado, animar,

@@ -13,8 +13,8 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  * Diferencias con Marketing Digital:
  *  - Clientes es "Clientes + demo de WhatsApp": en vez de video, un teléfono
  *    con la IA atendiendo a un cliente del giro abierto.
- *  - "Demo de WhatsApp de la portada": la conversación del teléfono de la
- *    primera sección (alguien escribiéndole a FENIAX).
+ *  - La portada lleva una animación de CRM (ventas, gestión y crecimiento)
+ *    hecha con HyperFrames (carpeta video/ del proyecto); no se edita acá.
  *
  * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
  * respaldo armado con el brandbook de FENIAX. Con una sola sección activa,
@@ -48,13 +48,6 @@ export const chatbotsCrmPage = defineType({
         defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),
       ],
-    }),
-    defineField({
-      name: "chatPortada",
-      title: "Demo de WhatsApp de la portada",
-      type: "chatDemo",
-      description:
-        "La conversación del teléfono de la primera sección: alguien escribiéndole a FENIAX («Hola, quiero integrar un CRM en mi empresa»...). Vacía: se usa la conversación por defecto.",
     }),
   ],
   preview: {

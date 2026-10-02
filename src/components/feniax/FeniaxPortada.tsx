@@ -1,9 +1,8 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "@/components/marketing/Anim";
+import { VideoBucle } from "@/components/marketing/VideoBucle";
 import { LOGOS_FENIAX } from "@/config/feniax";
-import type { ChatDemo } from "@/lib/chat-demo";
 import type { SeccionEquipo } from "@/lib/marketing-digital";
-import { DemoWhatsApp } from "./DemoWhatsApp";
 import { OndasFeniax } from "./OndasFeniax";
 import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
 
@@ -11,11 +10,12 @@ import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
  * 1 · Portada de FENIAX (tipo teamBanner, el mismo que abre Marketing
  * Digital: subtítulo, título, descripción, destacado, botón e imagen).
  *
- * Composición: texto a la izquierda y, a la derecha, el producto funcionando
- * -- un teléfono donde alguien le escribe a FENIAX "Hola, quiero integrar un
- * CRM en mi empresa" y la IA responde, agenda la demo y el lead cae al CRM
- * (Remotion, ver DemoWhatsApp). La conversación se edita en el Studio
- * ("Demo de WhatsApp de la portada").
+ * Composición: texto a la izquierda y, a la derecha, el producto funcionando:
+ * un panel de FENIAX CRM en movimiento -- los clientes avanzan de Nuevo a En
+ * curso y Cerrado, la IA está activa, cada venta cerrada se avisa y la gráfica
+ * de crecimiento sube (motion graphic de HyperFrames, 10 s en bucle: ver
+ * video/crm-hero-feniax). Reemplaza al teléfono con la demo de WhatsApp, que
+ * ahora vive solo en Clientes (pedido del 2026-10-01).
  *
  * Fondo: el de la portada del brandbook -- berenjena profundo con el
  * resplandor naranja arriba a la derecha, el morado abajo a la izquierda, la
@@ -29,12 +29,10 @@ export function FeniaxPortada({
   seccion,
   id,
   nivel,
-  chat,
 }: {
   seccion: SeccionEquipo;
   id: string;
   nivel: "h1" | "h2";
-  chat: ChatDemo;
 }) {
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar } = seccion;
   const Titulo = nivel;
@@ -58,7 +56,7 @@ export function FeniaxPortada({
       </div>
 
       <div className={`relative mx-auto grid max-w-page grid-cols-1 items-center gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-8 lg:px-12 ${relleno}`}>
-        <div className="min-w-0 lg:col-span-7">
+        <div className="min-w-0 lg:col-span-6">
           <Anim animar={animar} y={12} duration={0.6}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -111,19 +109,15 @@ export function FeniaxPortada({
           )}
         </div>
 
-        <div className="relative min-w-0 lg:col-span-5">
-          {/* Resplandor detras del telefono: el naranja de la "IA". */}
-          <div
-            aria-hidden="true"
-            className="absolute left-1/2 top-1/2 -z-10 h-[78%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(237,109,25,0.45)_0%,rgba(121,40,131,0.35)_45%,transparent_72%)] blur-2xl"
-          />
+        <div className="relative min-w-0 lg:col-span-6">
           <Anim animar={animar} y={24} delay={0.18} duration={0.8}>
-            <DemoWhatsApp
-              chat={chat}
-              tema="oscuro"
-              modo="fondo"
-              clave="portada"
-              className="mx-auto w-full max-w-[290px] sm:max-w-[320px] lg:max-w-[340px]"
+            <VideoBucle
+              src="/feniax/crm-crecimiento.mp4"
+              poster="/feniax/crm-crecimiento.jpg"
+              descripcion="Animación del panel de FENIAX CRM: la IA está activa, los clientes avanzan de Nuevo a En curso y Cerrado, cada venta cerrada se avisa y la gráfica de crecimiento sube."
+              variante="flotante"
+              prioridad={nivel === "h1"}
+              className="mx-auto w-full max-w-[440px] sm:max-w-[500px] lg:ml-auto lg:mr-0 lg:max-w-[620px]"
             />
           </Anim>
         </div>

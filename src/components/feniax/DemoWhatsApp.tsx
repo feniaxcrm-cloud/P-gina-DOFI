@@ -7,7 +7,8 @@ import type { TemaChat } from "@/remotion/feniax/tema";
 import { MarcoTelefono } from "./MarcoTelefono";
 
 /**
- * Demo de WhatsApp en un telefono (portada y seccion Clientes de FENIAX).
+ * Demo de WhatsApp en un telefono (seccion Clientes de FENIAX; la portada
+ * ya no la usa: lleva el motion del CRM).
  *
  * CARGA DIFERIDA: Remotion (ReproductorChat) se descarga recien cuando el
  * telefono esta a ~400px de entrar en pantalla. Hasta entonces se ve el
@@ -24,14 +25,12 @@ const ReproductorChat = dynamic(() => import("./ReproductorChat"), { ssr: false 
 export function DemoWhatsApp({
   chat,
   tema,
-  modo,
   clave,
   onTermina,
   className = "",
 }: {
   chat: ChatDemo;
   tema: TemaChat;
-  modo: "fondo" | "video";
   /** Identifica la conversacion: al cambiar, la demo vuelve a empezar. */
   clave: string;
   onTermina?: () => void;
@@ -77,7 +76,6 @@ export function DemoWhatsApp({
         <ReproductorChat
           chat={chat}
           tema={tema}
-          modo={modo}
           activo={enVista}
           reducido={reducido}
           onTermina={onTermina}
@@ -86,7 +84,8 @@ export function DemoWhatsApp({
       ) : (
         <div aria-hidden="true">
           <MarcoTelefono tema={tema} />
-          {modo === "video" && <div className="mt-4 h-11" />}
+          {/* Mismo alto que la barra de controles del reproductor. */}
+          <div className="mt-4 h-11" />
         </div>
       )}
 

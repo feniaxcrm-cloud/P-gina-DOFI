@@ -18,9 +18,11 @@
 
 export const FPS = 30;
 
-/** Pantalla de un telefono de 390 x 844 pt (el tamaño "medio" de iPhone). El
- *  Player la escala al ancho que tenga el marco en la pagina. */
-export const PANTALLA = { ancho: 390, alto: 844 } as const;
+/** Pantalla de 390 x 712: con el bisel, el telefono completo queda en 9:16
+ *  (el formato de un video vertical). Con el 390 x 844 de un iPhone real se
+ *  veia demasiado alargado en computadora (pedido del 2026-10-01). El Player
+ *  la escala al ancho que tenga el marco en la pagina. */
+export const PANTALLA = { ancho: 390, alto: 712 } as const;
 
 export const marca = {
   morado: "#792883",

@@ -6,7 +6,8 @@
  *  - Las 7 secciones (Portada, ¿Qué es FENIAX?, Bloque editorial, Método,
  *    Clientes + demo de WhatsApp, Reseñas, Cierre) con los textos de
  *    src/lib/feniax-respaldo.ts.
- *  - "Demo de WhatsApp de la portada" (Hola, quiero integrar un CRM...).
+ *  - (La portada ya no lleva un telefono con WhatsApp: lleva un motion de
+ *    CRM hecho con HyperFrames, que no se carga desde el Studio.)
  *  - En Clientes: los MISMOS giros de Marketing Digital (nombre, ícono, foto
  *    y empresas: las Cuentas se enlazan, no se duplican) y, en cada giro, su
  *    demo de WhatsApp ya escrita (src/lib/chat-demo.ts). Desde el Studio se
@@ -33,7 +34,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { COPY_FENIAX } from "../src/lib/feniax-respaldo";
-import { CHAT_FENIAX, plantillaParaGiro, type ChatDemo } from "../src/lib/chat-demo";
+import { plantillaParaGiro, type ChatDemo } from "../src/lib/chat-demo";
 import type { IconoCategoria } from "../src/lib/marketing-digital";
 
 const projectId = process.env.SANITY_PROJECT_ID;
@@ -143,7 +144,6 @@ const doc = {
   _id: "chatbotsCrmPage",
   _type: "chatbotsCrmPage",
   titulo: "ChatBots / CRM",
-  chatPortada: await chatSanity(CHAT_FENIAX),
   sections: [
     { _type: "teamBanner", ...c.portada, cta: cta(c.portada.cta), alineacion: "izquierda", overlay: "medio" },
     { _type: "aboutBanner", ...c.queEs },

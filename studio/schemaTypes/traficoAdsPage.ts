@@ -4,17 +4,23 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  * Página /trafico-ads. Documento único (singleton, _id fijo
  * "traficoAdsPage"), con su propia entrada en el menú.
  *
- * Mismo sistema que Marketing Digital: todo el contenido es la lista
+ * MISMA ESTRUCTURA QUE MARKETING DIGITAL: todo el contenido es la lista
  * `sections[]`, en ESE orden -- se cambia arrastrando. Para ocultar una
- * sección sin borrarla, se apaga "Mostrar en la página" dentro de ella.
+ * sección sin borrarla, se apaga "Mostrar en la página" dentro de ella. Los
+ * campos de cada sección son los mismos.
  *
- * Sin Clientes ni Reseñas a propósito: esos dos tipos dependen de datos que
- * se cargan a mano dentro de la propia sección (giros de negocio), y
- * repetirlos en varias páginas obligaría a recargarlos en cada una. Se
- * quedan exclusivos de Marketing Digital.
+ * Además de las secciones de Marketing Digital, esta página tiene tres
+ * propias:
+ *  - Plataformas (¿Dónde traficamos?): tarjetas de Meta, TikTok, Google...
+ *  - Ecosistema: el recorrido Instagram → Google → web → WhatsApp.
+ *  - Clientes + métricas de Meta Ads: en vez de un video, un panel con los
+ *    KPIs de una campaña de ejemplo por giro (CPR, CTR, CPA, alcance,
+ *    visualizaciones, frecuencia). Los logos, fotos y empresas de cada giro
+ *    se cargan dentro del giro, igual que en Marketing Digital.
  *
- * Mientras `sections[]` esté vacío, la página muestra "Página en
- * construcción" -- nunca contenido inventado.
+ * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
+ * respaldo armado con el documento «SECCION DE TRAFICO». Con una sola sección
+ * activa, manda lo que esté acá.
  */
 export const traficoAdsPage = defineType({
   name: "traficoAdsPage",
@@ -40,6 +46,10 @@ export const traficoAdsPage = defineType({
         defineArrayMember({ type: "aboutBanner" }),
         defineArrayMember({ type: "navigationBanner" }),
         defineArrayMember({ type: "methodBanner" }),
+        defineArrayMember({ type: "platformsBanner" }),
+        defineArrayMember({ type: "ecosystemBanner" }),
+        defineArrayMember({ type: "metricsClientsBanner" }),
+        defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),
       ],
     }),

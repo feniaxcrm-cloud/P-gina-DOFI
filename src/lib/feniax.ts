@@ -1,11 +1,10 @@
 import { sanityQuery } from "@/lib/sanity";
 import { obtenerResenasGoogle } from "@/lib/google-places";
 import { COPY_FENIAX } from "@/lib/feniax-respaldo";
+import { GIRO_GROQ, iconoDe } from "@/lib/giros";
 import { company } from "@/config/company";
 import {
   IMG,
-  LOGO,
-  ICONOS_CATEGORIA,
   bool,
   camposBase,
   logosDeGiros,
@@ -17,7 +16,6 @@ import {
   type ClienteMarquesina,
   type GiroNegocio,
   type GiroRaw,
-  type IconoCategoria,
   type RespuestaRaw,
   type SeccionCierre,
   type SeccionEquipo,
@@ -27,7 +25,7 @@ import {
   type SeccionRaw,
   type SeccionResenas,
 } from "@/lib/marketing-digital";
-import { CHAT_FENIAX, plantillaParaGiro, type ChatDemo, type MensajeChat } from "@/lib/chat-demo";
+import { plantillaParaGiro, type ChatDemo, type MensajeChat } from "@/lib/chat-demo";
 import type { TemaChat } from "@/remotion/feniax/tema";
 
 /**
@@ -78,11 +76,7 @@ export type SeccionFeniax =
 
 export type TipoSeccionFeniax = SeccionFeniax["tipo"];
 
-export type PaginaFeniax = {
-  secciones: SeccionFeniax[];
-  /** La conversacion del telefono de la portada. */
-  chatPortada: ChatDemo;
-};
+export type PaginaFeniax = { secciones: SeccionFeniax[] };
 
 // ============================================================
 // Respaldo (textos en src/lib/feniax-respaldo.ts)
@@ -143,17 +137,8 @@ function respaldo(girosMarketing: GiroConChat[], resenas: SeccionResenas["resena
 /** Una conversacion de demo tal como se carga en el Studio (tipo chatDemo). */
 const CHAT = `negocio, estado, "avatar": avatar.asset->url, "mensajes": mensajes[]{ de, texto, "imagen": imagen.asset->url }, aviso{ titulo, texto }`;
 
-const GIRO = `_key, nombre, icono,
-  "imagen": imagen{ ${IMG} },
-  "empresas": empresas[]{
-    _key,
-    defined(_ref) => @->{ nombre, activa, ${LOGO} },
-    !defined(_ref) => { nombre, ${LOGO} }
-  }`;
-
 const QUERY_FENIAX = `{
   "pagina": *[_type == "chatbotsCrmPage"][0]{
-    "chatPortada": chatPortada{ ${CHAT} },
     sections[]{
       _type, _key, activo, subtitulo, titulo, descripcion, destacado, animar,
       cta{ texto, enlace },
@@ -162,13 +147,13 @@ const QUERY_FENIAX = `{
       _type in ["teamBanner", "ctaBanner"] => { alineacion, overlay },
       _type == "methodBanner" => { mostrarPasos, pasos[]{ titulo, descripcion } },
       _type == "chatClientsBanner" => {
-        "giros": categorias[]{ ${GIRO}, "chat": chat{ ${CHAT} } },
+        "giros": categorias[]{ ${GIRO_GROQ}, "chat": chat{ ${CHAT} } },
         rotacionAutomatica, temaChat
       },
       _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
     }
   },
-  "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO} },
+  "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
     "id": _id, nombre, empresa, estrellas, comentario, fecha,
     "foto": foto.asset->url + "?w=160&h=160&fit=crop&auto=format",
@@ -191,7 +176,7 @@ type GiroChatRaw = NonNullable<GiroRaw> & { chat?: ChatRaw };
 type SeccionFeniaxRaw = SeccionRaw & { giros?: GiroChatRaw[] | null; temaChat?: Txt };
 
 type RespuestaFeniax = {
-  pagina: { chatPortada?: ChatRaw; sections?: SeccionFeniaxRaw[] | null } | null;
+  pagina: { sections?: SeccionFeniaxRaw[] | null } | null;
   girosMarketing: GiroRaw[] | null;
   resenas: RespuestaRaw["resenas"];
 };
@@ -223,10 +208,6 @@ function normalizarChat(raw: ChatRaw | undefined, respaldoChat: ChatDemo): ChatD
     mensajes,
     aviso: avisoTitulo ? { titulo: avisoTitulo, texto: t(raw?.aviso?.texto) } : null,
   };
-}
-
-function iconoDe(v: Txt): IconoCategoria | null {
-  return (ICONOS_CATEGORIA as readonly string[]).includes(t(v)) ? (t(v) as IconoCategoria) : null;
 }
 
 /** Giros con su conversacion. Reutiliza normalizarGiros (empresas, logos,
@@ -280,8 +261,5 @@ export async function getPaginaFeniax(): Promise<PaginaFeniax> {
     .map((s) => normalizarSeccionFeniax(s, resenas, girosMarketing))
     .filter((s): s is SeccionFeniax => s !== null);
 
-  return {
-    secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing, resenas),
-    chatPortada: normalizarChat(respuesta?.pagina?.chatPortada, CHAT_FENIAX),
-  };
+  return { secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing, resenas) };
 }

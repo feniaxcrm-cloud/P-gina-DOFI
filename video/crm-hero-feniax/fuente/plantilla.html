@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="es" data-resolution="square">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <script src="assets/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Sora";
+        src: url("assets/sora-variable.woff2") format("woff2");
+        font-weight: 100 800;
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1c0e27;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Sora", system-ui, sans-serif;
+        color: #fbf4fc;
+      }
+      #escena {
+        position: absolute;
+        inset: 0;
+      }
+      #grupo {
+        position: absolute;
+        inset: 0;
+      }
+
+      /* Capa 1: fondo de la portada del brandbook */
+      .fondo {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(52% 44% at 90% 4%, rgba(237, 109, 25, 0.3) 0%, rgba(229, 53, 42, 0.08) 48%, transparent 76%),
+          radial-gradient(60% 55% at 4% 98%, rgba(121, 40, 131, 0.5) 0%, transparent 72%),
+          linear-gradient(160deg, #271433 0%, #1c0e27 55%, #160a20 100%);
+      }
+      .puntos {
+        position: absolute;
+        right: -50px;
+        top: -40px;
+        width: 520px;
+        height: 420px;
+        background-image: radial-gradient(rgba(237, 109, 25, 0.5) 1.6px, transparent 2.2px);
+        background-size: 20px 20px;
+        -webkit-mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+        mask-image: radial-gradient(closest-side, #000 0%, transparent 100%);
+        opacity: 0.65;
+      }
+      .ondas {
+        position: absolute;
+        left: 0;
+        top: 40px;
+        width: 2160px;
+        height: 200px;
+        opacity: 0.42;
+      }
+      .halo {
+        position: absolute;
+        left: 40px;
+        top: 120px;
+        width: 1000px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(237, 109, 25, 0.2) 0%, rgba(121, 40, 131, 0.22) 55%, transparent 100%);
+      }
+
+      /* Ventana del CRM */
+      .panel {
+        position: absolute;
+        left: 70px;
+        top: 150px;
+        width: 940px;
+        height: 852px;
+        border-radius: 48px;
+        background: linear-gradient(165deg, rgba(60, 34, 80, 0.92) 0%, rgba(36, 19, 50, 0.94) 100%);
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 50px 90px -30px rgba(0, 0, 0, 0.75);
+      }
+      .logo {
+        position: absolute;
+        left: 102px;
+        top: 186px;
+        width: 88px;
+        height: 62px;
+      }
+      .marca {
+        position: absolute;
+        left: 208px;
+        top: 188px;
+        font-size: 44px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        line-height: 58px;
+      }
+      .ia {
+        position: absolute;
+        left: 756px;
+        top: 188px;
+        height: 58px;
+        padding: 0 26px 0 22px;
+        border-radius: 29px;
+        background: rgba(255, 255, 255, 0.09);
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 30px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .ia .punto {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #25d366;
+      }
+      .ia .onda {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: #25d366;
+        opacity: 0;
+      }
+      .linea-h {
+        position: absolute;
+        left: 96px;
+        top: 264px;
+        width: 888px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .tarjeta {
+        position: absolute;
+        border-radius: 32px;
+        background: rgba(255, 255, 255, 0.055);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+      .titulo {
+        position: absolute;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 44px;
+        color: rgba(251, 244, 252, 0.92);
+      }
+
+      /* Grafica de crecimiento */
+      #grafica {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: visible;
+      }
+      .flecha {
+        position: absolute;
+        left: 566px;
+        top: 300px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(160deg, #f38a3f 0%, #ed6d19 50%, #e5352a 100%);
+        box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .flecha svg {
+        width: 34px;
+        height: 34px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 3.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      #cabeza {
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        opacity: 1;
+      }
+      #cabeza .aura {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(237, 109, 25, 0.7) 0%, rgba(237, 109, 25, 0) 70%);
+      }
+      #cabeza .nucleo {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 6px solid #ed6d19;
+        box-shadow: 0 0 0 4px rgba(237, 109, 25, 0.3);
+      }
+
+      /* Indicadores */
+      .icono-kpi {
+        position: absolute;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icono-kpi svg {
+        width: 38px;
+        height: 38px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .etq-kpi {
+        position: absolute;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 42px;
+      }
+      .barra {
+        position: absolute;
+        width: 30px;
+        border-radius: 10px 10px 6px 6px;
+        transform-origin: 50% 100%;
+      }
+
+      /* Clientes */
+      .fila {
+        position: absolute;
+        left: 692px;
+        width: 276px;
+        height: 106px;
+      }
+      .fila-fondo {
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        background: linear-gradient(90deg, rgba(237, 109, 25, 0.28) 0%, rgba(237, 109, 25, 0.06) 100%);
+        border: 2px solid rgba(237, 109, 25, 0.35);
+        opacity: 0.4;
+      }
+      .avatar {
+        position: absolute;
+        left: 14px;
+        top: 20px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(150deg, #9a3fa7 0%, #792883 55%, #2a1638 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .avatar svg {
+        width: 36px;
+        height: 36px;
+        fill: #ffffff;
+      }
+      .canal {
+        position: absolute;
+        left: 46px;
+        top: 52px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 3px solid #2a1638;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .canal svg {
+        width: 16px;
+        height: 16px;
+        fill: #ffffff;
+      }
+      .nombre {
+        position: absolute;
+        left: 94px;
+        top: 24px;
+        width: 138px;
+        height: 16px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.36);
+      }
+      .detalle {
+        position: absolute;
+        left: 94px;
+        top: 50px;
+        width: 88px;
+        height: 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.17);
+      }
+      .chip {
+        position: absolute;
+        left: 94px;
+        top: 66px;
+        height: 34px;
+        padding: 0 14px;
+        border-radius: 17px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 22px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .chip svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .chip-nuevo {
+        background: rgba(255, 255, 255, 0.15);
+        color: #f3e8f6;
+      }
+      .chip-curso {
+        background: #792883;
+        color: #ffffff;
+        opacity: 0;
+      }
+      .chip-curso svg {
+        width: 22px;
+        height: 16px;
+      }
+      .chip-cerrado {
+        background: linear-gradient(90deg, #f38a3f 0%, #ed6d19 100%);
+        color: #2a1638;
+      }
+      .chip-cerrado svg {
+        fill: none;
+        stroke: #2a1638;
+        stroke-width: 3.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      /* Aviso de venta */
+      #aviso {
+        position: absolute;
+        right: 80px;
+        top: 68px;
+        height: 84px;
+        padding: 0 34px 0 14px;
+        border-radius: 42px;
+        background: #ffffff;
+        color: #2a1638;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 38px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        white-space: nowrap;
+        box-shadow: 0 24px 50px -14px rgba(0, 0, 0, 0.65), 0 0 0 6px rgba(237, 109, 25, 0.22);
+      }
+      #aviso .sello {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(160deg, #f38a3f 0%, #ed6d19 50%, #e5352a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #aviso .sello svg {
+        width: 32px;
+        height: 32px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 3.4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .chispa {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #f38a3f;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1080" data-height="1080">
+      <div id="escena">
+        <div class="fondo"></div>
+        <div class="puntos"></div>
+        <svg id="ondas" class="ondas" viewBox="0 0 2160 200" preserveAspectRatio="none" fill="none"></svg>
+        <div class="halo" id="halo"></div>
+
+        <div id="grupo">
+          <div class="panel"></div>
+
+          <!-- Encabezado -->
+          <svg class="logo" viewBox="161.10 0.00 67.30 47.00">{{ISOTIPO}}</svg>
+          <div class="marca">FENIAX CRM</div>
+          <div class="ia">
+            <span class="punto"><span class="onda" id="onda-ia"></span></span>
+            IA activa
+          </div>
+          <div class="linea-h"></div>
+
+          <!-- Crecimiento -->
+          <div class="tarjeta" style="left: 96px; top: 284px; width: 552px; height: 372px"></div>
+          <div class="titulo" style="left: 128px; top: 308px">Crecimiento</div>
+          <div class="flecha" id="flecha">
+            <svg viewBox="0 0 24 24"><path d="M7 17L17 7M8.5 7H17v8.5" /></svg>
+          </div>
+          <svg id="grafica" viewBox="0 0 1080 1080">
+            <defs>
+              <linearGradient id="g-linea" gradientUnits="userSpaceOnUse" x1="126" y1="0" x2="618" y2="0">
+                <stop offset="0" stop-color="#c9b3d3" />
+                <stop offset="0.35" stop-color="#ed6d19" />
+                <stop offset="1" stop-color="#e5352a" />
+              </linearGradient>
+              <linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ed6d19" stop-opacity="0.5" />
+                <stop offset="1" stop-color="#ed6d19" stop-opacity="0" />
+              </linearGradient>
+              <clipPath id="recorte-area"><rect id="recorte" x="126" y="360" width="492" height="270" /></clipPath>
+            </defs>
+            <g stroke="rgba(255,255,255,0.12)" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round">
+              <line x1="126" y1="380" x2="618" y2="380" />
+              <line x1="126" y1="460" x2="618" y2="460" />
+              <line x1="126" y1="540" x2="618" y2="540" />
+              <line x1="126" y1="620" x2="618" y2="620" stroke-dasharray="none" stroke="rgba(255,255,255,0.2)" />
+            </g>
+            <path id="area" fill="url(#g-area)" clip-path="url(#recorte-area)" d="" />
+            <path id="linea" fill="none" stroke="url(#g-linea)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" d="" />
+          </svg>
+          <div id="cabeza"><div class="aura"></div><div class="nucleo"></div></div>
+
+          <!-- Indicadores -->
+          <div class="tarjeta" style="left: 96px; top: 678px; width: 264px; height: 300px"></div>
+          <div class="tarjeta" style="left: 384px; top: 678px; width: 264px; height: 300px"></div>
+          <div class="icono-kpi" style="left: 122px; top: 704px; background: linear-gradient(150deg, #9a3fa7 0%, #792883 100%)">
+            <svg viewBox="0 0 24 24"><path d="M4 6.2A2.7 2.7 0 0 1 6.7 3.5h10.6A2.7 2.7 0 0 1 20 6.2v7.1a2.7 2.7 0 0 1-2.7 2.7H10l-4 3.4a.7.7 0 0 1-1.2-.5V16A2.7 2.7 0 0 1 4 13.3z" /></svg>
+          </div>
+          <div class="icono-kpi" style="left: 410px; top: 704px; background: linear-gradient(160deg, #f38a3f 0%, #ed6d19 55%, #e5352a 100%)">
+            <svg viewBox="0 0 24 24"><path d="M3 4.5h2.2l2.1 10a1.6 1.6 0 0 0 1.6 1.3h8.1a1.6 1.6 0 0 0 1.5-1.1L20.5 8H6.2" /><circle cx="9.5" cy="19.6" r="1.1" /><circle cx="16.5" cy="19.6" r="1.1" /></svg>
+          </div>
+          <div class="etq-kpi" style="left: 122px; top: 792px">Mensajes</div>
+          <div class="etq-kpi" style="left: 410px; top: 792px">Ventas</div>
+          {{BARRAS}}
+
+          <!-- Clientes -->
+          <div class="tarjeta" style="left: 676px; top: 284px; width: 308px; height: 694px"></div>
+          <div class="titulo" style="left: 706px; top: 308px">Clientes</div>
+          {{FILAS}}
+
+          <!-- Aviso de venta cerrada -->
+          <div id="aviso">
+            <span class="sello"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" /></svg></span>
+            Venta cerrada
+          </div>
+        </div>
+        <div id="chispas"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        const NS = "http://www.w3.org/2000/svg";
+
+        // ---------- Guion (segundos) ----------
+        // El cuadro 0 es el estado FINAL (todo en su sitio, la ultima venta
+        // a la vista): asi el poster es la composicion completa y el bucle no
+        // tiene salto. 0,9 -> 1,5 se limpia el tablero; 1,5 -> 9,0 se cuenta la
+        // historia de nuevo hasta volver al mismo estado.
+        const LIMPIA = 0.9;
+        const D_LIMPIA = 0.6;
+        const CURSO = [2.0, 2.9, 4.3, 5.6]; // un cliente pasa a "En curso"
+        const VENTA = [3.6, 5.2, 6.7, 8.0]; // y se cierra la venta
+        const LLEGA = 8.45; // entra un cliente nuevo
+        const RAFAGAS = [
+          { hasta: 0.12, t: 2.0, dur: 0.7 },
+          { hasta: 0.34, t: 3.6, dur: 0.9 },
+          { hasta: 0.56, t: 5.2, dur: 0.9 },
+          { hasta: 0.78, t: 6.7, dur: 0.9 },
+          { hasta: 1.0, t: 8.0, dur: 0.95 },
+        ];
+
+        // ---------- Cinta de lineas (bucle exacto: un periodo en 10 s) ----------
+        const ondas = document.getElementById("ondas");
+        const defs = document.createElementNS(NS, "defs");
+        defs.innerHTML =
+          '<linearGradient id="g-ondas" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1080" y2="0" spreadMethod="repeat">' +
+          '<stop offset="0" stop-color="#ED6D19"/><stop offset="0.3" stop-color="#E5352A"/><stop offset="0.62" stop-color="#792883"/><stop offset="1" stop-color="#ED6D19"/></linearGradient>';
+        ondas.appendChild(defs);
+        const LINEAS = 18;
+        for (let k = 0; k < LINEAS; k++) {
+          const t = k / (LINEAS - 1);
+          const amp = 40 * Math.cos(Math.PI * t) || 1;
+          const fase = t * 216;
+          const y0 = 100 + (t - 0.5) * 22;
+          let d = "";
+          for (let x = 0; x <= 2160; x += 20) {
+            const y = y0 - amp * Math.sin((2 * Math.PI * (x + fase)) / 1080);
+            d += (x === 0 ? "M" : "L") + x + " " + y.toFixed(1);
+          }
+          const p = document.createElementNS(NS, "path");
+          p.setAttribute("d", d);
+          p.setAttribute("stroke", "url(#g-ondas)");
+          p.setAttribute("stroke-width", "1.4");
+          p.setAttribute("stroke-opacity", (0.3 + 0.7 * Math.sin(Math.PI * t)).toFixed(2));
+          ondas.appendChild(p);
+        }
+        tl.fromTo(ondas, { x: 0 }, { x: -1080, duration: 10, ease: "none" }, 0);
+
+        // ---------- Movimiento continuo (periodos que dividen 10 s) ----------
+        tl.fromTo("#grupo", { y: 0 }, { y: -9, duration: 5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+        tl.fromTo("#halo", { scale: 0.94, opacity: 0.8 }, { scale: 1.05, opacity: 1, duration: 1.25, ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+        tl.fromTo("#onda-ia", { scale: 1, opacity: 0.6 }, { scale: 2.6, opacity: 0, duration: 2.5, ease: "power1.out", repeat: 3 }, 0);
+
+        // ---------- Grafica: curva suave, en tramos rectos ----------
+        // Catmull-Rom entre 13 valores (sube con altibajos) muestreada en 60
+        // tramos RECTOS: cada tramo avanza la linea, el recorte del area y la
+        // cabeza a la vez y a la misma velocidad, asi los tres coinciden.
+        const X0 = 126, X1 = 618, Y_ARRIBA = 380, Y_ABAJO = 620;
+        const V = [0.08, 0.15, 0.12, 0.24, 0.29, 0.25, 0.4, 0.47, 0.43, 0.6, 0.72, 0.68, 0.9];
+        const ctrl = V.map((v, i) => ({ x: X0 + (i * (X1 - X0)) / (V.length - 1), y: Y_ABAJO - (Y_ABAJO - Y_ARRIBA) * v }));
+        const pts = [];
+        const MUESTRAS = 5;
+        for (let i = 0; i < ctrl.length - 1; i++) {
+          const p0 = ctrl[Math.max(0, i - 1)], p1 = ctrl[i], p2 = ctrl[i + 1], p3 = ctrl[Math.min(ctrl.length - 1, i + 2)];
+          for (let s = 0; s < MUESTRAS; s++) {
+            const u = s / MUESTRAS, u2 = u * u, u3 = u2 * u;
+            const c = (a, b, c1, d) => 0.5 * (2 * b + (-a + c1) * u + (2 * a - 5 * b + 4 * c1 - d) * u2 + (-a + 3 * b - 3 * c1 + d) * u3);
+            pts.push({ x: c(p0.x, p1.x, p2.x, p3.x), y: c(p0.y, p1.y, p2.y, p3.y) });
+          }
+        }
+        pts.push(ctrl[ctrl.length - 1]);
+        const N = pts.length - 1;
+        const cum = [0];
+        for (let i = 1; i <= N; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+        const L = cum[N];
+
+        const linea = document.getElementById("linea");
+        const dLinea = pts.map((p, i) => (i ? "L" : "M") + p.x.toFixed(2) + " " + p.y.toFixed(2)).join(" ");
+        linea.setAttribute("d", dLinea);
+        document.getElementById("area").setAttribute("d", dLinea + ` L${X1} ${Y_ABAJO} L${X0} ${Y_ABAJO} Z`);
+        linea.style.strokeDasharray = L.toFixed(2) + " " + L.toFixed(2);
+        const recorte = document.getElementById("recorte");
+        const cabeza = document.getElementById("cabeza");
+        const FIN = pts[N];
+        cabeza.style.left = FIN.x - 32 + "px";
+        cabeza.style.top = FIN.y - 32 + "px";
+
+        // Limpieza del tablero (estado final -> vacio)
+        tl.to(linea, { strokeDashoffset: L, duration: D_LIMPIA, ease: "power2.in" }, LIMPIA);
+        tl.to(recorte, { attr: { width: 0 }, duration: D_LIMPIA, ease: "power2.in" }, LIMPIA);
+        tl.to(cabeza, { opacity: 0, scale: 0.4, duration: 0.3, ease: "power2.in" }, LIMPIA);
+        tl.to("#flecha", { opacity: 0, scale: 0, duration: 0.3, ease: "power2.in" }, LIMPIA);
+
+        // Cada rafaga dibuja desde donde quedo la anterior
+        let desde = 0;
+        RAFAGAS.forEach((r, k) => {
+          const hasta = Math.round(r.hasta * N);
+          const largo = cum[hasta] - cum[desde];
+          let t = r.t;
+          if (k === 0) tl.fromTo(cabeza, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)", immediateRender: false }, t);
+          for (let i = desde; i < hasta; i++) {
+            const d = (r.dur * (cum[i + 1] - cum[i])) / largo;
+            tl.fromTo(linea, { strokeDashoffset: L - cum[i] }, { strokeDashoffset: L - cum[i + 1], duration: d, ease: "none", immediateRender: false }, t);
+            tl.fromTo(recorte, { attr: { width: pts[i].x - X0 } }, { attr: { width: pts[i + 1].x - X0 }, duration: d, ease: "none", immediateRender: false }, t);
+            tl.fromTo(
+              cabeza,
+              { x: pts[i].x - FIN.x, y: pts[i].y - FIN.y },
+              { x: pts[i + 1].x - FIN.x, y: pts[i + 1].y - FIN.y, duration: d, ease: "none", immediateRender: false },
+              t
+            );
+            t += d;
+          }
+          desde = hasta;
+        });
+        tl.fromTo("#flecha", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2.4)", immediateRender: false }, 8.95);
+        // La cabeza respira mientras esta quieta al final (la aura crece y vuelve).
+        tl.fromTo("#cabeza .aura", { scale: 0.8, opacity: 0.8 }, { scale: 1.25, opacity: 1, duration: 1.25, ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+
+        // ---------- Indicadores ----------
+        const barras = Array.from(document.querySelectorAll(".barra"));
+        const ritmoMensajes = [CURSO[0] - 0.1, CURSO[1] - 0.1, CURSO[2] - 0.1, CURSO[3] - 0.1, LLEGA];
+        const ritmoVentas = [VENTA[0], VENTA[1], VENTA[2], VENTA[3], 8.9];
+        tl.to(barras, { scaleY: 0, duration: 0.4, ease: "power2.in", stagger: 0.03 }, LIMPIA);
+        barras.forEach((b) => {
+          const grupo = b.dataset.kpi;
+          const i = Number(b.dataset.i);
+          const t = (grupo === "m" ? ritmoMensajes : ritmoVentas)[i];
+          tl.fromTo(b, { scaleY: 0 }, { scaleY: 1, duration: 0.55, ease: "back.out(1.5)", immediateRender: false }, t);
+        });
+
+        // ---------- Clientes ----------
+        for (let i = 0; i < 4; i++) {
+          const fila = "#f" + i + " ";
+          tl.to(fila + ".chip-cerrado", { opacity: 0, scale: 0.8, duration: 0.3, ease: "power2.in" }, LIMPIA);
+          tl.to(fila + ".chip-nuevo", { opacity: 1, duration: 0.3, ease: "power1.out" }, LIMPIA + 0.2);
+          tl.to(fila + ".fila-fondo", { opacity: 0, duration: 0.4, ease: "power1.in" }, LIMPIA);
+
+          tl.to(fila + ".chip-nuevo", { opacity: 0, duration: 0.2, ease: "power1.in" }, CURSO[i]);
+          tl.fromTo(fila + ".chip-curso", { opacity: 0, y: 8, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.3, ease: "back.out(2)", immediateRender: false }, CURSO[i]);
+
+          tl.to(fila + ".chip-curso", { opacity: 0, duration: 0.2, ease: "power1.in" }, VENTA[i]);
+          tl.fromTo(fila + ".chip-cerrado", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2.4)", immediateRender: false }, VENTA[i]);
+          tl.fromTo(fila + ".fila-fondo", { opacity: 0, scaleX: 0.92 }, { opacity: 1, scaleX: 1, duration: 0.35, ease: "power2.out", immediateRender: false }, VENTA[i]);
+          tl.to(fila + ".fila-fondo", { opacity: 0.4, duration: 0.9, ease: "power1.out" }, VENTA[i] + 0.35);
+        }
+        // El quinto cliente no estaba: entra como "Nuevo".
+        tl.to("#f4", { opacity: 0, y: 18, duration: 0.3, ease: "power2.in" }, LIMPIA);
+        tl.fromTo("#f4", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.7)", immediateRender: false }, LLEGA);
+
+        // ---------- Aviso de "Venta cerrada" + chispas ----------
+        tl.to("#aviso", { y: -170, duration: 0.3, ease: "power2.in" }, LIMPIA);
+        const cont = document.getElementById("chispas");
+        VENTA.forEach((t, i) => {
+          const entra = t + 0.12;
+          tl.fromTo("#aviso", { y: -170 }, { y: 0, duration: 0.5, ease: "back.out(1.6)", immediateRender: false }, entra);
+          if (i < VENTA.length - 1) tl.to("#aviso", { y: -170, duration: 0.28, ease: "power2.in" }, entra + 1.05);
+
+          // chispas desde el chip "Cerrado" de esa fila
+          const f = document.getElementById("f" + i);
+          const cx = parseFloat(f.style.left) + 94 + 62;
+          const cy = parseFloat(f.style.top) + 66 + 17;
+          for (let n = 0; n < 9; n++) {
+            const ch = document.createElement("div");
+            ch.className = "chispa";
+            cont.appendChild(ch);
+            const ang = (n / 9) * Math.PI * 2 + 0.4;
+            const dist = 70 + (n % 3) * 22;
+            tl.fromTo(
+              ch,
+              { x: cx - 6, y: cy - 6, opacity: 0, scale: 1 },
+              { x: cx - 6 + Math.cos(ang) * dist, y: cy - 6 + Math.sin(ang) * dist * 0.75, opacity: 1, scale: 0.4, duration: 0.55, ease: "power3.out", immediateRender: false },
+              t + 0.2
+            );
+            tl.to(ch, { opacity: 0, duration: 0.25, ease: "power1.in" }, t + 0.55);
+          }
+        });
+        // El ultimo aviso se queda a la vista (es el cuadro 0 del bucle).
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

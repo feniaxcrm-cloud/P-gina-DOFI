@@ -52,7 +52,6 @@ export function ClientesWhatsApp({
       <DemoWhatsApp
         chat={chat}
         tema={tema}
-        modo="video"
         clave={giro?.key ?? "generica"}
         onTermina={rotacion && !elegido && n > 1 ? () => setActivo((a) => (a + 1) % n) : undefined}
         className="mx-auto w-full max-w-[300px] lg:max-w-[320px]"

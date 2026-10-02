@@ -1,7 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { getPaginaFeniax, type SeccionFeniax, type TipoSeccionFeniax } from "@/lib/feniax";
-import type { ChatDemo } from "@/lib/chat-demo";
 import { FeniaxPortada } from "./FeniaxPortada";
 import { FeniaxQueEs } from "./FeniaxQueEs";
 import { FeniaxEditorial } from "./FeniaxEditorial";
@@ -29,20 +28,10 @@ const ANCLA: Record<TipoSeccionFeniax, string> = {
   ctaBanner: "contacto",
 };
 
-function Seccion({
-  seccion,
-  id,
-  nivel,
-  chatPortada,
-}: {
-  seccion: SeccionFeniax;
-  id: string;
-  nivel: "h1" | "h2";
-  chatPortada: ChatDemo;
-}) {
+function Seccion({ seccion, id, nivel }: { seccion: SeccionFeniax; id: string; nivel: "h1" | "h2" }) {
   switch (seccion.tipo) {
     case "teamBanner":
-      return <FeniaxPortada seccion={seccion} id={id} nivel={nivel} chat={chatPortada} />;
+      return <FeniaxPortada seccion={seccion} id={id} nivel={nivel} />;
     case "aboutBanner":
       return <FeniaxQueEs seccion={seccion} id={id} nivel={nivel} />;
     case "navigationBanner":
@@ -59,7 +48,7 @@ function Seccion({
 }
 
 export async function PaginaFeniax() {
-  const { secciones, chatPortada } = await getPaginaFeniax();
+  const { secciones } = await getPaginaFeniax();
   const vistas = new Map<string, number>();
 
   return (
@@ -71,13 +60,7 @@ export async function PaginaFeniax() {
           const n = (vistas.get(base) ?? 0) + 1;
           vistas.set(base, n);
           return (
-            <Seccion
-              key={seccion.key}
-              seccion={seccion}
-              id={n === 1 ? base : `${base}-${n}`}
-              nivel={i === 0 ? "h1" : "h2"}
-              chatPortada={chatPortada}
-            />
+            <Seccion key={seccion.key} seccion={seccion} id={n === 1 ? base : `${base}-${n}`} nivel={i === 0 ? "h1" : "h2"} />
           );
         })}
       </main>

@@ -26,6 +26,9 @@
   --color-accent-lift: #FF9440;
   /* Coral: solo aparece dentro de degradados de marca, nunca como acento suelto */
   --color-coral: #EE9070;
+  /* Positivo: SOLO para una cifra que mejora (▲/▼ de una metrica) en los
+     paneles de Trafico/Ads. Semantico, no de marca: no se usa como acento. */
+  --color-positive: #4ADE80;
 
   /* Texto */
   --color-foam: #F4F0FE;
@@ -1008,5 +1011,71 @@ body {
   .feniax-pulso,
   .feniax-orbita {
     animation: none;
+  }
+}
+
+
+/* ============================================================
+   TRÁFICO / ADS — composicion "el problema" de la portada
+   (src/components/trafico/HeroProblema.tsx): tarjetas de me gusta,
+   visualizaciones y ventas. Todo es ambiental y se apaga con movimiento
+   reducido.
+   ============================================================ */
+@keyframes trafico-flotar {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+.trafico-flotar {
+  animation: trafico-flotar var(--flotar-duracion, 7s) ease-in-out infinite;
+  animation-delay: var(--flotar-retraso, 0s);
+}
+
+/* Linea que se dibuja: el path lleva pathLength="1". */
+@keyframes trafico-trazo {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.trafico-trazo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: trafico-trazo 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--trazo-retraso, 0.4s);
+}
+
+/* El signo de pregunta de "Ventas" late: el dato que falta. */
+@keyframes trafico-parpadeo {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.trafico-pregunta {
+  animation: trafico-parpadeo 2.8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trafico-flotar,
+  .trafico-pregunta {
+    animation: none;
+  }
+
+  .trafico-trazo {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }

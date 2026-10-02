@@ -1,20 +1,32 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, type Variants } from "motion/react";
 import {
   ArrowsClockwise,
+  ChartBar,
   ChartLineUp,
   Compass,
   Fire,
+  Funnel,
   HandCoins,
   MagnifyingGlass,
   MapTrifold,
+  PaintBrush,
+  Pause,
+  Play,
   PlugsConnected,
   Robot,
   RocketLaunch,
   Sailboat,
+  ShareNetwork,
+  Tag,
+  Target,
+  TrendUp,
+  UsersThree,
 } from "@phosphor-icons/react";
 import type { PasoMetodo } from "@/lib/marketing-digital";
+import { useRecorridoVivo } from "./useRecorridoVivo";
 
 /**
  * El Metodo DOFI como RECORRIDO, no como grilla de tarjetas:
@@ -49,6 +61,15 @@ import type { PasoMetodo } from "@/lib/marketing-digital";
  *
  * ICONOS por posicion, segun el brief: exploracion, ruta, lanzamiento,
  * navegacion, resultados; y ventas para el destino.
+ *
+ * RECORRIDO VIVO (`vivo`, hoy solo el Metodo de FENIAX): despues de la
+ * entrada, un punto luminoso viaja de parada en parada. Cada parada se
+ * enciende cuando el punto llega (sube, brilla, su titulo toma el color de
+ * marca y su icono hace una microanimacion propia: la lupa busca, el enchufe
+ * conecta, el robot piensa...), la linea va quedando "recorrida" y en el
+ * destino se enciende el fuego del fenix; luego vuelve a empezar. Corre solo
+ * mientras es visible, se puede pausar y con movimiento reducido no corre.
+ * Ver useRecorridoVivo.ts.
  */
 
 /** Juegos de iconos por marca. Se elige con una clave (no se pasan los
@@ -58,13 +79,35 @@ import type { PasoMetodo } from "@/lib/marketing-digital";
  *    resultados) y ventas en el destino.
  *  - feniax: el sistema comercial (diagnostico, canales conectados, IA,
  *    seguimiento automatico, reportes) y el fuego del fenix en el destino:
- *    las ventas "renacen". */
+ *    las ventas "renacen".
+ *  - trafico: los siete frentes que se analizan antes de invertir (objetivo,
+ *    audiencia, oferta, canal, creatividad, conversion, datos) y la
+ *    tendencia al alza en el destino: medir, analizar, optimizar. */
 const JUEGOS = {
   dofi: { pasos: [Compass, MapTrifold, RocketLaunch, Sailboat, ChartLineUp], destino: HandCoins },
   feniax: { pasos: [MagnifyingGlass, PlugsConnected, Robot, ArrowsClockwise, ChartLineUp], destino: Fire },
+  trafico: { pasos: [Target, UsersThree, Tag, ShareNetwork, PaintBrush, Funnel, ChartBar], destino: TrendUp },
 } as const;
 
 export type JuegoIconos = keyof typeof JUEGOS;
+
+/** Microanimacion del icono cuando su parada esta activa (una vez, ~1 s).
+ *  FENIAX: cada paso hace "lo que dice" (buscar, conectar, pensar, girar,
+ *  crecer) y el destino parpadea como una llama. */
+const MOVIMIENTO_ACTIVO: Partial<Record<JuegoIconos, Array<Record<string, number[]>>>> = {
+  feniax: [
+    { x: [0, 5, -4, 0], y: [0, -4, 3, 0], rotate: [0, 10, -8, 0] }, // lupa: busca
+    { scale: [1, 1.22, 0.95, 1.12, 1] }, // enchufe: conecta
+    { y: [0, -4, 0, -3, 0], rotate: [0, -8, 8, -4, 0] }, // robot: piensa
+    { rotate: [0, 360] }, // flechas: se repite solo
+    { y: [0, -4, 0], scale: [1, 1.18, 1] }, // grafica: crece
+  ],
+};
+const MOVIMIENTO_DESTINO: Partial<Record<JuegoIconos, Record<string, number[]>>> = {
+  feniax: { scale: [1, 1.18, 0.94, 1.12, 1], y: [0, -3, 0, -2, 0] }, // fuego: parpadea
+};
+const MOVIMIENTO_GENERICO = { scale: [1, 1.15, 1] };
+const MOVIMIENTO_REPOSO = { x: 0, y: 0, scale: 1, rotate: 0 };
 
 const NODO = 64;
 const NODO_DESTINO = 88;
@@ -121,15 +164,39 @@ export function RutaMetodo({
   destino,
   animar,
   iconos = "dofi",
+  vivo = false,
 }: {
   pasos: PasoMetodo[];
   destino: string;
   animar: boolean;
   iconos?: JuegoIconos;
+  /** Recorrido con un punto que viaja y enciende cada parada (ver arriba). */
+  vivo?: boolean;
 }) {
   const { pasos: ICONOS, destino: IconoDestino } = JUEGOS[iconos];
   const n = pasos.length + (destino ? 1 : 0);
+
+  const raiz = useRef<HTMLDivElement>(null);
+  const nodos = useRef<(HTMLElement | null)[]>([]);
+  const orbe = useRef<HTMLSpanElement>(null);
+  const relleno = useRef<HTMLDivElement>(null);
+  const tramos = useRef<(HTMLElement | null)[]>([]);
+  const corre = vivo && animar && n > 1;
+  const recorrido = useRecorridoVivo({
+    habilitado: corre,
+    n,
+    contenedor: raiz,
+    nodos,
+    orbe,
+    relleno,
+    tramos,
+  });
+  const { activo } = recorrido;
+
   if (n === 0) return null;
+  // Con 8 paradas o mas (Trafico: 7 pasos + destino) cada una mide ~150 px en
+  // escritorio: el destino baja de 25 a 19 px para que "Optimizar." entre.
+  const denso = n >= 8;
 
   // La linea llega al centro de la parada i en INICIO + DIBUJO * (i + 0.5) / n.
   const escalon = DIBUJO / n;
@@ -144,6 +211,7 @@ export function RutaMetodo({
   // el titulo centrado, en vez de quedar pegado a la izquierda en tablet.
   return (
     <motion.div
+      ref={raiz}
       className="relative mx-auto max-w-[560px] xl:max-w-none"
       style={estilo}
       initial={animar ? "oculto" : false}
@@ -173,6 +241,45 @@ export function RutaMetodo({
         </div>
       )}
 
+      {corre && (
+        <>
+          {/* Linea recorrida (escritorio): la misma curva, llena, recortada hasta donde llego el punto. */}
+          <div
+            ref={relleno}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 hidden h-[140px] xl:block"
+            style={{ clipPath: "inset(0 100% 0 0)" }}
+          >
+            <svg className="h-full w-full" viewBox={`0 0 ${VB_ANCHO} ${VB_ALTO}`} preserveAspectRatio="none" fill="none">
+              <path
+                d={trazarRuta(n, Boolean(destino))}
+                style={{ stroke: "var(--color-accent)" }}
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+          </div>
+          <span
+            ref={orbe}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 z-20 -ml-[10px] -mt-[10px] h-5 w-5 rounded-full bg-gradient-to-br from-brand-lift to-accent ring-4 ring-white"
+            style={{ opacity: 0 }}
+          />
+          {!recorrido.reducido && (
+            <button
+              type="button"
+              onClick={recorrido.alternar}
+              aria-pressed={recorrido.pausado}
+              aria-label={recorrido.pausado ? "Reanudar la animación del método" : "Pausar la animación del método"}
+              className="absolute -top-14 right-0 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-brand/20 bg-white text-brand transition-colors duration-300 hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+            >
+              {recorrido.pausado ? <Play size={16} weight="fill" aria-hidden="true" /> : <Pause size={16} weight="fill" aria-hidden="true" />}
+            </button>
+          )}
+        </>
+      )}
+
       <motion.ol variants={lista} className="relative flex flex-col gap-10 xl:flex-row xl:gap-0">
         {pasos.map((paso, i) => {
           const Icono = ICONOS[i % ICONOS.length];
@@ -181,8 +288,9 @@ export function RutaMetodo({
             <motion.li
               key={`${paso.titulo}-${i}`}
               data-reveal="true"
+              data-activo={corre && activo === i ? "true" : undefined}
               variants={parada}
-              className={`relative flex gap-5 xl:w-[var(--ancho-parada)] xl:flex-col xl:items-center xl:gap-0 xl:px-3 xl:text-center ${
+              className={`group/p relative flex gap-5 xl:w-[var(--ancho-parada)] xl:flex-col xl:items-center xl:gap-0 xl:px-3 xl:text-center ${
                 i % 2 === 1 ? "xl:pt-[72px]" : ""
               }`}
             >
@@ -194,14 +302,39 @@ export function RutaMetodo({
                   className="absolute -bottom-10 left-[31px] top-16 w-0 origin-top border-l-2 border-dashed border-brand/30 xl:hidden"
                 />
               )}
-              <span className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-brand/15 bg-white text-brand shadow-[0_12px_30px_-14px_color-mix(in_srgb,var(--color-brand)_50%,transparent)]">
-                <Icono size={26} weight="duotone" aria-hidden="true" />
+              {corre && !ultimo && (
+                // Tramo recorrido (vista vertical): se llena de arriba hacia abajo.
+                <span
+                  aria-hidden="true"
+                  ref={(el) => {
+                    tramos.current[i] = el;
+                  }}
+                  className="absolute -bottom-10 left-[31px] top-16 w-0 origin-top border-l-2 border-solid border-accent xl:hidden"
+                  style={{ transform: "scaleY(0)" }}
+                />
+              )}
+              <span
+                ref={(el) => {
+                  nodos.current[i] = el;
+                }}
+                className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-brand/15 bg-white text-brand shadow-[0_12px_30px_-14px_color-mix(in_srgb,var(--color-brand)_50%,transparent)] transition-[scale,border-color] duration-500 group-data-[activo=true]/p:scale-110 group-data-[activo=true]/p:border-accent"
+              >
+                {corre && activo === i && <Pulso />}
+                <motion.span
+                  className="flex"
+                  animate={corre && activo === i ? (MOVIMIENTO_ACTIVO[iconos]?.[i] ?? MOVIMIENTO_GENERICO) : MOVIMIENTO_REPOSO}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                >
+                  <Icono size={26} weight="duotone" aria-hidden="true" />
+                </motion.span>
                 <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-accent px-1.5 font-display text-[11px] font-bold text-fg-on-accent">
                   {String(i + 1).padStart(2, "0")}
                 </span>
               </span>
               <div className="pt-1.5 xl:mt-5 xl:pt-0">
-                <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-ink">{paso.titulo}</h3>
+                <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-ink transition-colors duration-500 group-data-[activo=true]/p:text-brand">
+                  {paso.titulo}
+                </h3>
                 {paso.descripcion && (
                   <p className="mt-1.5 font-sans text-[15px] leading-relaxed text-ink-muted">{paso.descripcion}</p>
                 )}
@@ -213,20 +346,46 @@ export function RutaMetodo({
         {destino && (
           <motion.li
             data-reveal="true"
+            data-activo={corre && activo === n - 1 ? "true" : undefined}
             variants={parada}
-            className={`relative flex items-center gap-5 xl:w-[var(--ancho-parada)] xl:flex-col xl:gap-0 xl:px-3 xl:text-center ${
+            className={`group/p relative flex items-center gap-5 xl:w-[var(--ancho-parada)] xl:flex-col xl:gap-0 xl:px-3 xl:text-center ${
               (n - 1) % 2 === 1 ? "xl:pt-[72px]" : ""
             }`}
           >
-            <span className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand via-brand-lift to-accent text-white shadow-[0_0_0_6px_rgba(244,123,32,0.14),0_20px_44px_-14px_rgba(244,123,32,0.65)] xl:h-[88px] xl:w-[88px]">
-              <IconoDestino size={34} weight="fill" aria-hidden="true" />
+            <span
+              ref={(el) => {
+                nodos.current[n - 1] = el;
+              }}
+              className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand via-brand-lift to-accent text-white shadow-[0_0_0_6px_rgba(244,123,32,0.14),0_20px_44px_-14px_rgba(244,123,32,0.65)] transition-[scale,box-shadow] duration-500 group-data-[activo=true]/p:scale-110 group-data-[activo=true]/p:shadow-[0_0_0_10px_rgba(244,123,32,0.2),0_24px_50px_-12px_rgba(244,123,32,0.8)] xl:h-[88px] xl:w-[88px]"
+            >
+              {corre && activo === n - 1 && <Pulso />}
+              <motion.span
+                className="flex"
+                animate={corre && activo === n - 1 ? (MOVIMIENTO_DESTINO[iconos] ?? MOVIMIENTO_GENERICO) : MOVIMIENTO_REPOSO}
+                transition={{ duration: 1.4, ease: "easeInOut" }}
+              >
+                <IconoDestino size={34} weight="fill" aria-hidden="true" />
+              </motion.span>
             </span>
-            <p className="text-balance bg-gradient-to-r from-brand via-brand-lift to-accent bg-clip-text font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-transparent xl:mt-5 xl:text-[1.6rem]">
+            <p className={`text-balance bg-gradient-to-r from-brand via-brand-lift to-accent bg-clip-text font-display text-2xl font-extrabold leading-tight tracking-[-0.01em] text-transparent xl:mt-5 ${denso ? "xl:text-[1.2rem]" : "xl:text-[1.6rem]"}`}>
               {destino}
             </p>
           </motion.li>
         )}
       </motion.ol>
     </motion.div>
+  );
+}
+
+/** Aro que se abre desde la parada cuando el punto llega a ella. */
+function Pulso() {
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 rounded-full border-2 border-accent"
+      initial={{ scale: 1, opacity: 0.8 }}
+      animate={{ scale: 1.8, opacity: 0 }}
+      transition={{ duration: 1, ease: "easeOut" }}
+    />
   );
 }

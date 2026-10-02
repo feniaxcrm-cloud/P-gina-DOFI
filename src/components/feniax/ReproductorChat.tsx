@@ -15,14 +15,9 @@ import { MarcoTelefono } from "./MarcoTelefono";
  * cuando el telefono se acerca a la pantalla (next/dynamic, sin SSR): la
  * pagina no paga esos KB en la carga inicial.
  *
- * MODOS
- *  - "fondo" (portada): se reproduce sola, en bucle, sin controles visibles
- *    mas alla de un boton de pausa (un movimiento continuo tiene que poder
- *    detenerse).
- *  - "video" (Clientes): se comporta como un video -- play/pausa, barra de
- *    progreso que se puede tocar para adelantar o volver, y tiempo. Al
- *    terminar avisa con `onTermina` (la seccion pasa al siguiente giro); sin
- *    `onTermina`, vuelve a empezar.
+ * Se comporta como un video -- play/pausa, barra de progreso que se puede
+ * tocar para adelantar o volver, y tiempo. Al terminar avisa con `onTermina`
+ * (la seccion pasa al siguiente giro); sin `onTermina`, vuelve a empezar.
  *
  * `activo` lo maneja el contenedor: false cuando el telefono sale de la
  * pantalla (se pausa) o cuando el visitante pidio menos movimiento (no
@@ -32,7 +27,6 @@ import { MarcoTelefono } from "./MarcoTelefono";
 type Props = {
   chat: ChatDemo;
   tema: TemaChat;
-  modo: "fondo" | "video";
   activo: boolean;
   reducido: boolean;
   onTermina?: () => void;
@@ -48,7 +42,7 @@ function mmss(cuadros: number) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
 
-export default function ReproductorChat({ chat, tema, modo, activo, reducido, onTermina, clave }: Props) {
+export default function ReproductorChat({ chat, tema, activo, reducido, onTermina, clave }: Props) {
   const ref = useRef<PlayerRef>(null);
   const barra = useRef<HTMLDivElement>(null);
   const tiempo = useRef<HTMLSpanElement>(null);
@@ -160,8 +154,7 @@ export default function ReproductorChat({ chat, tema, modo, activo, reducido, on
 
   return (
     <div className="w-full">
-      <div className="relative">
-        <MarcoTelefono tema={tema}>
+      <MarcoTelefono tema={tema}>
         <Player
           ref={ref}
           component={ChatWhatsApp}
@@ -180,53 +173,40 @@ export default function ReproductorChat({ chat, tema, modo, activo, reducido, on
           moveToBeginningWhenEnded={false}
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
         />
-        </MarcoTelefono>
-        {modo === "fondo" && (
-          <button
-            type="button"
-            onClick={alternar}
-            aria-label={reproduciendo ? "Pausar la demostración" : "Reproducir la demostración"}
-            className={`${BOTON} absolute -bottom-3 -right-3 border border-white/20 bg-deep/80 text-white shadow-[0_10px_24px_-10px_rgba(0,0,0,0.6)] backdrop-blur-md hover:bg-deep`}
-          >
-            {reproduciendo ? <Pause size={15} weight="fill" /> : <Play size={15} weight="fill" />}
-          </button>
-        )}
-      </div>
+      </MarcoTelefono>
 
-      {modo === "video" && (
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={alternar}
-            aria-label={reproduciendo ? "Pausar la demostración" : "Reproducir la demostración"}
-            className={`${BOTON} bg-brand text-white hover:bg-brand-lift`}
-          >
-            {reproduciendo ? <Pause size={18} weight="fill" /> : <Play size={18} weight="fill" />}
-          </button>
-          <div
-            role="slider"
-            tabIndex={0}
-            aria-label="Avance de la demostración"
-            aria-valuemin={0}
-            aria-valuemax={Math.round(total / FPS)}
-            aria-valuetext="Usa las flechas para adelantar o retroceder"
-            onPointerDown={buscar}
-            onKeyDown={alTeclearBarra}
-            className="group relative flex h-11 flex-1 cursor-pointer items-center outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-          >
-            <span className="relative h-1.5 w-full overflow-hidden rounded-full bg-brand/15">
-              <span
-                ref={barra}
-                className="absolute inset-0 origin-left rounded-full bg-[linear-gradient(90deg,var(--color-accent),#E5352A)]"
-                style={{ transform: "scaleX(0)" }}
-              />
-            </span>
-          </div>
-          <span ref={tiempo} className="w-[88px] shrink-0 text-right font-sans text-sm tabular-nums text-ink-subtle">
-            {`0:00 / ${mmss(total)}`}
+      <div className="mt-4 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={alternar}
+          aria-label={reproduciendo ? "Pausar la demostración" : "Reproducir la demostración"}
+          className={`${BOTON} bg-brand text-white hover:bg-brand-lift`}
+        >
+          {reproduciendo ? <Pause size={18} weight="fill" /> : <Play size={18} weight="fill" />}
+        </button>
+        <div
+          role="slider"
+          tabIndex={0}
+          aria-label="Avance de la demostración"
+          aria-valuemin={0}
+          aria-valuemax={Math.round(total / FPS)}
+          aria-valuetext="Usa las flechas para adelantar o retroceder"
+          onPointerDown={buscar}
+          onKeyDown={alTeclearBarra}
+          className="group relative flex h-11 flex-1 cursor-pointer items-center outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+        >
+          <span className="relative h-1.5 w-full overflow-hidden rounded-full bg-brand/15">
+            <span
+              ref={barra}
+              className="absolute inset-0 origin-left rounded-full bg-[linear-gradient(90deg,var(--color-accent),#E5352A)]"
+              style={{ transform: "scaleX(0)" }}
+            />
           </span>
         </div>
-      )}
+        <span ref={tiempo} className="w-[88px] shrink-0 text-right font-sans text-sm tabular-nums text-ink-subtle">
+          {`0:00 / ${mmss(total)}`}
+        </span>
+      </div>
     </div>
   );
 }

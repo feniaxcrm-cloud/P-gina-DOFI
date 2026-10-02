@@ -61,7 +61,7 @@ export function FeniaxMetodo({ seccion, id, nivel }: { seccion: SeccionMetodo; i
 
       {mostrarPasos && (pasos.length > 0 || destacado) && (
         <div className="mx-auto mt-16 max-w-page px-5 sm:px-6 md:mt-20 md:px-10 lg:px-12">
-          <RutaMetodo pasos={pasos} destino={destacado} animar={animar} iconos="feniax" />
+          <RutaMetodo pasos={pasos} destino={destacado} animar={animar} iconos="feniax" vivo />
         </div>
       )}
 

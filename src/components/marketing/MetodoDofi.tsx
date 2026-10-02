@@ -2,7 +2,7 @@ import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
 import { PiezaCompleta } from "./PiezaCompleta";
-import { RutaMetodo } from "./RutaMetodo";
+import { RutaMetodo, type JuegoIconos } from "./RutaMetodo";
 import type { SeccionMetodo } from "@/lib/marketing-digital";
 
 /**
@@ -19,7 +19,18 @@ import type { SeccionMetodo } from "@/lib/marketing-digital";
  * para cuando la pieza grafica ya trae el metodo dibujado, y un recorrido
  * con solo el destino no tendria sentido.
  */
-export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id: string; nivel: "h1" | "h2" }) {
+export function MetodoDofi({
+  seccion,
+  id,
+  nivel,
+  iconos,
+}: {
+  seccion: SeccionMetodo;
+  id: string;
+  nivel: "h1" | "h2";
+  /** Juego de iconos del recorrido (por defecto el nautico de DOFI). */
+  iconos?: JuegoIconos;
+}) {
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, pasos, mostrarPasos, cta, animar } = seccion;
   const Titulo = nivel;
   const altPieza = [titulo, ...pasos.map((p) => p.titulo), destacado].filter(Boolean).join(". ");
@@ -97,7 +108,7 @@ export function MetodoDofi({ seccion, id, nivel }: { seccion: SeccionMetodo; id:
 
       {mostrarPasos && (pasos.length > 0 || destacado) && (
         <div className="mx-auto mt-16 max-w-page px-5 sm:px-6 md:mt-20 md:px-10 lg:px-12">
-          <RutaMetodo pasos={pasos} destino={destacado} animar={animar} />
+          <RutaMetodo pasos={pasos} destino={destacado} animar={animar} iconos={iconos} />
         </div>
       )}
 
