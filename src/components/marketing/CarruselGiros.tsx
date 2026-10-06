@@ -61,7 +61,9 @@ import type { EmpresaGiro, GiroNegocio, IconoCategoria, ImagenSanity } from "@/l
  * paneles que se desplaza para mantener visible el abierto.
  */
 
-const ICONOS: Record<IconoCategoria, Icon> = {
+/** Exportado: el mazo de casos de Asesorías usa el mismo icono en la
+ *  etiqueta del giro de cada tarjeta. */
+export const ICONOS: Record<IconoCategoria, Icon> = {
   construccion: Buildings,
   belleza: Sparkle,
   servicios: Handshake,
@@ -127,6 +129,70 @@ function posicionFoto(h: ImagenSanity["hotspot"]) {
   return h ? `${Math.round(h.x * 100)}% ${Math.round(h.y * 100)}%` : "50% 50%";
 }
 
+/** Imagen de un caso de éxito para el panel abierto (modo casos, Asesorías).
+ *  `clave` identifica el caso: cambia la clave, entra la imagen nueva. */
+export type FotoCaso = { clave: string; url: string; hotspot: ImagenSanity["hotspot"]; alt: string };
+
+const CURVA_FOTO = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * La imagen del caso al frente del mazo, sobre el fondo del panel abierto.
+ * Cada caso nuevo entra con un barrido desde el borde derecho -- el lado del
+ * mazo: la tarjeta sale volando y su imagen "pasa" al panel -- y un zoom
+ * que se asienta. La anterior queda debajo hasta que la nueva termina de
+ * entrar, asi nunca se ve un hueco. Al cerrarse el panel, o con un caso sin
+ * imagen, la capa se desvanece y vuelve a verse el panel de siempre.
+ */
+function CapaFotoCaso({ foto, visible, duracion }: { foto: FotoCaso | null; visible: boolean; duracion: string }) {
+  const reducido = useReducedMotion() ?? false;
+  const [capas, setCapas] = useState<FotoCaso[]>(() => (foto ? [foto] : []));
+  const clave = foto?.clave;
+
+  useEffect(() => {
+    // Cerrado, el panel conserva su ultima foto mientras se desvanece.
+    if (!foto || !visible) return;
+    setCapas((previas) =>
+      previas.length > 0 && previas[previas.length - 1].clave === foto.clave ? previas : [...previas.slice(-1), foto]
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clave, visible]);
+
+  const mostrar = visible && Boolean(foto);
+
+  return (
+    <span
+      aria-hidden="true"
+      data-foto-caso={mostrar ? clave : undefined}
+      className="absolute inset-0"
+      style={{ opacity: mostrar ? 1 : 0, transition: `opacity ${duracion} ${CURVA}` }}
+    >
+      {capas.map((capa, i) => {
+        const entrando = capas.length > 1 && i === capas.length - 1;
+        return (
+          <motion.img
+            key={capa.clave}
+            src={capa.url}
+            alt=""
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover"
+            style={{ objectPosition: posicionFoto(capa.hotspot) }}
+            // transform y clipPath completos: Motion los anima con la Web
+            // Animations API (compositor), asi el barrido no se traba
+            // mientras el carrusel carga los logos del giro nuevo.
+            initial={entrando && !reducido ? { clipPath: "inset(0% 0% 0% 100%)", transform: "scale(1.12)" } : false}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)", transform: "scale(1)" }}
+            transition={{ duration: reducido ? 0 : 0.8, ease: CURVA_FOTO }}
+            onAnimationComplete={() => {
+              if (entrando) setCapas((previas) => previas.slice(-1));
+            }}
+          />
+        );
+      })}
+      <span className="absolute inset-0 bg-gradient-to-t from-abyss/85 via-abyss/20 to-transparent" />
+    </span>
+  );
+}
+
 /** Logos de proporciones distintas se ven del mismo "peso" si ocupan la
  *  misma AREA, no el mismo alto: un logo cuadrado a 44px de alto se ve chico
  *  al lado de uno apaisado. Se reparte un area fija segun la proporcion real
@@ -187,6 +253,7 @@ export function CarruselGiros({
   onCambio,
   seleccionPorCursor = true,
   intermedio,
+  fotoAbierto,
 }: {
   giros: GiroNegocio[];
   rotacion: boolean;
@@ -207,6 +274,11 @@ export function CarruselGiros({
    *  telefono para poner la demo de WhatsApp justo debajo del giro elegido
    *  (si fuera despues de los logos, quedaria a 18 logos de distancia). */
   intermedio?: React.ReactNode;
+  /** MODO CASOS (Asesorías): la imagen del caso que esta al frente del mazo
+   *  de al lado, mostrada en el panel ABIERTO en lugar de su foto o sus
+   *  colores. null: el panel abierto se ve como siempre. Sin esta prop
+   *  (Marketing Digital, Tráfico, FENIAX), nada cambia. */
+  fotoAbierto?: FotoCaso | null;
 }) {
   const id = useId();
   const n = giros.length;
@@ -500,6 +572,11 @@ export function CarruselGiros({
                       />
                     )}
                   </>
+                )}
+
+                {/* Modo casos: la imagen del caso al frente del mazo. */}
+                {fotoAbierto !== undefined && (
+                  <CapaFotoCaso foto={abierto ? fotoAbierto : null} visible={abierto} duracion={duracion} />
                 )}
 
                 {/* Cerrado: icono arriba y nombre en vertical. */}

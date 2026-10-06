@@ -267,7 +267,7 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
 // ============================================================
 
 /** Imagen con su alt, que vive DENTRO del campo imagen en el Studio.
- *  Exportada: la reutiliza src/lib/pagina-servicio.ts (mismo fragmento,
+ *  Exportada: la reutilizan trafico.ts, feniax.ts y asesorias.ts (mismo fragmento,
  *  mismas paginas de banners). */
 export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
 
@@ -312,7 +312,9 @@ const QUERY_MARKETING = `{
 // ============================================================
 
 type Txt = string | null | undefined;
-type ImgRaw =
+/** Exportado: src/lib/asesorias.ts normaliza con esto el logo de su portada
+ *  y las imagenes de los casos. */
+export type ImgRaw =
   | { url?: Txt; ancho?: number | null; alto?: number | null; hotspot?: { x: number; y: number } | null; alt?: Txt }
   | null
   | undefined;
@@ -338,7 +340,7 @@ export type GiroRaw = {
   empresas?: EmpresaRaw[] | null;
 } | null;
 
-/** Exportado: src/lib/pagina-servicio.ts reutiliza esta misma forma cruda
+/** Exportado: trafico.ts, feniax.ts y asesorias.ts reutilizan esta misma forma cruda
  *  (es un superconjunto de lo que esas paginas necesitan). */
 export type SeccionRaw = {
   _type?: Txt;
@@ -397,7 +399,7 @@ export function unoDe<T extends string>(v: Txt, validos: readonly T[], porDefect
 
 /** Una imagen sin archivo, o sin dimensiones, no se puede mostrar sin
  *  adivinar su proporcion: se descarta y la seccion usa su estado sin imagen. */
-function imagen(raw: ImgRaw, ancho: number, altPorDefecto = ""): ImagenSanity | null {
+export function imagen(raw: ImgRaw, ancho: number, altPorDefecto = ""): ImagenSanity | null {
   if (!raw?.url || !raw.ancho || !raw.alto) return null;
   return {
     url: `${raw.url}?w=${ancho}&auto=format`,
@@ -420,7 +422,7 @@ function cta(raw: CtaRaw): CtaSimple {
  *  la pieza trae dibujado.
  *
  *  Exportada: resuelve TODOS los campos comunes (imagen, cta, animar, etc.)
- *  de una sola vez, asi src/lib/pagina-servicio.ts no reimplementa nada de
+ *  de una sola vez, asi las demas paginas de servicio no reimplementan nada de
  *  esto para sus propios tipos de seccion (son el mismo `Base`). */
 export function camposBase(raw: SeccionRaw, altFoto: boolean): Base {
   const titulo = t(raw.titulo);
