@@ -117,6 +117,19 @@
   --text-button--line-height: 1;
   --text-button--font-weight: 600;
 
+  /* Titulos de seccion que se adaptan al ALTO de la pantalla, no solo al
+     ancho (pedido del 2026-10-07: cada seccion entra entera en una
+     pantalla). min() elige el menor entre la escala por ancho de siempre y
+     un tope por alto: en una laptop de 1536x730 el titulo baja a ~50px y
+     deja lugar al contenido; en 1920x1080 llega a su tope. Medido en
+     Playwright, no estimado. */
+  --text-titulo: clamp(2rem, min(1.4rem + 2.8vw, 6.8svh), 4rem);
+  --text-titulo--line-height: 1.04;
+  --text-titulo--letter-spacing: -0.02em;
+  --text-titulo-xl: clamp(2.4rem, min(1.5rem + 3.8vw, 8.6svh), 5.25rem);
+  --text-titulo-xl--line-height: 1;
+  --text-titulo-xl--letter-spacing: -0.03em;
+
   /* ==========================================================
      LIENZO CLARO — base del sitio (Sprint "Header nuevo + lienzo blanco
      global", §2, §22-23)
@@ -206,6 +219,74 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
   border-radius: 4px;
+}
+
+/* ============================================================
+   UNA SECCION = UNA PANTALLA (pedido del 2026-10-07)
+   ------------------------------------------------------------
+   "Cada seccion cuadre el 100% de la pantalla": en tablet y escritorio cada
+   seccion mide al menos el alto de la ventana, centra su contenido y ese
+   contenido esta dimensionado para ENTRAR entero (titulos con
+   --text-titulo, medios con alturas en svh). Antes casi todas pasaban de
+   la pantalla: Clientes media 1527px en una laptop de 730px de alto.
+
+   - padding-top suma el alto del header fijo (--alto-nav): cuando la seccion
+     queda arriba, nada queda tapado por la barra.
+   - svh y no vh: en telefonos la barra del navegador no deja el contenido
+     a medias. vh queda como respaldo para navegadores viejos.
+   - En telefono no se fuerza el alto: el contenido apilado ya es mas alto
+     que la pantalla y estirarlo solo agregaria aire.
+   - Las secciones son flex en columna para centrar en alto: su contenedor
+     interior lleva w-full (con mx-auto, un hijo flex se encogeria a su
+     contenido).
+   ============================================================ */
+:root {
+  --alto-nav: 64px;
+  --pantalla-arriba: calc(var(--alto-nav) + clamp(1.25rem, 4svh, 3rem));
+  --pantalla-abajo: clamp(2rem, 5.5svh, 4rem);
+  /* Alto util de una seccion: la pantalla sin el header ni los margenes.
+     Las secciones con contenido "elastico" (Clientes) miden exacto esto. */
+  --alto-util: calc(100svh - var(--pantalla-arriba) - var(--pantalla-abajo));
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --alto-nav: 68px;
+  }
+}
+
+@layer components {
+  .pantalla {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: var(--pantalla-arriba);
+    padding-bottom: var(--pantalla-abajo);
+  }
+
+  @media (min-width: 768px) {
+    .pantalla {
+      min-height: 100vh;
+      min-height: 100svh;
+    }
+  }
+}
+
+/* Iman suave entre secciones (solo escritorio): al soltar el scroll cerca
+   del borde de una seccion, la pagina la encuadra completa. "proximity" y no
+   "mandatory": nunca impide detenerse a mitad de camino ni llegar al pie. */
+@media (min-width: 1024px) and (min-height: 620px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+
+  .pantalla {
+    scroll-snap-align: start;
+  }
+
+  footer {
+    scroll-snap-align: end;
+  }
 }
 
 /* ============================================================
@@ -310,6 +391,72 @@ body {
     0 18px 42px -12px rgba(18, 10, 38, 0.65);
 }
 
+/* Destello: una franja de luz cruza el boton cada tanto, y otra vez al pasar
+   el cursor o enfocarlo con teclado (pedido del 2026-10-07: "usa reactbits
+   si ... botones"). Tecnica adaptada de ShinyText de React Bits (c) 2026
+   David Haz, MIT + Commons Clause, como .texto-brillo: un degradado 2,5
+   veces mas ancho que el boton que se desplaza con background-position.
+
+   Va DEBAJO del texto (z-index -1 dentro del contexto que abre `isolation`):
+   brilla el relleno, el texto nunca pierde contraste. Los dos extremos del
+   degradado son transparentes, asi que en reposo no se ve nada. Sin
+   overflow:hidden (que cambiaria la linea base del boton): el destello se
+   recorta solo con el mismo radio. Con movimiento reducido no aparece. */
+.banner-cta-boton {
+  position: relative;
+  isolation: isolate;
+}
+
+.banner-cta-boton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: linear-gradient(
+    110deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  background-position: 0% 0;
+  animation: cta-destello 7s cubic-bezier(0.45, 0, 0.55, 1) 2.5s infinite;
+}
+
+.banner-cta-boton:hover::after,
+.banner-cta-boton:focus-visible::after {
+  animation: cta-destello-ya 0.9s cubic-bezier(0.45, 0, 0.55, 1) 1;
+}
+
+@keyframes cta-destello {
+  0% {
+    background-position: 100% 0;
+  }
+  16%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+@keyframes cta-destello-ya {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-cta-boton::after {
+    animation: none;
+  }
+}
+
 /* Grano: capa fija, sin repintados durante el scroll */
 .grain-layer {
   position: fixed;
@@ -359,7 +506,8 @@ body {
    teclado: hoy los nombres no son enlaces, pero cuando lleguen los logos
    reales y sean navegables, la pausa ya funcionara. */
 .wall-track:hover,
-.wall-track:focus-within {
+.wall-track:focus-within,
+.wall-track[data-pausado] {
   animation-play-state: paused;
 }
 
@@ -367,22 +515,6 @@ body {
    con movimiento reducido tiene que cambiar de comportamiento. */
 .wall-viewport {
   overflow: hidden;
-}
-
-/* Marquesina en sentido contrario (Marketing Digital: dos filas de
-   clientes que se cruzan). Misma mecanica que .wall-track, recorrido
-   invertido: arranca en -50% y vuelve a 0. */
-.wall-track--reverse {
-  animation-name: tide-slide-reverse;
-}
-
-@keyframes tide-slide-reverse {
-  from {
-    transform: translate3d(-50%, 0, 0);
-  }
-  to {
-    transform: translate3d(0, 0, 0);
-  }
 }
 
 /* Bordes desvanecidos de la marquesina con una mascara, no con un
@@ -407,13 +539,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* La fila invertida declara su propio animation-name mas abajo en el
-     archivo que el `animation: none` general: sin esta regla volveria a
-     animarse con movimiento reducido. */
-  .wall-track--reverse {
-    animation: none;
-  }
-
   /* Parallax (src/components/marketing/Parallax.tsx): mismo recurso que
      [data-reveal], CSS con !important en vez de ramificar React. */
   [data-parallax] {
@@ -693,7 +818,11 @@ body {
 .capacidad-card {
   position: relative;
   isolation: isolate;
-  background-color: var(--color-canvas);
+  /* Vidrio sobre el fondo oscuro del hero (version premium del 2026-10-07):
+     opaco lo justo para que el oleaje del fondo no compita con el texto. */
+  background-color: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   --mouse-x: 50%;
   --mouse-y: 50%;
 }
@@ -824,96 +953,113 @@ body {
 }
 
 /* ============================================================
-   HERO — scrim de legibilidad + overlays geometricos animados
-   (ver src/components/Hero.tsx, "Correccion Hero final", spec §10-25)
+   HERO — fondo vivo y la palabra con color (version premium, 2026-10-07;
+   ver src/components/Hero.tsx). Reemplaza al scrim y a los paneles
+   diagonales de la version anterior.
 
-   Reemplaza por completo al degradado en barrido (.hero-media-gradient,
-   una sola franja de luz corriendo en diagonal) del sprint anterior: ese
-   era "unicamente un gradient", exactamente lo que este sprint pide NO
-   hacer. Ahora son dos capas independientes:
-
-   1. .hero-scrim — FIJO, nunca animado. Oscurece la mitad izquierda de la
-      imagen (zona del copy) y se aclara hacia la derecha, para que el
-      texto siga siendo legible sin depender de que la foto que llegue
-      desde Sanity tenga contraste propio (spec §22).
-
-   2. .hero-shape-1/2/3 — paneles diagonales reales via clip-path polygon
-      (no rectangulos, no un gradient plano — spec §10), en morado/lila/
-      naranja DOFI a muy baja opacidad. Cada uno anima SOLO `transform`
-      (translate + rotate + scale, nunca layout ni el propio clip-path):
-      "compositor-friendly" de verdad, sin recalcular la forma en cada
-      fotograma. 11-16s, ease-in-out, `alternate` — va y vuelve sobre si
-      mismo, asi el loop no necesita contenido duplicado (no es un tile)
-      y el "reinicio" es literalmente el punto de partida, imperceptible.
-      La fotografia de abajo (Hero.tsx) nunca lleva animacion propia.
+   1. .hero-aurora — tres resplandores grandes (violeta, naranja, lila) que se
+      desplazan MUY despacio. Solo animan transform (compositor), nunca
+      layout; con movimiento reducido quedan quietos.
+   2. .texto-marea — la ultima palabra del titulo con el degradado de la
+      marca (naranja -> coral -> lila) y un brillo que la recorre cada tanto.
+      Es texto real (el H1 se pinta de entrada: regla de LCP).
+   3. .hero-latido — el punto de la etiqueta de arriba, que late.
    ============================================================ */
-.hero-scrim {
-  background-image: linear-gradient(
-    100deg,
-    color-mix(in srgb, var(--color-ink) 80%, transparent) 0%,
-    color-mix(in srgb, var(--color-ink) 52%, transparent) 26%,
-    color-mix(in srgb, var(--color-brand) 30%, transparent) 46%,
-    transparent 68%
-  );
-}
-
-@keyframes hero-shape-drift-1 {
+@keyframes hero-aurora {
   from {
-    transform: translate3d(0, 0, 0) rotate(-3deg) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   to {
-    transform: translate3d(18px, -10px, 0) rotate(-1.5deg) scale(1.03);
-  }
-}
-@keyframes hero-shape-drift-2 {
-  from {
-    transform: translate3d(0, 0, 0) rotate(4deg) scale(1);
-  }
-  to {
-    transform: translate3d(-16px, 12px, 0) rotate(2deg) scale(1.02);
-  }
-}
-@keyframes hero-shape-drift-3 {
-  from {
-    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  }
-  to {
-    transform: translate3d(10px, -14px, 0) rotate(3deg) scale(1.04);
+    transform: translate3d(var(--ax), var(--ay), 0) scale(var(--as, 1.12));
   }
 }
 
-.hero-shape {
+.hero-aurora {
   position: absolute;
-  inset: 0;
+  border-radius: 9999px;
+  filter: blur(110px);
   will-change: transform;
+  animation: hero-aurora var(--dur, 18s) ease-in-out infinite alternate;
 }
 
-/* Panel grande, desde la esquina superior izquierda — el que mas aporta a
-   "proteger" el area del copy, ademas del scrim fijo. */
-.hero-shape-1 {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-brand) 55%, transparent),
-    color-mix(in srgb, var(--color-brand-lift) 28%, transparent)
-  );
-  clip-path: polygon(0% 0%, 56% 0%, 36% 100%, 0% 100%);
-  animation: hero-shape-drift-1 13s ease-in-out infinite alternate;
+.hero-aurora-1 {
+  left: -10%;
+  top: -18%;
+  width: 46rem;
+  height: 34rem;
+  background: color-mix(in srgb, var(--color-brand-lift) 45%, transparent);
+  --ax: 6rem;
+  --ay: 3rem;
+  --dur: 19s;
 }
 
-/* Franja diagonal secundaria, lila, cruzando hacia la derecha. */
-.hero-shape-2 {
-  background: color-mix(in srgb, var(--color-brand-lift) 20%, transparent);
-  clip-path: polygon(28% 0%, 100% 0%, 100% 40%, 44% 100%, 18% 100%);
-  animation: hero-shape-drift-2 16s ease-in-out infinite alternate;
+.hero-aurora-2 {
+  right: -12%;
+  bottom: -26%;
+  width: 40rem;
+  height: 30rem;
+  background: color-mix(in srgb, var(--color-accent) 32%, transparent);
+  --ax: -5rem;
+  --ay: -3rem;
+  --dur: 23s;
 }
 
-/* Acento naranja muy pequeño y muy tenue (spec §11: "naranja unicamente
-   como acento muy pequeño si aporta") — un solo triangulo chico, nunca un
-   bloque. */
-.hero-shape-3 {
-  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  clip-path: polygon(70% 28%, 90% 20%, 96% 52%, 80% 62%);
-  animation: hero-shape-drift-3 11s ease-in-out infinite alternate;
+.hero-aurora-3 {
+  right: 18%;
+  top: 8%;
+  width: 26rem;
+  height: 22rem;
+  background: color-mix(in srgb, var(--color-coral) 16%, transparent);
+  --ax: -4rem;
+  --ay: 4rem;
+  --as: 1.2;
+  --dur: 27s;
+}
+
+/* Dos capas: el degradado de la marca, quieto, y encima una franja de luz que
+   lo cruza. La franja empieza y termina fuera del texto, asi la vuelta no
+   tiene salto. Es la tecnica de ShinyText de React Bits, como .texto-brillo
+   (credito y licencia ahi). */
+.texto-marea {
+  background-image:
+    linear-gradient(100deg, transparent 40%, rgba(255, 255, 255, 0.85) 50%, transparent 60%),
+    linear-gradient(95deg, var(--color-accent-lift) 0%, var(--color-coral) 48%, var(--color-mist) 100%);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 100% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Un poco de aire abajo: el degradado recortado al texto no se come los
+     descendentes. */
+  padding-bottom: 0.06em;
+  animation: texto-marea 7s cubic-bezier(0.45, 0, 0.55, 1) 1.4s infinite;
+}
+
+@keyframes texto-marea {
+  0% {
+    background-position: 100% 0, 0 0;
+  }
+  45%,
+  100% {
+    background-position: 0% 0, 0 0;
+  }
+}
+
+@keyframes hero-latido {
+  0% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.hero-latido {
+  animation: hero-latido 2.4s ease-out infinite;
 }
 
 /* ============================================================
@@ -953,6 +1099,40 @@ body {
   --giro-cerrado: linear-gradient(180deg, #F7EFF9 0%, #EEDFF2 100%);
   --giro-abierto: radial-gradient(120% 80% at 92% 108%, rgba(229, 53, 42, 0.55) 0%, rgba(237, 109, 25, 0.25) 35%, rgba(237, 109, 25, 0) 62%),
     linear-gradient(165deg, #9A3FA7 0%, #792883 45%, #2A1638 100%);
+}
+
+/* Brillo que recorre un texto de vez en cuando, como un reflejo (titulo de la
+   portada de Asesorias). Tecnica adaptada de ShinyText de React Bits (c) 2026
+   David Haz, MIT + Commons Clause -- aca en CSS puro, sin un requestAnimationFrame
+   por cuadro: el degradado (2,5 veces el ancho del texto) se desplaza con
+   background-position. Al principio y al final de cada vuelta el texto se ve
+   liso; con movimiento reducido queda liso y quieto. */
+.texto-brillo {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-foam) 0%,
+    var(--color-foam) 40%,
+    #ffffff 48%,
+    var(--color-accent-lift) 53%,
+    var(--color-foam) 62%,
+    var(--color-foam) 100%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: texto-brillo 6s cubic-bezier(0.45, 0, 0.55, 1) 1.2s infinite;
+}
+
+@keyframes texto-brillo {
+  0% {
+    background-position: 100% 0;
+  }
+  45%,
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 /* Texto con el degradado del isotipo "IA" (naranja -> rojo). Solo en

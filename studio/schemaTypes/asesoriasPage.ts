@@ -15,7 +15,9 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  *  - Clientes + casos de éxito (casesClientsBanner): el carrusel de giros de
  *    siempre y, al lado, un mazo de casos; cada caso trae su imagen y al
  *    pasar de caso el carrusel abre su giro y la muestra.
- * El resto son las de Marketing Digital (¿Qué es...?, Reseñas, Cierre...).
+ *  - Logros (achievementsBanner): tarjetas con foto que reemplazan a las
+ *    reseñas en esta página (pedido del 2026-10-07).
+ * El resto son las de Marketing Digital (¿Qué es...?, Cierre...).
  *
  * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
  * respaldo con los mismos textos (src/lib/asesorias-respaldo.ts). Con una sola
@@ -46,6 +48,7 @@ export const asesoriasPage = defineType({
         defineArrayMember({ type: "navigationBanner" }),
         defineArrayMember({ type: "methodBanner" }),
         defineArrayMember({ type: "casesClientsBanner" }),
+        defineArrayMember({ type: "achievementsBanner" }),
         defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),
       ],

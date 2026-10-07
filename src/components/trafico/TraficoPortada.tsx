@@ -36,11 +36,9 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar } = seccion;
   const Titulo = nivel;
   const parrafos = parrafosDe(descripcion);
-  // La seccion que abre la pagina arranca debajo del header fijo (64-68px).
-  const relleno = nivel === "h1" ? "pb-16 pt-32 md:pb-20 md:pt-36" : "py-20 md:py-24";
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative isolate overflow-hidden bg-abyss text-foam">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative isolate overflow-hidden bg-abyss text-foam">
       <div className="absolute inset-0 -z-10">
         {imagen ? (
           <>
@@ -55,7 +53,7 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
       <div
         className={`relative mx-auto grid w-full max-w-page grid-cols-1 items-center gap-14 px-5 sm:px-6 md:px-10 lg:gap-8 lg:px-12 ${
           imagen ? "" : "lg:grid-cols-12"
-        } ${relleno}`}
+        }`}
       >
         <div className={`min-w-0 ${imagen ? "max-w-[720px]" : "lg:col-span-7"}`}>
           {subtitulo && (
@@ -69,14 +67,14 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
           <Anim animar={animar} y={16} delay={0.08} duration={0.6}>
             <Titulo
               id={`${id}-titulo`}
-              className="max-w-[19ch] text-balance font-display text-[clamp(2rem,1.3rem+3.2vw,4rem)] font-extrabold leading-[1.05] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)]"
+              className="max-w-[19ch] text-balance font-display text-[clamp(2rem,min(1.3rem+3.2vw,7.4svh),4rem)] font-extrabold leading-[1.05] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)]"
             >
               {titulo}
             </Titulo>
           </Anim>
 
           {parrafos.length > 0 && (
-            <div className="mt-6 flex max-w-[600px] flex-col gap-4">
+            <div className="mt-[clamp(1rem,3svh,1.5rem)] flex max-w-[600px] flex-col gap-4">
               {parrafos.map((p, i) => (
                 <Anim key={i} animar={animar} y={14} delay={0.16 + i * 0.08} duration={0.6}>
                   <p className="font-sans text-base leading-relaxed text-foam/85 md:text-lg">{p}</p>
@@ -87,7 +85,7 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
 
           {destacado && (
             <Anim animar={animar} y={14} delay={0.34} duration={0.6}>
-              <p className="mt-7 flex max-w-[600px] items-start gap-3 font-display text-lg font-semibold leading-snug tracking-tight text-accent-lift md:text-xl">
+              <p className="mt-[clamp(1rem,3.4svh,1.75rem)] flex max-w-[600px] items-start gap-3 font-display text-lg font-semibold leading-snug tracking-tight text-accent-lift md:text-xl">
                 <span aria-hidden="true" className="mt-[0.7em] h-px w-10 shrink-0 bg-accent-lift/70" />
                 {destacado}
               </p>
@@ -96,7 +94,7 @@ export function TraficoPortada({ seccion, id, nivel }: { seccion: SeccionEquipo;
 
           {cta && (
             <Anim animar={animar} y={14} delay={0.42} duration={0.6}>
-              <div className="mt-9">
+              <div className="mt-[clamp(1.5rem,4.4svh,2.25rem)]">
                 <BotonCta texto={cta.texto} enlace={cta.enlace} />
               </div>
             </Anim>

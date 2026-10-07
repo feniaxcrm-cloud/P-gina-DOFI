@@ -28,7 +28,7 @@ export function FeniaxCierre({ seccion, id, nivel }: { seccion: SeccionCierre; i
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="relative isolate flex min-h-[560px] overflow-hidden bg-abyss text-foam md:min-h-[620px]"
+      className="pantalla relative isolate overflow-hidden bg-abyss text-foam max-md:min-h-[560px] max-md:pb-36"
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {imagen ? (
@@ -43,10 +43,10 @@ export function FeniaxCierre({ seccion, id, nivel }: { seccion: SeccionCierre; i
         <Puntos className="-right-20 top-0 h-[360px] w-[460px] opacity-60" />
       </div>
 
-      <div className={`relative mx-auto flex w-full max-w-page flex-col justify-center px-5 pb-36 pt-24 sm:px-6 md:px-10 md:pb-44 md:pt-28 lg:px-12 ${ALINEA[alineacion]}`}>
+      <div className={`relative mx-auto flex w-full max-w-page flex-col justify-center px-5 sm:px-6 md:px-10 lg:px-12 ${ALINEA[alineacion]}`}>
         {!imagen && (
           <Anim animar={animar} y={16}>
-            <span aria-hidden="true" className="relative mb-10 flex h-28 w-28 items-center justify-center md:h-32 md:w-32">
+            <span aria-hidden="true" className="relative mb-[clamp(1.5rem,5svh,2.5rem)] flex h-28 w-28 items-center justify-center md:h-[min(8rem,15svh)] md:w-[min(8rem,15svh)]">
               <span className="feniax-pulso absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(237,109,25,0.55)_0%,rgba(229,53,42,0.2)_45%,transparent_70%)] blur-md" />
               <span className="absolute inset-2 rounded-full border border-white/10" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -64,7 +64,7 @@ export function FeniaxCierre({ seccion, id, nivel }: { seccion: SeccionCierre; i
         <Anim animar={animar} y={16} delay={0.08}>
           <Titulo
             id={`${id}-titulo`}
-            className="max-w-[20ch] text-balance font-display text-[clamp(2.25rem,1.3rem+2.8vw,3.875rem)] font-extrabold leading-[1.05] tracking-[-0.02em]"
+            className="max-w-[20ch] text-balance font-display text-[clamp(2.25rem,min(1.3rem+2.8vw,7.6svh),3.875rem)] font-extrabold leading-[1.05] tracking-[-0.02em]"
           >
             {inicio && <>{inicio} </>}
             <span className="texto-ia">{final}</span>
@@ -85,7 +85,7 @@ export function FeniaxCierre({ seccion, id, nivel }: { seccion: SeccionCierre; i
 
         {cta && (
           <Anim animar={animar} y={14} delay={0.28}>
-            <div className="mt-10">
+            <div className="mt-[clamp(1.5rem,4.5svh,2.5rem)]">
               <BotonCta texto={cta.texto} enlace={cta.enlace} color="feniax" tamano="grande" />
             </div>
           </Anim>

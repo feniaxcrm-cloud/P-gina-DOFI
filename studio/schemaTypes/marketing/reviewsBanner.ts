@@ -12,6 +12,11 @@ import { camposBase } from "./camposBase";
  *
  * Sin campos de imagen: esta sección no usa ninguna. Tener un campo que no
  * hace nada solo confunde a quien edita.
+ *
+ * LAS RESEÑAS SE DESLIZAN SOLAS en todas las páginas (pedido del 2026-10-07),
+ * así que ya no hay interruptor de "avance automático" ni de velocidad: eran
+ * campos que no harían nada. scripts/ajustar-paginas.mts borra esos dos
+ * valores de los documentos que los tenían.
  */
 export const reviewsBanner = defineType({
   name: "reviewsBanner",
@@ -36,24 +41,8 @@ export const reviewsBanner = defineType({
         name: "cantidadMostrada",
         title: "Cantidad de reseñas a mostrar",
         type: "number",
-        description: "Máximo de tarjetas en el carrusel. Vacío: se muestran todas las disponibles.",
+        description: "Máximo de tarjetas en la franja. Vacío: se muestran todas las disponibles.",
         validation: (Rule) => Rule.integer().min(1).max(50),
-      }),
-      defineField({
-        name: "autoplay",
-        title: "Avance automático",
-        type: "boolean",
-        description: "El carrusel avanza solo cada tantos segundos. Se detiene al pasar el cursor o enfocar con teclado, y no se activa con movimiento reducido. Apagado por defecto.",
-        initialValue: false,
-      }),
-      defineField({
-        name: "velocidadAutoplay",
-        title: "Velocidad del avance automático (segundos)",
-        type: "number",
-        description: "Solo aplica si el avance automático está activo.",
-        initialValue: 6,
-        validation: (Rule) => Rule.integer().min(3).max(30),
-        hidden: ({ parent }) => !parent?.autoplay,
       }),
     ],
   }),

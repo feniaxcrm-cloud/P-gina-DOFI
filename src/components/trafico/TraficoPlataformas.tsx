@@ -11,8 +11,8 @@ import { IconoPlataforma } from "./IconoPlataforma";
 /**
  * 5 · ¿Dónde traficamos? (tipo platformsBanner).
  *
- * "El tráfico no tiene un solo destino": una tarjeta por plataforma (Meta,
- * TikTok, Google, tráfico web...) con su marca, la frase que la resume y lo
+ * "El tráfico no tiene un solo destino": una tarjeta por plataforma (WhatsApp,
+ * Meta, TikTok, Google...) con su marca, la frase que la resume y lo
  * que hacemos en ella. Las plataformas se agregan, quitan y reordenan en el
  * Studio; cada una elige su icono de una lista.
  *
@@ -29,7 +29,7 @@ export function TraficoPlataformas({ seccion, id, nivel }: { seccion: SeccionPla
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#F6F1FC_0%,#FDFBF7_100%)] py-20 md:py-28"
+      className="group/nautico pantalla relative overflow-hidden bg-[linear-gradient(180deg,#F6F1FC_0%,#FDFBF7_100%)]"
     >
       <OrnamentoRuta ambiente="derivar" duracion={12} className="left-[8%] top-[5%] hidden h-20 w-[60%] md:block lg:h-24" />
       <OrnamentoOlas ambiente="derivar" duracion={10.5} retraso={0.8} className="inset-x-0 bottom-0 h-12 opacity-80 md:h-16 lg:h-20" />
@@ -50,24 +50,24 @@ export function TraficoPlataformas({ seccion, id, nivel }: { seccion: SeccionPla
       <OrnamentoNodo className="left-[34%] top-[8%] h-3 w-3 sm:h-4 sm:w-4" retraso={1.4} />
       <OrnamentoNodo className="right-[30%] bottom-4 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.5} />
 
-      <div className="relative mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
+      <div className="relative mx-auto w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <Anim animar={animar} className="max-w-[760px]">
           {subtitulo && (
             <p className="mb-5 font-sans text-sm font-semibold uppercase tracking-[0.16em] text-brand">{subtitulo}</p>
           )}
           <Titulo
             id={`${id}-titulo`}
-            className="text-balance font-display text-[clamp(2.25rem,1.5rem+3vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.02em] text-ink"
+            className="text-balance font-display text-titulo font-extrabold text-ink"
           >
             {titulo}
           </Titulo>
           {descripcion && (
-            <p className="mt-6 font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{descripcion}</p>
+            <p className="mt-[clamp(0.75rem,2.5svh,1.5rem)] font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{descripcion}</p>
           )}
         </Anim>
 
         {plataformas.length > 0 && (
-          <ul className="mt-12 grid gap-5 sm:grid-cols-2 md:mt-14 xl:grid-cols-4">
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 md:mt-[clamp(2rem,6svh,3.5rem)] xl:grid-cols-4">
             {plataformas.map((p, i) => (
               <li key={p.key} className="min-w-0">
                 <Anim animar={animar} delay={0.06 + i * 0.07} y={20} className="h-full">

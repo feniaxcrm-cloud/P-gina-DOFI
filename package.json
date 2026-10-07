@@ -16,7 +16,9 @@
     "sembrar:feniax": "tsx --env-file=.env.local scripts/sembrar-feniax.mts",
     "sembrar:trafico": "tsx --env-file=.env.local scripts/sembrar-trafico.mts",
     "ajustar:feniax": "tsx --env-file=.env.local scripts/ajustar-feniax.mts",
-    "ajustar:ctas": "tsx --env-file=.env.local scripts/ajustar-ctas.mts"
+    "ajustar:ctas": "tsx --env-file=.env.local scripts/ajustar-ctas.mts",
+    "sembrar:asesorias": "tsx --env-file=.env.local scripts/sembrar-asesorias.mts",
+    "ajustar:paginas": "tsx --env-file=.env.local scripts/ajustar-paginas.mts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.2",

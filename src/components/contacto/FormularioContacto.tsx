@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { ArrowRight, CheckCircle, WhatsappLogo } from "@phosphor-icons/react";
+import { ArrowRight, Check, CheckCircle, LockSimple, WhatsappLogo } from "@phosphor-icons/react";
 import { clasesBoton, estiloBoton } from "@/components/BotonCta";
 import { SERVICIOS, TEXTO_CTA, mensajeFormulario, serviciosDeUrl, type ClaveServicio } from "@/lib/cta";
 import { createWhatsAppUrl } from "@/lib/whatsapp";
@@ -13,6 +13,11 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
  * CUATRO CAMPOS, ni uno mas: nombres y apellidos, servicio (varios a la vez),
  * detalle de lo que necesita (opcional: es el unico que se puede dejar vacio)
  * y nombre del negocio.
+ *
+ * MAS PREMIUM Y SENCILLO (pedido del 2026-10-07): una tarjeta clara sobre el
+ * fondo de marca, campos suaves que se encienden en morado al escribir, los
+ * servicios como pastillas con su check, nombre y negocio lado a lado en
+ * escritorio y un solo boton a todo el ancho. Entra completo en una pantalla.
  *
  * AL ENVIAR, WHATSAPP: no hay servidor de por medio. Se arma el mensaje con lo
  * que la persona escribio (mensajeFormulario, src/lib/cta.ts) y se abre
@@ -26,8 +31,21 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
 type Errores = { nombre?: string; servicios?: string; negocio?: string };
 
 const CAMPO =
-  "w-full rounded-[14px] border border-white/20 bg-white/[0.07] px-4 py-3.5 font-sans text-base text-foam placeholder:text-fog transition-colors duration-200 focus:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40";
-const ETIQUETA = "font-display text-sm font-semibold text-foam";
+  "w-full rounded-[14px] border border-ink/12 bg-[#F7F5FB] px-4 py-3 font-sans text-base text-ink placeholder:text-ink-subtle/80 transition-[border-color,background-color,box-shadow] duration-200 hover:border-ink/25 focus:border-brand focus:bg-white focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_14%,transparent)] focus:outline-none aria-[invalid=true]:border-accent";
+const ETIQUETA = "font-display text-[13.5px] font-semibold text-ink";
+const ERROR = "flex items-center gap-1.5 font-sans text-[13px] font-medium text-[#B4480A]";
+
+function AvisoError({ id, texto }: { id: string; texto?: string }) {
+  if (!texto) return null;
+  return (
+    <p id={id} className={ERROR}>
+      <span aria-hidden="true" className="flex h-4 w-4 items-center justify-center rounded-full bg-accent/15 text-[11px] font-bold">
+        !
+      </span>
+      {texto}
+    </p>
+  );
+}
 
 export function FormularioContacto() {
   const id = useId();
@@ -69,12 +87,12 @@ export function FormularioContacto() {
 
   if (enlace) {
     return (
-      <div role="status" className="flex flex-col items-center gap-5 py-6 text-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/15 text-accent-lift">
+      <div role="status" className="flex flex-col items-center gap-5 py-8 text-center">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-whatsapp/12 text-whatsapp">
           <CheckCircle size={36} weight="fill" aria-hidden="true" />
         </span>
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-foam md:text-3xl">¡Listo! Te llevamos a WhatsApp</h2>
-        <p className="max-w-[40ch] font-sans text-base leading-relaxed text-mist">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink md:text-3xl">¡Listo! Te llevamos a WhatsApp</h2>
+        <p className="max-w-[40ch] font-sans text-base leading-relaxed text-ink-muted">
           Abrimos el chat con tu mensaje ya escrito: solo falta que le des enviar. Si no se abrió, usa el botón.
         </p>
         <a
@@ -92,100 +110,104 @@ export function FormularioContacto() {
   }
 
   return (
-    <form onSubmit={alEnviar} noValidate className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <label htmlFor={`${id}-nombre`} className={ETIQUETA}>
-          Nombres y Apellidos
-        </label>
-        <input
-          id={`${id}-nombre`}
-          name="nombre"
-          type="text"
-          autoComplete="name"
-          placeholder="Tu nombre completo"
-          aria-invalid={Boolean(errores.nombre)}
-          aria-describedby={errores.nombre ? `${id}-err-nombre` : undefined}
-          className={CAMPO}
-        />
-        {errores.nombre && (
-          <p id={`${id}-err-nombre`} className="font-sans text-sm text-accent-lift">
-            {errores.nombre}
-          </p>
-        )}
+    <form onSubmit={alEnviar} noValidate className="flex flex-col gap-[clamp(1rem,2.8svh,1.5rem)]">
+      <div className="grid grid-cols-1 gap-[clamp(1rem,2.8svh,1.5rem)] sm:grid-cols-2 sm:gap-4">
+        <div className="flex flex-col gap-2">
+          <label htmlFor={`${id}-nombre`} className={ETIQUETA}>
+            Nombres y Apellidos
+          </label>
+          <input
+            id={`${id}-nombre`}
+            name="nombre"
+            type="text"
+            autoComplete="name"
+            placeholder="Tu nombre completo"
+            aria-invalid={Boolean(errores.nombre)}
+            aria-describedby={errores.nombre ? `${id}-err-nombre` : undefined}
+            className={CAMPO}
+          />
+          <AvisoError id={`${id}-err-nombre`} texto={errores.nombre} />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor={`${id}-negocio`} className={ETIQUETA}>
+            Nombre del Negocio
+          </label>
+          <input
+            id={`${id}-negocio`}
+            name="negocio"
+            type="text"
+            autoComplete="organization"
+            placeholder="Cómo se llama tu negocio"
+            aria-invalid={Boolean(errores.negocio)}
+            aria-describedby={errores.negocio ? `${id}-err-negocio` : undefined}
+            className={CAMPO}
+          />
+          <AvisoError id={`${id}-err-negocio`} texto={errores.negocio} />
+        </div>
       </div>
 
-      <fieldset className="flex flex-col gap-3" aria-describedby={errores.servicios ? `${id}-err-servicios` : undefined}>
-        <legend className={`${ETIQUETA} mb-1`}>
-          Servicio que requiere <span className="font-sans font-normal text-fog">(puedes elegir varios)</span>
+      <fieldset className="flex flex-col gap-2.5" aria-describedby={errores.servicios ? `${id}-err-servicios` : undefined}>
+        <legend className={`${ETIQUETA} mb-2.5`}>
+          Servicio que requiere <span className="font-sans font-normal text-ink-subtle">(puedes elegir varios)</span>
         </legend>
-        <div className="flex flex-wrap gap-3">
-          {SERVICIOS.map((s) => (
-            <div key={s.clave}>
-              <input
-                id={`${id}-${s.clave}`}
-                type="checkbox"
-                name="servicio"
-                value={s.clave}
-                checked={servicios.includes(s.clave)}
-                onChange={() => alternar(s.clave)}
-                className="peer sr-only"
-              />
-              <label
-                htmlFor={`${id}-${s.clave}`}
-                className="inline-flex min-h-[48px] cursor-pointer select-none items-center gap-2 rounded-full border border-white/25 bg-white/[0.07] px-5 py-2.5 font-display text-[15px] font-semibold text-foam transition-colors duration-200 hover:border-accent/70 peer-checked:border-accent peer-checked:bg-accent peer-checked:text-abyss peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-abyss"
-              >
-                {s.nombre}
-              </label>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap">
+          {SERVICIOS.map((s) => {
+            const marcado = servicios.includes(s.clave);
+            return (
+              <div key={s.clave}>
+                <input
+                  id={`${id}-${s.clave}`}
+                  type="checkbox"
+                  name="servicio"
+                  value={s.clave}
+                  checked={marcado}
+                  onChange={() => alternar(s.clave)}
+                  className="peer sr-only"
+                />
+                <label
+                  htmlFor={`${id}-${s.clave}`}
+                  className="flex min-h-[46px] cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap rounded-full border border-ink/12 bg-white px-3 py-2 font-display text-[13.5px] font-semibold text-ink sm:px-4 sm:text-[14.5px] transition-[background-color,border-color,color,box-shadow] duration-200 hover:border-brand/45 peer-checked:border-brand peer-checked:bg-brand peer-checked:text-white peer-checked:shadow-[0_10px_22px_-12px_rgba(75,42,147,0.8)] peer-focus-visible:ring-2 peer-focus-visible:ring-accent peer-focus-visible:ring-offset-2"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-colors duration-200 ${
+                      marcado ? "border-white bg-white text-brand" : "border-ink/25 text-transparent"
+                    }`}
+                  >
+                    <Check size={11} weight="bold" />
+                  </span>
+                  {s.nombre}
+                </label>
+              </div>
+            );
+          })}
         </div>
-        {errores.servicios && (
-          <p id={`${id}-err-servicios`} className="font-sans text-sm text-accent-lift">
-            {errores.servicios}
-          </p>
-        )}
+        <AvisoError id={`${id}-err-servicios`} texto={errores.servicios} />
       </fieldset>
 
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-detalle`} className={ETIQUETA}>
-          Detalle de lo que necesita <span className="font-sans font-normal text-fog">(opcional)</span>
+          Detalle de lo que necesita <span className="font-sans font-normal text-ink-subtle">(opcional)</span>
         </label>
         <textarea
           id={`${id}-detalle`}
           name="detalle"
-          rows={4}
+          rows={3}
           placeholder="Cuéntanos en pocas palabras qué quieres lograr"
-          className={`${CAMPO} resize-y`}
+          className={`${CAMPO} min-h-[96px] resize-none`}
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor={`${id}-negocio`} className={ETIQUETA}>
-          Nombre del Negocio
-        </label>
-        <input
-          id={`${id}-negocio`}
-          name="negocio"
-          type="text"
-          autoComplete="organization"
-          placeholder="Cómo se llama tu negocio"
-          aria-invalid={Boolean(errores.negocio)}
-          aria-describedby={errores.negocio ? `${id}-err-negocio` : undefined}
-          className={CAMPO}
-        />
-        {errores.negocio && (
-          <p id={`${id}-err-negocio`} className="font-sans text-sm text-accent-lift">
-            {errores.negocio}
-          </p>
-        )}
-      </div>
-
-      <div className="mt-2 flex flex-col items-start gap-3">
-        <button type="submit" className={`${clasesBoton("normal")} w-full sm:w-auto`} style={estiloBoton("naranja")}>
+      <div className="flex flex-col gap-3 pt-1">
+        <button type="submit" className={`${clasesBoton("normal")} w-full max-sm:px-5 max-sm:text-[15px]`} style={estiloBoton("naranja")}>
           {TEXTO_CTA}
           <ArrowRight size={20} weight="bold" aria-hidden="true" className="shrink-0 transition-transform duration-300 ease-out group-hover/cta:translate-x-1" />
         </button>
-        <p className="font-sans text-sm text-fog">Al enviarlo se abre WhatsApp con tu mensaje listo para mandar.</p>
+        <p className="flex items-center justify-center gap-2 text-center font-sans text-[13px] text-ink-subtle">
+          <LockSimple size={14} weight="bold" aria-hidden="true" />
+          Se abre WhatsApp con tu mensaje listo para enviar.
+        </p>
       </div>
     </form>
   );

@@ -1,6 +1,5 @@
 import { sanityQuery } from "@/lib/sanity";
 import { obtenerResenasGoogle } from "@/lib/google-places";
-import { company } from "@/config/company";
 import { GIRO_GROQ } from "@/lib/giros";
 import { COPY_ASESORIAS, IMAGENES_ASESORIAS } from "@/lib/asesorias-respaldo";
 import {
@@ -8,13 +7,11 @@ import {
   bool,
   camposBase,
   imagen,
-  logosDeGiros,
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
   t,
   type BaseSeccion,
-  type ClienteMarquesina,
   type GiroNegocio,
   type GiroRaw,
   type ImagenSanity,
@@ -39,6 +36,10 @@ import {
  *  - "casesClientsBanner": Clientes con un MAZO DE CASOS al lado del carrusel
  *    de giros. Cada caso trae texto, imagen y (opcional) su giro: al pasar de
  *    caso, el carrusel abre ese giro y muestra la imagen del caso.
+ *  - "achievementsBanner": LOGROS (pedido del 2026-10-07, reemplaza a las
+ *    reseñas en esta página): un mazo de tarjetas y, al lado, la foto de la
+ *    historia al frente. Cada clic en la tarjeta pasa a otra historia y cambia
+ *    la foto. Cuántas tarjetas, sus fotos y sus textos se editan en el Studio.
  *
  * CLIENTES SIN GIROS PROPIOS: igual que Tráfico y FENIAX, si la sección no
  * tiene giros cargados usa los de Marketing Digital (las mismas empresas y
@@ -63,7 +64,26 @@ export type CasoExito = {
   imagen: ImagenSanity | null;
 };
 
+/** Una tarjeta de Logros: la frase grande, su remate, la etiqueta (rubro o
+ *  servicio), el nombre que va sobre la foto, la firma al pie y la foto. */
+export type Logro = {
+  key: string;
+  titulo: string;
+  texto: string;
+  etiqueta: string;
+  nombre: string;
+  firma: string;
+  foto: ImagenSanity | null;
+};
+
 export type SeccionPortadaAsesorias = BaseSeccion & { tipo: "splitHeroBanner"; logo: ImagenSanity | null };
+
+export type SeccionLogros = BaseSeccion & {
+  tipo: "achievementsBanner";
+  logros: Logro[];
+  pasoAutomatico: boolean;
+  segundosPorLogro: number;
+};
 
 export type SeccionCasos = BaseSeccion & {
   tipo: "casesClientsBanner";
@@ -71,7 +91,6 @@ export type SeccionCasos = BaseSeccion & {
   casos: CasoExito[];
   pasoAutomatico: boolean;
   segundosPorCaso: number;
-  clientes: ClienteMarquesina[];
 };
 
 export type SeccionAsesorias =
@@ -80,6 +99,7 @@ export type SeccionAsesorias =
   | SeccionNavegacion
   | SeccionMetodo
   | SeccionCasos
+  | SeccionLogros
   | SeccionResenas
   | SeccionCierre;
 
@@ -120,7 +140,7 @@ function imagenLocal(i: { archivo: string; ancho: number; alto: number; alt: str
   return { url: `/asesorias/${i.archivo}`, ancho: i.ancho, alto: i.alto, hotspot: null, alt: i.alt };
 }
 
-function respaldo(girosMarketing: GiroNegocio[], resenas: SeccionResenas["resenas"]): SeccionAsesorias[] {
+function respaldo(girosMarketing: GiroNegocio[]): SeccionAsesorias[] {
   const c = COPY_ASESORIAS;
   const img = IMAGENES_ASESORIAS;
   return [
@@ -149,16 +169,21 @@ function respaldo(girosMarketing: GiroNegocio[], resenas: SeccionResenas["resena
       })),
       pasoAutomatico: c.clientes.pasoAutomatico,
       segundosPorCaso: c.clientes.segundosPorCaso,
-      clientes: logosDeGiros(girosMarketing),
     },
     {
-      ...base("asesorias-resenas", c.resenas),
-      tipo: "reviewsBanner",
-      enlaceGoogle: company.location.mapsUrl,
-      resenas,
-      cantidadMostrada: null,
-      autoplay: false,
-      velocidadAutoplay: 6,
+      ...base("asesorias-logros", { subtitulo: c.logros.subtitulo, titulo: c.logros.titulo }),
+      tipo: "achievementsBanner",
+      logros: c.logros.items.map((l, i) => ({
+        key: `logro-${i}`,
+        titulo: l.titulo,
+        texto: l.texto,
+        etiqueta: l.etiqueta,
+        nombre: l.nombre,
+        firma: l.firma,
+        foto: imagenLocal(img.logros[l.foto]),
+      })),
+      pasoAutomatico: c.logros.pasoAutomatico,
+      segundosPorLogro: c.logros.segundosPorLogro,
     },
     {
       ...base("asesorias-cierre", { titulo: c.cierre.titulo, descripcion: c.cierre.descripcion, cta: { ...c.cierre.cta } }),
@@ -189,7 +214,12 @@ const QUERY_ASESORIAS = `{
         pasoAutomatico,
         segundosPorCaso
       },
-      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
+      _type == "achievementsBanner" => {
+        "logros": logros[]{ _key, titulo, texto, etiqueta, nombre, firma, "foto": foto{ ${IMG} } },
+        pasoAutomatico,
+        segundosPorLogro
+      },
+      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
   },
   "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
@@ -204,11 +234,23 @@ type Txt = string | null | undefined;
 
 type CasoRaw = { _key?: Txt; titulo?: Txt; texto?: Txt; giro?: Txt; cliente?: Txt; imagen?: ImgRaw } | null;
 
+type LogroRaw = {
+  _key?: Txt;
+  titulo?: Txt;
+  texto?: Txt;
+  etiqueta?: Txt;
+  nombre?: Txt;
+  firma?: Txt;
+  foto?: ImgRaw;
+} | null;
+
 type SeccionAsesoriasRaw = SeccionRaw & {
   logo?: ImgRaw;
   casos?: CasoRaw[] | null;
+  logros?: LogroRaw[] | null;
   pasoAutomatico?: boolean | null;
   segundosPorCaso?: number | null;
+  segundosPorLogro?: number | null;
 };
 
 type RespuestaAsesorias = {
@@ -235,6 +277,26 @@ function normalizarCasos(raw: CasoRaw[] | null | undefined): CasoExito[] {
     }));
 }
 
+/** Un logro sin titulo no es una tarjeta a medias: no se muestra. */
+function normalizarLogros(raw: LogroRaw[] | null | undefined): Logro[] {
+  return (raw ?? [])
+    .filter((l): l is NonNullable<LogroRaw> => Boolean(l && t(l.titulo)))
+    .map((l, i) => ({
+      key: t(l._key) || `logro-${i}`,
+      titulo: t(l.titulo),
+      texto: t(l.texto),
+      etiqueta: t(l.etiqueta),
+      nombre: t(l.nombre),
+      firma: t(l.firma),
+      foto: imagen(l.foto, 1100, [t(l.nombre), t(l.titulo)].filter(Boolean).join(": ")),
+    }));
+}
+
+/** Segundos por tarjeta en el paso automatico: entre 4 y 30, 6 por defecto. */
+function segundos(v: number | null | undefined, porDefecto: number): number {
+  return typeof v === "number" && v >= 4 ? Math.min(30, Math.round(v)) : porDefecto;
+}
+
 function normalizarSeccionAsesorias(
   raw: SeccionAsesoriasRaw,
   resenas: SeccionResenas["resenas"],
@@ -249,7 +311,6 @@ function normalizarSeccionAsesorias(
     case "casesClientsBanner": {
       const propios = normalizarGiros(raw.giros);
       const giros = propios.length > 0 ? propios : girosMarketing;
-      const segundos = raw.segundosPorCaso;
       return {
         ...camposBase(raw, false),
         // Sin botón: "Ver casos de éxito" se quitó de Clientes en todas las páginas.
@@ -258,10 +319,20 @@ function normalizarSeccionAsesorias(
         giros,
         casos: normalizarCasos(raw.casos),
         pasoAutomatico: bool(raw.pasoAutomatico, true),
-        segundosPorCaso: typeof segundos === "number" && segundos >= 4 ? Math.min(30, Math.round(segundos)) : 7,
-        clientes: logosDeGiros(giros),
+        segundosPorCaso: segundos(raw.segundosPorCaso, 7),
       };
     }
+
+    case "achievementsBanner":
+      return {
+        ...camposBase(raw, false),
+        // Sin boton: las tarjetas son el contenido de la seccion.
+        cta: null,
+        tipo: "achievementsBanner",
+        logros: normalizarLogros(raw.logros),
+        pasoAutomatico: bool(raw.pasoAutomatico, true),
+        segundosPorLogro: segundos(raw.segundosPorLogro, 6),
+      };
 
     default: {
       // Los demás tipos son los de Marketing Digital, con la misma
@@ -287,5 +358,5 @@ export async function getPaginaAsesorias(): Promise<{ secciones: SeccionAsesoria
     .map((s) => normalizarSeccionAsesorias(s, resenas, girosMarketing))
     .filter((s): s is SeccionAsesorias => s !== null);
 
-  return { secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing, resenas) };
+  return { secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing) };
 }

@@ -123,7 +123,7 @@ export function HeroProblema({ marcas, className = "" }: Props) {
   const conectada = t >= CONECTA;
 
   return (
-    <div ref={raiz} className={`relative mx-auto h-[520px] w-full max-w-[440px] sm:h-[590px] ${className}`}>
+    <div ref={raiz} className={`relative mx-auto h-[520px] w-full max-w-[440px] sm:h-[590px] lg:h-[min(590px,var(--alto-util))] lg:min-h-[480px] ${className}`}>
       <p className="sr-only">
         Ilustración con cifras ilustrativas: en Meta Ads suben los me gusta, en TikTok Ads las visualizaciones y, cuando
         el tráfico se conecta con las ventas, en Google Ads también suben las ventas.

@@ -39,7 +39,7 @@ export function MetodoDofi({
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)] py-20 md:py-28"
+      className="group/nautico pantalla relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F6F1FC_55%,#FDFBF7_100%)]"
     >
       {/* El Metodo es el tramo del viaje: timon guiando desde arriba a la
           izquierda, un barco chico que se mece del otro lado, una brujula
@@ -75,7 +75,7 @@ export function MetodoDofi({
       <OrnamentoNodo className="right-[16%] top-[14%] h-3 w-3 sm:h-4 sm:w-4" retraso={0.6} />
       <OrnamentoNodo className="left-[22%] top-4 hidden h-3 w-3 sm:block" ambiente="pulsar" retraso={1.8} />
       <OrnamentoNodo className="left-[10%] bottom-4 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.2} />
-      <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
+      <div className="mx-auto w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="mx-auto max-w-[820px] text-center">
           {subtitulo && (
             <Anim animar={animar} y={12}>
@@ -85,21 +85,21 @@ export function MetodoDofi({
           <Anim animar={animar} y={18} delay={0.04}>
             <Titulo
               id={`${id}-titulo`}
-              className="text-balance font-display text-[clamp(2.25rem,1.5rem+3vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.02em] text-ink"
+              className="text-balance font-display text-titulo font-extrabold text-ink"
             >
               {titulo}
             </Titulo>
           </Anim>
           {descripcion && (
             <Anim animar={animar} y={14} delay={0.12}>
-              <p className="mt-6 font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{descripcion}</p>
+              <p className="mt-[clamp(0.75rem,2.5svh,1.5rem)] font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{descripcion}</p>
             </Anim>
           )}
         </div>
       </div>
 
       {imagen && (
-        <div className="mt-14 md:mt-16">
+        <div className="mt-[clamp(1.5rem,5svh,4rem)] w-full">
           <Anim animar={animar} y={20}>
             <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={imagen.alt || altPieza} />
           </Anim>
@@ -107,13 +107,13 @@ export function MetodoDofi({
       )}
 
       {mostrarPasos && (pasos.length > 0 || destacado) && (
-        <div className="mx-auto mt-16 max-w-page px-5 sm:px-6 md:mt-20 md:px-10 lg:px-12">
+        <div className="mx-auto mt-[clamp(1.25rem,4svh,5rem)] w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
           <RutaMetodo pasos={pasos} destino={destacado} animar={animar} iconos={iconos} />
         </div>
       )}
 
       {cta && (
-        <div className="mx-auto mt-16 flex max-w-page justify-center px-5 sm:px-6 md:mt-20 md:px-10 lg:px-12">
+        <div className="mx-auto mt-[clamp(1rem,3.6svh,5rem)] flex w-full max-w-page justify-center px-5 sm:px-6 md:px-10 lg:px-12">
           <Anim animar={animar} y={14} delay={0.1}>
             <BotonCta texto={cta.texto} enlace={cta.enlace} />
           </Anim>

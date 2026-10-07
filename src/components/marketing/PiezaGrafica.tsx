@@ -46,15 +46,23 @@ export function ModoPieza({
 }) {
   const Titulo = nivel;
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative overflow-hidden bg-canvas">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative overflow-hidden bg-canvas max-md:py-0">
       <Titulo id={`${id}-titulo`} className="sr-only">
         {titulo}
       </Titulo>
-      <Anim animar={animar} y={20}>
-        <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={imagen.alt || altPorDefecto} />
+      {/* En pantallas anchas la pieza ocupa el ancho; si su proporcion la haria
+          mas alta que la pantalla, se limita por alto (siempre entera, nunca
+          recortada) y queda centrada. */}
+      <Anim animar={animar} y={20} className="w-full">
+        <div
+          className="mx-auto w-full"
+          style={{ maxWidth: `calc((${cta ? "var(--alto-util) - 6.5rem" : "var(--alto-util)"}) * ${imagen.ancho} / ${imagen.alto})` }}
+        >
+          <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={imagen.alt || altPorDefecto} />
+        </div>
       </Anim>
       {cta && (
-        <div className="mx-auto flex max-w-page justify-center px-5 py-14 sm:px-6 md:px-10 md:py-20 lg:px-12">
+        <div className="mx-auto flex w-full max-w-page justify-center px-5 py-10 sm:px-6 md:px-10 md:pb-0 md:pt-[clamp(1.5rem,4svh,2.5rem)] lg:px-12">
           <Anim animar={animar}>
             <BotonCta texto={cta.texto} enlace={cta.enlace} />
           </Anim>
@@ -86,7 +94,7 @@ export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id
   const parrafos = parrafosDe(descripcion);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="group/nautico relative overflow-hidden bg-canvas">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="group/nautico pantalla relative overflow-hidden bg-canvas max-md:pb-32">
       {/* Decoracion: resplandor y oleaje en tinta de marca muy baja. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-24 top-10 h-[26rem] w-[26rem] rounded-full bg-brand-lift/10 blur-[120px]" />
@@ -129,14 +137,14 @@ export function PiezaGrafica({ seccion, id, nivel }: { seccion: SeccionQueEs; id
           hueco debajo. */}
       {/* pb-32 en movil: las ondas miden 160px y sin ese aire rozaban la frase
           destacada, que en telefono es lo ultimo de la columna. */}
-      <div className="relative mx-auto grid max-w-page grid-cols-1 gap-10 px-5 pb-32 pt-20 sm:px-6 md:grid-cols-12 md:items-center md:gap-12 md:px-10 md:py-28 lg:px-12">
+      <div className="relative mx-auto grid w-full max-w-page grid-cols-1 gap-10 px-5 sm:px-6 md:grid-cols-12 md:items-center md:gap-12 md:px-10 lg:px-12">
         <Anim animar={animar} className="min-w-0 md:col-span-6">
           {subtitulo && (
             <p className="mb-5 font-sans text-sm font-semibold uppercase tracking-[0.16em] text-brand">{subtitulo}</p>
           )}
           <Titulo
             id={`${id}-titulo`}
-            className="text-balance font-display text-[clamp(2.5rem,1.6rem+3.4vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink"
+            className="text-balance font-display text-[clamp(2.5rem,min(1.6rem+3.4vw,9svh),4.5rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink"
           >
             {titulo}
           </Titulo>

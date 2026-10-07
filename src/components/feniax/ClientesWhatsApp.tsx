@@ -21,6 +21,11 @@ import { DemoWhatsApp } from "./DemoWhatsApp";
  * cuando una conversación termina, se abre el giro siguiente. En cuanto el
  * visitante elige un giro, se queda en ese (su demo se repite). El carrusel
  * no rota por su cuenta: el ritmo lo marca la conversación, no un reloj.
+ *
+ * EN ESCRITORIO EL TELÉFONO SE MIDE POR EL ALTO: la sección mide una pantalla
+ * (MarcoClientes) y el teléfono toma el alto de su columna; su ancho sale de
+ * su proporción (9:16). Antes iba "sticky" al lado de una grilla de logos
+ * más alta que la pantalla.
  */
 export function ClientesWhatsApp({
   giros,
@@ -40,33 +45,26 @@ export function ClientesWhatsApp({
   // Sin giros (ni propios ni de Marketing Digital), el telefono igual
   // muestra una demo: la generica.
   const chat = giro?.chat ?? PLANTILLAS.servicios;
+  const clave = giro?.key ?? "generica";
+  const onTermina = rotacion && !elegido && n > 1 ? () => setActivo((a) => (a + 1) % n) : undefined;
 
-  const demo = (
-    <>
-      <p className="mb-5 flex items-center justify-center gap-2 font-sans text-sm font-semibold text-ink-subtle">
-        <ChatCircleDots size={18} weight="duotone" aria-hidden="true" className="text-accent" />
-        <span>
-          Demo en WhatsApp{giro ? <> · <span className="text-ink">{giro.nombre}</span></> : null}
-        </span>
-      </p>
-      <DemoWhatsApp
-        chat={chat}
-        tema={tema}
-        clave={giro?.key ?? "generica"}
-        onTermina={rotacion && !elegido && n > 1 ? () => setActivo((a) => (a + 1) % n) : undefined}
-        className="mx-auto w-full max-w-[300px] lg:max-w-[320px]"
-      />
-    </>
+  const etiqueta = (
+    <p className="flex shrink-0 items-center justify-center gap-2 font-sans text-sm font-semibold text-ink-subtle">
+      <ChatCircleDots size={18} weight="duotone" aria-hidden="true" className="text-accent" />
+      <span>
+        Demo en WhatsApp{giro ? <> · <span className="text-ink">{giro.nombre}</span></> : null}
+      </span>
+    </p>
   );
 
   return (
-    // 11fr / 9fr = 55% carrusel, 45% telefono: la misma reticula que
-    // Clientes de Marketing Digital. En telefono la demo va DENTRO del
-    // carrusel, entre los giros y sus logos (prop `intermedio`); la columna
-    // derecha se oculta. Las dos instancias no cargan Remotion a la vez: la
-    // oculta (display: none) nunca entra en pantalla.
-    <div className="grid grid-cols-1 gap-12 md:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] md:gap-8 lg:gap-12">
-      <div className="min-w-0">
+    // 3fr / 2fr: el teléfono no necesita más ancho que el que le da su alto.
+    // Por debajo de lg la demo va DENTRO del carrusel, entre los giros y sus
+    // logos (prop `intermedio`); la columna derecha se oculta. Las dos
+    // instancias no cargan Remotion a la vez: la oculta (display: none) nunca
+    // entra en pantalla.
+    <div className="grid grid-cols-1 gap-12 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-10">
+      <div className="min-w-0 lg:h-full lg:min-h-0">
         <CarruselGiros
           giros={giros}
           rotacion={false}
@@ -77,13 +75,25 @@ export function ClientesWhatsApp({
             setActivo(i);
             if (porVisitante) setElegido(true);
           }}
-          intermedio={<div className="mb-4 mt-10 md:hidden">{demo}</div>}
+          intermedio={
+            <div className="mb-2 mt-10 lg:hidden">
+              <div className="mb-4">{etiqueta}</div>
+              <DemoWhatsApp
+                chat={chat}
+                tema={tema}
+                clave={clave}
+                onTermina={onTermina}
+                className="mx-auto w-full max-w-[300px]"
+              />
+            </div>
+          }
         />
       </div>
 
-      {/* En escritorio el telefono acompaña el scroll mientras se recorren
-          los logos del giro (la columna de la izquierda es mas alta). */}
-      <div className="hidden min-w-0 md:sticky md:top-24 md:block md:self-start">{demo}</div>
+      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:gap-3">
+        {etiqueta}
+        <DemoWhatsApp chat={chat} tema={tema} clave={clave} onTermina={onTermina} ajustarAlto className="min-h-0 flex-1" />
+      </div>
     </div>
   );
 }

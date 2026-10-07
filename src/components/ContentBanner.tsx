@@ -37,11 +37,21 @@ import type {
  *
  * ALTO Y RECORTE
  * -----------------------------------------------------------------
- * Alto fijo por breakpoint (380px en mobile -> 600px en desktop) con
+ * Telefono y tablet: alto fijo por breakpoint (380 -> 520px) con
  * `object-cover`: la imagen cubre el banner sin deformarse nunca. Lo que
  * decide QUE parte queda visible al recortar es el hotspot de Sanity,
  * traducido a `object-position` -- el mismo mecanismo que ya usa el Hero,
  * sin instalar @sanity/image-url.
+ *
+ * ESCRITORIO: UNA PANTALLA, LA PIEZA ENTERA (pedido del 2026-10-07: "cada
+ * seccion cuadre el 100% de la pantalla"). El banner mide el alto de la
+ * ventana y la pieza se muestra COMPLETA, con su proporcion real (sale de
+ * Sanity): nunca se recorta el texto que trae dibujado. Lo que sobra
+ * alrededor lo llena la misma imagen, ampliada y desenfocada (un "ambiente"
+ * del color de la pieza), asi no quedan franjas vacias. El boton se ubica
+ * sobre la pieza, no sobre el ambiente: sus coordenadas siguen siendo las que
+ * se eligieron en el Studio. Sin las medidas (o sin imagen), el banner de
+ * siempre.
  *
  * MOVIMIENTO
  * -----------------------------------------------------------------
@@ -115,16 +125,47 @@ export function ContentBanner({
   backgroundImage,
   backgroundImageAlt,
   hotspot,
+  ancho,
+  alto,
   cta,
 }: SeccionContenido) {
   const objectPosition = hotspot
     ? `${Math.round(hotspot.x * 100)}% ${Math.round(hotspot.y * 100)}%`
     : "50% 50%";
+  // Pantalla completa con la pieza entera: solo si se sabe su proporcion.
+  const completa = Boolean(backgroundImage && ancho && alto);
+  const proporcion = completa ? `${ancho} / ${alto}` : undefined;
 
   return (
-    <section className="relative w-full">
-      <Reveal y={20}>
-        <div className="group relative h-[380px] w-full overflow-hidden sm:h-[440px] md:h-[520px] lg:h-[600px]">
+    <section
+      className={`relative w-full overflow-hidden ${
+        completa ? "lg:flex lg:h-[100svh] lg:items-center lg:justify-center lg:bg-abyss lg:pt-[var(--alto-nav)] lg:snap-start" : ""
+      }`}
+    >
+      {completa && backgroundImage && (
+        // El ambiente: la misma imagen (misma URL, el navegador no la baja dos
+        // veces), ampliada y muy desenfocada, solo en escritorio.
+        <div aria-hidden="true" className="absolute inset-0 hidden lg:block">
+          <Image
+            src={backgroundImage}
+            alt=""
+            fill
+            sizes="100vw"
+            loading="lazy"
+            className="scale-125 object-cover opacity-90 blur-[60px] saturate-[1.15]"
+          />
+          <div className="absolute inset-0 bg-abyss/25" />
+        </div>
+      )}
+      <Reveal y={20} className={completa ? "relative w-full lg:w-auto" : undefined}>
+        <div
+          className={`group relative h-[380px] w-full overflow-hidden sm:h-[440px] md:h-[520px] ${
+            completa
+              ? "lg:h-auto lg:w-[min(100vw,calc((100svh-var(--alto-nav))*var(--proporcion)))] lg:[aspect-ratio:var(--proporcion)] lg:shadow-[0_40px_90px_-40px_rgba(8,4,20,0.8)]"
+              : "lg:h-[600px]"
+          }`}
+          style={proporcion ? ({ "--proporcion": proporcion } as React.CSSProperties) : undefined}
+        >
           {backgroundImage ? (
             <Image
               src={backgroundImage}

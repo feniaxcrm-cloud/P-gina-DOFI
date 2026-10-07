@@ -13,7 +13,6 @@ import { SelectorGiro } from "../../components/SelectorGiro";
  *   │ (el panel abierto muestra │ [Ver otro caso →]  │
  *   │  la imagen del caso)      │ 01 / 03            │
  *   └──────────────────────────┴────────────────────┘
- *   Marquesina continua de clientes
  *
  * Es la sección de Clientes de Marketing Digital con una diferencia: en vez
  * del video, la columna derecha es un MAZO DE TARJETAS de casos de éxito (la

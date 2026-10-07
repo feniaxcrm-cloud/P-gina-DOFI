@@ -27,7 +27,7 @@ export const COPY_FENIAX = {
     subtitulo: "CRM con IA · Ventas inteligentes",
     titulo: "Renace tu manera de vender",
     descripcion:
-      "Conectamos tu WhatsApp, Instagram y Facebook a un CRM con inteligencia artificial que responde al instante, ordena cada conversación y le da seguimiento a cada cliente.",
+      "Conectamos tu WhatsApp, Instagram, Facebook y TikTok a un CRM con inteligencia artificial que responde al instante, ordena cada conversación y le da seguimiento a cada cliente.",
     destacado: "Tus ventas renacen con IA.",
     cta: CTA_WHATSAPP,
   },

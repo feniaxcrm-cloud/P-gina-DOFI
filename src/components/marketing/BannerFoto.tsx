@@ -122,18 +122,18 @@ export function BannerFoto({
   const esEquipo = seccion.tipo === "teamBanner";
   const Titulo = nivel;
   const a = ALINEA[alineacion];
-  const alto = esEquipo ? "min-h-[640px] md:min-h-[600px] lg:min-h-[660px]" : "min-h-[560px] md:min-h-[600px]";
-  // La seccion que abre la pagina arranca debajo del header fijo (64-68px).
-  const relleno = nivel === "h1" ? "pb-16 pt-32 md:pb-20 md:pt-36" : "py-20 md:py-24";
+  // Una pantalla desde tablet (.pantalla, globals.css). En telefono el banner
+  // conserva su alto propio: la foto necesita aire y el texto va abajo.
+  const alto = esEquipo ? "max-md:min-h-[640px]" : "max-md:min-h-[560px]";
   const escalaTitulo = esEquipo
-    ? "max-w-[18ch] text-[clamp(1.875rem,1.3rem+2.3vw,3.5rem)] leading-[1.06]"
-    : "max-w-[20ch] text-[clamp(2.25rem,1.3rem+2.8vw,3.875rem)] leading-[1.05]";
+    ? "max-w-[18ch] text-[clamp(1.875rem,min(1.3rem+2.3vw,7svh),3.5rem)] leading-[1.06]"
+    : "max-w-[20ch] text-[clamp(2.25rem,min(1.3rem+2.8vw,7.6svh),3.875rem)] leading-[1.05]";
 
   return (
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className={`relative isolate flex overflow-hidden bg-abyss text-foam ${alto}`}
+      className={`pantalla relative isolate overflow-hidden bg-abyss text-foam ${alto}`}
     >
       <div className="absolute inset-0 -z-10">
         {imagen ? (
@@ -160,7 +160,7 @@ export function BannerFoto({
       </div>
 
       <div
-        className={`relative mx-auto flex w-full max-w-page items-end px-5 sm:px-6 md:items-center md:px-10 lg:px-12 ${relleno} ${a.caja}`}
+        className={`relative mx-auto flex w-full max-w-page flex-1 items-end px-5 sm:px-6 md:flex-none md:items-center md:px-10 lg:px-12 ${a.caja}`}
       >
         <div className={`flex max-w-[720px] flex-col ${a.texto}`}>
           {subtitulo && (
@@ -200,7 +200,7 @@ export function BannerFoto({
 
           {cta && (
             <Anim animar={animar} y={14} delay={0.32} duration={0.6}>
-              <div className="mt-9">
+              <div className="mt-[clamp(1.75rem,4.5svh,2.25rem)]">
                 <BotonCta texto={cta.texto} enlace={cta.enlace} tamano={esEquipo ? "normal" : "grande"} />
               </div>
             </Anim>

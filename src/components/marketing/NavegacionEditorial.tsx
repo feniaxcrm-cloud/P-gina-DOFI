@@ -64,14 +64,14 @@ export function NavegacionEditorial({
   const parrafos = parrafosDe(descripcion);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative isolate overflow-hidden bg-abyss text-foam">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative isolate overflow-hidden bg-abyss text-foam max-md:pb-32">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-[radial-gradient(110%_120%_at_88%_12%,#2E1B68_0%,#1A0F3D_48%,#120A26_100%)]"
       />
       <div aria-hidden="true" className="absolute -bottom-40 -left-32 -z-10 h-[28rem] w-[28rem] rounded-full bg-accent/15 blur-[140px]" />
 
-      <div className="relative mx-auto max-w-page px-5 pb-32 pt-24 sm:px-6 md:px-10 md:pb-40 md:pt-32 lg:px-12">
+      <div className="relative mx-auto w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-12 lg:gap-10">
           <div className="min-w-0 lg:col-span-7">
             {subtitulo && (
@@ -85,7 +85,7 @@ export function NavegacionEditorial({
             <Anim animar={animar} y={20} delay={0.06}>
               <Titulo
                 id={`${id}-titulo`}
-                className="text-balance font-display text-[clamp(2.75rem,1.5rem+4.2vw,5.75rem)] font-extrabold leading-[0.98] tracking-[-0.03em]"
+                className="text-balance font-display text-titulo-xl font-extrabold"
               >
                 {inicio && <>{inicio} </>}
                 <span className="bg-gradient-to-r from-accent-lift to-accent bg-clip-text text-transparent">{ultima}</span>
@@ -93,7 +93,7 @@ export function NavegacionEditorial({
             </Anim>
 
             <Anim animar={animar} y={10} delay={0.14}>
-              <div aria-hidden="true" className="mt-10 flex max-w-[680px] items-center gap-4 text-accent-lift">
+              <div aria-hidden="true" className="mt-[clamp(1.5rem,4.5svh,2.5rem)] flex max-w-[680px] items-center gap-4 text-accent-lift">
                 <span className="h-px w-14 bg-accent-lift/70" />
                 <Sailboat size={24} weight="duotone" />
                 <span className="h-px flex-1 border-t border-dashed border-white/20" />
@@ -101,7 +101,7 @@ export function NavegacionEditorial({
             </Anim>
 
             {parrafos.length > 0 && (
-              <div className={`mt-10 grid max-w-[680px] gap-8 ${parrafos.length > 1 ? "sm:grid-cols-2" : ""}`}>
+              <div className={`mt-[clamp(1.5rem,4.5svh,2.5rem)] grid max-w-[680px] gap-8 ${parrafos.length > 1 ? "sm:grid-cols-2" : ""}`}>
                 {parrafos.map((p, i) => (
                   <Anim key={i} animar={animar} y={14} delay={0.2 + i * 0.08}>
                     <p className="font-sans text-base leading-relaxed text-foam/80 md:text-lg">{p}</p>
@@ -112,13 +112,13 @@ export function NavegacionEditorial({
 
             {destacado && (
               <Anim animar={animar} y={14} delay={0.34}>
-                <p className="mt-10 font-display text-2xl font-bold tracking-tight text-foam">{destacado}</p>
+                <p className="mt-[clamp(1.5rem,4.5svh,2.5rem)] font-display text-2xl font-bold tracking-tight text-foam">{destacado}</p>
               </Anim>
             )}
 
             {cta && (
               <Anim animar={animar} y={14} delay={0.4}>
-                <div className="mt-10">
+                <div className="mt-[clamp(1.5rem,4.5svh,2.5rem)]">
                   <BotonCta texto={cta.texto} enlace={cta.enlace} />
                 </div>
               </Anim>
@@ -127,7 +127,7 @@ export function NavegacionEditorial({
 
           <div className="min-w-0 lg:col-span-5">
             <Anim animar={animar} y={24} delay={0.1}>
-              <Brujula animar={animar} className="mx-auto w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px]" />
+              <Brujula animar={animar} className="mx-auto w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[min(440px,62svh)]" />
             </Anim>
           </div>
         </div>

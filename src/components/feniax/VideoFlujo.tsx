@@ -6,8 +6,9 @@ import { VideoBucle } from "@/components/marketing/VideoBucle";
  * README): los mensajes de WhatsApp, Instagram, Facebook y la web entran,
  * la IA los responde y cada uno avanza por el embudo del CRM hasta la venta.
  *
- * La reproduccion (solo en pantalla, en bucle, con pausa y sin arrancar con
- * movimiento reducido) vive en VideoBucle, que comparte con Tráfico/Ads.
+ * La reproduccion (sola y en bucle mientras esta en pantalla, sin botones, y
+ * sin arrancar con movimiento reducido) vive en VideoBucle, que comparte con
+ * Tráfico/Ads.
  */
 export function VideoFlujo({ className = "" }: { className?: string }) {
   return (

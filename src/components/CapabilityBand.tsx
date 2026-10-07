@@ -108,28 +108,23 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
     cardRef.current = node;
   }, []);
 
+  // Vidrio oscuro sobre el fondo del hero (version premium, 2026-10-07):
+  // icono a la izquierda y titulo + descripcion a la derecha, asi las cuatro
+  // entran en una fila baja y el hero completo cabe en una pantalla.
   const contenido = (
     <>
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-brand/20 bg-brand/8">
-        <Icono size={32} weight="bold" aria-hidden="true" className="text-brand" />
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-[linear-gradient(150deg,var(--color-brand-lift)_0%,var(--color-brand)_100%)] shadow-[0_10px_22px_-12px_rgba(109,75,201,0.9)]">
+        <Icono size={24} weight="bold" aria-hidden="true" className="text-white" />
       </div>
-      {/* min-h-[2lh]: reserva el alto de 2 lineas de titulo SIEMPRE, tenga
-          una o dos ("Rescatando Emprendedores" es la unica que envuelve
-          hoy) -- asi las 4 descripciones arrancan a la misma altura sin
-          importar cuantas lineas ocupe cada titulo (spec §31-34). `lh` es
-          una unidad CSS real (line-height del propio elemento): se adapta
-          sola al leading que termine aplicando, no es un pixelaje a mano. */}
-      <h3 className="mt-4 min-h-[2lh] font-display text-base font-bold leading-snug tracking-tight text-ink md:text-lg">
-        {titulo}
-      </h3>
-      <p className="mt-2 max-w-[34ch] font-sans text-sm leading-relaxed text-ink-muted">
-        {descripcion}
-      </p>
+      <div className="min-w-0">
+        <h3 className="font-display text-[15.5px] font-bold leading-snug tracking-tight text-foam">{titulo}</h3>
+        <p className="mt-1 font-sans text-[13.5px] leading-snug text-mist">{descripcion}</p>
+      </div>
     </>
   );
 
   const className =
-    "capacidad-card relative flex h-full flex-col rounded-[20px] border border-brand/10 p-6 shadow-[0_1px_2px_rgba(26,15,61,0.06)]";
+    "capacidad-card relative flex h-full items-start gap-4 rounded-[20px] border border-white/12 p-4 shadow-[0_24px_48px_-32px_rgba(8,4,20,0.9)] xl:p-5";
 
   // El listener solo se pasa si el dispositivo tiene hover real y el
   // usuario no pidio reduced-motion -- en touch/tablet no se adjunta

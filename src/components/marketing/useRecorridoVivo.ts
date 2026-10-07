@@ -26,9 +26,9 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
  * El punto desaparece al llegar a una parada y reaparece al salir: la parada
  * "lo absorbe", asi nunca tapa su propio icono.
  *
- * SOLO CORRE MIENTRAS ES VISIBLE y no esta en pausa. Con movimiento reducido
- * no corre nunca (la ruta queda estatica, como siempre). Siempre se puede
- * pausar (el boton lo pone RutaMetodo).
+ * SOLO CORRE MIENTRAS ES VISIBLE. Con movimiento reducido no corre nunca (la
+ * ruta queda estatica, como siempre). Sin boton de pausa: lo que se mueve en el
+ * sitio corre solo (pedido del 2026-10-07).
  *
  * LA GEOMETRIA SE MIDE, no se supone: los centros de las paradas salen de las
  * posiciones reales en el DOM (offsetLeft/offsetTop, que ignoran las
@@ -99,7 +99,6 @@ export function useRecorridoVivo({
   tramos: RefObject<(HTMLElement | null)[]>;
 }) {
   const [activo, setActivo] = useState<number | null>(null);
-  const [pausado, setPausado] = useState(false);
   const [enVista, setEnVista] = useState(false);
   const [reducido, setReducido] = useState(false);
 
@@ -194,7 +193,7 @@ export function useRecorridoVivo({
   }, [habilitado, contenedor, medir, escribir]);
 
   useEffect(() => {
-    if (!habilitado || reducido || !enVista || pausado || n < 2) return;
+    if (!habilitado || reducido || !enVista || n < 2) return;
     let cancelado = false;
     let cuadro = 0;
     const vuelta = duracion(n);
@@ -226,9 +225,7 @@ export function useRecorridoVivo({
       cancelado = true;
       cancelAnimationFrame(cuadro);
     };
-  }, [habilitado, reducido, enVista, pausado, n, medir, escribir, orbe]);
+  }, [habilitado, reducido, enVista, n, medir, escribir, orbe]);
 
-  const alternar = useCallback(() => setPausado((v) => !v), []);
-
-  return { activo, pausado, reducido, alternar };
+  return { activo };
 }

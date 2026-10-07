@@ -25,7 +25,7 @@ export const platformsBanner = defineType({
   name: "platformsBanner",
   title: "Plataformas (¿Dónde traficamos?)",
   type: "object",
-  description: "Tarjetas de las plataformas donde se trafica: Meta, TikTok, Google, tráfico web...",
+  description: "Tarjetas de las plataformas donde se trafica: WhatsApp, Meta, TikTok, Google...",
   fields: camposBase({
     conImagen: false,
     omitir: ["destacado", "cta"],

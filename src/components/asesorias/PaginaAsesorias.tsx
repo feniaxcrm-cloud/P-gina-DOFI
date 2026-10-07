@@ -6,8 +6,10 @@ import { NavegacionEditorial } from "@/components/marketing/NavegacionEditorial"
 import { PiezaGrafica } from "@/components/marketing/PiezaGrafica";
 import { ResenasGoogle } from "@/components/marketing/ResenasGoogle";
 import { getPaginaAsesorias, type SeccionAsesorias, type TipoSeccionAsesorias } from "@/lib/asesorias";
+import type { GiroNegocio } from "@/lib/marketing-digital";
 import { AsesoriasClientes } from "./AsesoriasClientes";
 import { AsesoriasPortada } from "./AsesoriasPortada";
+import { LogrosAsesorias } from "./LogrosAsesorias";
 
 /**
  * Página Asesorías 1 a 1 · Rescatando Emprendedores. Mismo patrón que
@@ -17,8 +19,9 @@ import { AsesoriasPortada } from "./AsesoriasPortada";
  * estables por tipo. Un tipo que este código no conoce se ignora sin romper.
  *
  * Reutiliza los componentes de Marketing Digital donde la sección es la misma
- * (¿Qué es...? → PiezaGrafica, reseñas, cierre) y tiene los suyos donde
- * cambia: la portada con logo e imagen, y Clientes con el mazo de casos.
+ * (¿Qué es...? → PiezaGrafica, cierre) y tiene los suyos donde cambia: la
+ * portada con logo e imagen, Clientes con el mazo de casos y Logros (las
+ * tarjetas con foto que reemplazan a las reseñas, pedido del 2026-10-07).
  */
 const ANCLA: Record<TipoSeccionAsesorias, string> = {
   splitHeroBanner: "inicio",
@@ -26,11 +29,23 @@ const ANCLA: Record<TipoSeccionAsesorias, string> = {
   navigationBanner: "como-trabajamos",
   methodBanner: "metodo",
   casesClientsBanner: "clientes",
+  achievementsBanner: "logros",
   reviewsBanner: "resenas",
   ctaBanner: "contacto",
 };
 
-function Seccion({ seccion, id, nivel }: { seccion: SeccionAsesorias; id: string; nivel: "h1" | "h2" }) {
+function Seccion({
+  seccion,
+  id,
+  nivel,
+  giros,
+}: {
+  seccion: SeccionAsesorias;
+  id: string;
+  nivel: "h1" | "h2";
+  /** Los giros de Clientes: Logros toma de ahí el icono de cada etiqueta. */
+  giros: GiroNegocio[];
+}) {
   switch (seccion.tipo) {
     case "splitHeroBanner":
       return <AsesoriasPortada seccion={seccion} id={id} nivel={nivel} prioridad={nivel === "h1"} />;
@@ -42,6 +57,8 @@ function Seccion({ seccion, id, nivel }: { seccion: SeccionAsesorias; id: string
       return <MetodoDofi seccion={seccion} id={id} nivel={nivel} />;
     case "casesClientsBanner":
       return <AsesoriasClientes seccion={seccion} id={id} nivel={nivel} />;
+    case "achievementsBanner":
+      return <LogrosAsesorias seccion={seccion} giros={giros} id={id} nivel={nivel} />;
     case "reviewsBanner":
       return <ResenasGoogle seccion={seccion} id={id} nivel={nivel} />;
     case "ctaBanner":
@@ -52,6 +69,7 @@ function Seccion({ seccion, id, nivel }: { seccion: SeccionAsesorias; id: string
 export async function PaginaAsesorias() {
   const { secciones } = await getPaginaAsesorias();
   const vistas = new Map<string, number>();
+  const giros = secciones.find((s) => s.tipo === "casesClientsBanner")?.giros ?? [];
 
   return (
     <>
@@ -67,6 +85,7 @@ export async function PaginaAsesorias() {
               seccion={seccion}
               id={n === 1 ? base : `${base}-${n}`}
               nivel={i === 0 ? "h1" : "h2"}
+              giros={giros}
             />
           );
         })}

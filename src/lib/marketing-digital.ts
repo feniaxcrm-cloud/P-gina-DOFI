@@ -65,12 +65,6 @@ export const ICONOS_CATEGORIA = [
 ] as const;
 export type IconoCategoria = (typeof ICONOS_CATEGORIA)[number];
 
-/** Una ficha de la marquesina continua de Clientes. `logo` nunca es null:
- *  sale de las empresas cargadas en los giros de negocio (mismo lugar que el
- *  carrusel de arriba), y solo entran ahi las que YA tienen logo -- la
- *  marquesina nunca sustituye un logo por el nombre escrito. */
-export type ClienteMarquesina = { nombre: string; slug: string; logo: string };
-
 /** Una empresa dentro de un giro. Puede venir de una Cuenta (su nombre y su
  *  logo son los de la Cuenta: no se duplican) o cargarse directo en el giro
  *  con su propio logo. `logo` trae las dimensiones reales del archivo para
@@ -137,8 +131,6 @@ export type SeccionClientes = Base & {
   /** Columna derecha. La portada es `imagen` (campo comun de la seccion).
    *  Sin video, la columna igual existe, con su estado vacio. */
   video: VideoSeccion | null;
-  /** Marquesina continua: todas las Cuentas activas. */
-  clientes: ClienteMarquesina[];
 };
 export type SeccionResenas = Base & {
   tipo: "reviewsBanner";
@@ -146,9 +138,6 @@ export type SeccionResenas = Base & {
   resenas: Resena[];
   /** Tope de tarjetas a mostrar. `null`: sin tope, se muestran todas. */
   cantidadMostrada: number | null;
-  autoplay: boolean;
-  /** Segundos entre avances automaticos. Solo importa si `autoplay` esta activo. */
-  velocidadAutoplay: number;
 };
 export type SeccionCierre = Base & { tipo: "ctaBanner"; alineacion: Alineacion; overlay: Overlay };
 
@@ -240,7 +229,6 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
     giros: [],
     rotacionAutomatica: true,
     video: null,
-    clientes: [],
   },
   {
     ...base("respaldo-resenas", { titulo: "Reseñas en Google" }),
@@ -248,8 +236,6 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
     enlaceGoogle: company.location.mapsUrl,
     resenas: [],
     cantidadMostrada: null,
-    autoplay: false,
-    velocidadAutoplay: 6,
   },
   {
     ...base("respaldo-cierre", {
@@ -297,7 +283,7 @@ const QUERY_MARKETING = `{
         rotacionAutomatica,
         "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
       },
-      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
+      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
   },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
@@ -365,8 +351,6 @@ export type SeccionRaw = {
   sonidoVideo?: boolean | null;
   enlaceGoogle?: Txt;
   cantidadMostrada?: number | null;
-  autoplay?: boolean | null;
-  velocidadAutoplay?: number | null;
 };
 
 export type RespuestaRaw = {
@@ -472,25 +456,6 @@ function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
   return { url, ajuste: unoDe(raw.ajusteVideo, AJUSTES_VIDEO, "rellenar"), sonido: bool(raw.sonidoVideo, false) };
 }
 
-/** La marquesina continua reutiliza los logos que YA existen en los giros de
- *  negocio (misma fuente que el carrusel de arriba, "NO crear un sistema
- *  independiente de logos"): junta las empresas de TODOS los giros que
- *  tengan logo, sin repetir el mismo logo dos veces si la misma empresa
- *  quedo asignada a mas de un giro. Sin logo, una empresa no entra aca --
- *  nunca se muestra su nombre como reemplazo. */
-export function logosDeGiros(giros: GiroNegocio[]): ClienteMarquesina[] {
-  const vistos = new Set<string>();
-  const lista: ClienteMarquesina[] = [];
-  for (const g of giros) {
-    for (const e of g.empresas) {
-      if (!e.logo || vistos.has(e.logo.url)) continue;
-      vistos.add(e.logo.url);
-      lista.push({ nombre: e.nombre, slug: e.key, logo: e.logo.url });
-    }
-  }
-  return lista;
-}
-
 export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
   if (!raw || raw.activo === false) return null;
 
@@ -526,7 +491,6 @@ export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMa
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
         video: normalizarVideo(raw),
-        clientes: logosDeGiros(giros),
       };
     }
     case "reviewsBanner": {
@@ -540,9 +504,6 @@ export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMa
         enlaceGoogle: t(raw.enlaceGoogle) || company.location.mapsUrl,
         resenas: cantidadMostrada ? resenas.slice(0, cantidadMostrada) : resenas,
         cantidadMostrada,
-        autoplay: bool(raw.autoplay, false),
-        velocidadAutoplay:
-          typeof raw.velocidadAutoplay === "number" && raw.velocidadAutoplay > 0 ? raw.velocidadAutoplay : 6,
       };
     }
     default:

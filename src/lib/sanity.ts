@@ -525,6 +525,11 @@ export type SeccionContenido = {
    *  cliente (mismo mecanismo que el Hero). Clave aca: el banner recorta la
    *  imagen a lo ancho, y el hotspot decide que parte queda visible. */
   hotspot: { x: number; y: number } | null;
+  /** Medidas reales del archivo (null sin imagen o si Sanity no las trae).
+   *  En escritorio el banner ocupa la pantalla y muestra la pieza ENTERA con
+   *  su proporcion exacta (ver ContentBanner.tsx). */
+  ancho: number | null;
+  alto: number | null;
   /** null cuando el banner no tiene texto o enlace cargados: en ese caso se
    *  pinta la imagen sola, sin boton (no un boton vacio). */
   cta: CtaBanner | null;
@@ -590,6 +595,8 @@ type SeccionContenidoRaw = {
   backgroundImage: string | null;
   backgroundImageAlt: string | null;
   hotspot: { x: number; y: number } | null;
+  ancho: number | null;
+  alto: number | null;
   ctaTexto: string | null;
   ctaEnlace: string | null;
   ctaColor: string | null;
@@ -650,6 +657,8 @@ const QUERY_PAGINA_INICIO = `{
       "backgroundImage": backgroundImage.asset->url + "?w=2400&auto=format",
       "backgroundImageAlt": coalesce(backgroundImageAlt, ""),
       "hotspot": backgroundImage.hotspot{ x, y },
+      "ancho": backgroundImage.asset->metadata.dimensions.width,
+      "alto": backgroundImage.asset->metadata.dimensions.height,
       ctaTexto,
       ctaEnlace,
       ctaColor,
@@ -782,6 +791,8 @@ const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) =>
   backgroundImage: null,
   backgroundImageAlt: "",
   hotspot: null,
+  ancho: null,
+  alto: null,
   cta: null,
 }));
 
@@ -930,6 +941,8 @@ function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): Seccio
       backgroundImage: s.backgroundImage,
       backgroundImageAlt: s.backgroundImageAlt ?? "",
       hotspot: s.hotspot ?? null,
+      ancho: typeof s.ancho === "number" && s.ancho > 0 ? s.ancho : null,
+      alto: typeof s.alto === "number" && s.alto > 0 ? s.alto : null,
       cta: normalizarCtaBanner(s),
     }));
 

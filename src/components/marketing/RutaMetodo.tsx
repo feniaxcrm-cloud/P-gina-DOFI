@@ -13,8 +13,6 @@ import {
   MagnifyingGlass,
   MapTrifold,
   PaintBrush,
-  Pause,
-  Play,
   PlugsConnected,
   Robot,
   RocketLaunch,
@@ -68,8 +66,8 @@ import { useRecorridoVivo } from "./useRecorridoVivo";
  * marca y su icono hace una microanimacion propia: la lupa busca, el enchufe
  * conecta, el robot piensa...), la linea va quedando "recorrida" y en el
  * destino se enciende el fuego del fenix; luego vuelve a empezar. Corre solo
- * mientras es visible, se puede pausar y con movimiento reducido no corre.
- * Ver useRecorridoVivo.ts.
+ * mientras es visible, sin boton de pausa (corre solo) y con movimiento
+ * reducido no corre. Ver useRecorridoVivo.ts.
  */
 
 /** Juegos de iconos por marca. Se elige con una clave (no se pasan los
@@ -182,7 +180,7 @@ export function RutaMetodo({
   const relleno = useRef<HTMLDivElement>(null);
   const tramos = useRef<(HTMLElement | null)[]>([]);
   const corre = vivo && animar && n > 1;
-  const recorrido = useRecorridoVivo({
+  const { activo } = useRecorridoVivo({
     habilitado: corre,
     n,
     contenedor: raiz,
@@ -191,7 +189,6 @@ export function RutaMetodo({
     relleno,
     tramos,
   });
-  const { activo } = recorrido;
 
   if (n === 0) return null;
   // Con 8 paradas o mas (Trafico: 7 pasos + destino) cada una mide ~150 px en
@@ -266,17 +263,6 @@ export function RutaMetodo({
             className="pointer-events-none absolute left-0 top-0 z-20 -ml-[10px] -mt-[10px] h-5 w-5 rounded-full bg-gradient-to-br from-brand-lift to-accent ring-4 ring-white"
             style={{ opacity: 0 }}
           />
-          {!recorrido.reducido && (
-            <button
-              type="button"
-              onClick={recorrido.alternar}
-              aria-pressed={recorrido.pausado}
-              aria-label={recorrido.pausado ? "Reanudar la animación del método" : "Pausar la animación del método"}
-              className="absolute -top-14 right-0 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-brand/20 bg-white text-brand transition-colors duration-300 hover:bg-brand/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-            >
-              {recorrido.pausado ? <Play size={16} weight="fill" aria-hidden="true" /> : <Pause size={16} weight="fill" aria-hidden="true" />}
-            </button>
-          )}
         </>
       )}
 

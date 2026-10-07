@@ -93,17 +93,11 @@ function serieDe(clave: ClaveKpi, s: Series): ReadonlyArray<number | null> {
 
 // ------------------------------------------------------------------ tiempo
 /** El dia (1 a 30) que muestra un cuadro. LINEAL A PROPOSITO: es un eje de
- *  tiempo, no un movimiento, y arrastrar la barra de la pagina tiene que
- *  caer exacto en el dia que se toca (ver cuadroDeDia). Lo que se ve fluido
- *  son las series, que ya son curvas. */
-export function diaEn(frame: number) {
+ *  tiempo, no un movimiento (los dias pasan parejos). Lo que se ve fluido son
+ *  las series, que ya son curvas. */
+function diaEn(frame: number) {
   const t = interpolate(frame, [TIEMPOS.intro, TIEMPOS.intro + TIEMPOS.recorrido], [0, 1], sujetar);
   return 1 + (DIAS - 1) * t;
-}
-
-/** El cuadro en que arranca un dia (inversa de diaEn). */
-export function cuadroDeDia(dia: number) {
-  return Math.round(TIEMPOS.intro + ((dia - 1) / (DIAS - 1)) * TIEMPOS.recorrido);
 }
 
 /** Entrada de cada pieza: sube 14 px y aparece, con resorte, escalonada. */

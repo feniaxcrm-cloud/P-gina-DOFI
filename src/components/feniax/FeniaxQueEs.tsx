@@ -60,23 +60,23 @@ export function FeniaxQueEs({ seccion, id, nivel }: { seccion: SeccionQueEs; id:
   const parrafos = parrafosDe(descripcion);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative isolate overflow-hidden bg-canvas pb-36 pt-20 md:pb-44 md:pt-28">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative isolate overflow-hidden bg-canvas max-md:pb-36">
       <IsotipoAgua className="-right-24 -top-10 -z-10 w-[420px] opacity-[0.06] md:w-[560px] lg:-right-16 lg:w-[640px]" />
       <OndasFeniax idGradiente="ondas-que-es" className="inset-x-0 bottom-0 -z-10 h-28 md:h-36" amplitud={60} opacidad={0.28} duracion={55} />
       <Puntos className="-left-32 top-10 -z-10 h-[300px] w-[380px] opacity-50" color="color-mix(in srgb, var(--color-brand) 35%, transparent)" />
 
-      <div className="relative mx-auto grid max-w-page grid-cols-1 gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-12 lg:px-12">
+      <div className="relative mx-auto grid w-full max-w-page grid-cols-1 gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:items-center lg:gap-12 lg:px-12">
         <Anim animar={animar} className="min-w-0 lg:col-span-6">
           {subtitulo && <Etiqueta>{subtitulo}</Etiqueta>}
           <Titulo
             id={`${id}-titulo`}
-            className="text-balance font-display text-[clamp(2.5rem,1.6rem+3.4vw,4.5rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink"
+            className="text-balance font-display text-[clamp(2.5rem,min(1.6rem+3.4vw,8.4svh),4.5rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink"
           >
             {titulo}
           </Titulo>
-          <span aria-hidden="true" className="mt-7 block h-1.5 w-20 rounded-full bg-[linear-gradient(90deg,#792883,#ED6D19,#E5352A)]" />
+          <span aria-hidden="true" className="mt-[clamp(1rem,3.4svh,1.75rem)] block h-1.5 w-20 rounded-full bg-[linear-gradient(90deg,#792883,#ED6D19,#E5352A)]" />
 
-          <div className="mt-9 flex flex-col gap-5">
+          <div className="mt-[clamp(1.25rem,4svh,2.25rem)] flex flex-col gap-[clamp(0.75rem,2.4svh,1.25rem)]">
             {parrafos.map((p, i) => (
               <p key={i} className="font-sans text-lg leading-relaxed text-ink-muted md:text-xl">
                 {p}
@@ -84,12 +84,12 @@ export function FeniaxQueEs({ seccion, id, nivel }: { seccion: SeccionQueEs; id:
             ))}
           </div>
           {destacado && (
-            <p className="mt-8 font-display text-2xl font-bold leading-snug tracking-tight text-brand md:text-[1.75rem]">
+            <p className="mt-[clamp(1.25rem,3.6svh,2rem)] font-display text-2xl font-bold leading-snug tracking-tight text-brand md:text-[1.75rem]">
               {destacado}
             </p>
           )}
           {cta && (
-            <div className="mt-9">
+            <div className="mt-[clamp(1.5rem,4.4svh,2.25rem)]">
               <BotonCta texto={cta.texto} enlace={cta.enlace} color="feniax-morado" />
             </div>
           )}

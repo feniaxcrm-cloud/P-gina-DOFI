@@ -10,7 +10,7 @@ import {
   useTransform,
   type PanInfo,
 } from "motion/react";
-import { ArrowRight, Trophy } from "@phosphor-icons/react";
+import { ArrowRight, HandTap, Trophy } from "@phosphor-icons/react";
 import { ICONOS } from "@/components/marketing/CarruselGiros";
 import type { CasoExito } from "@/lib/asesorias";
 import type { IconoCategoria } from "@/lib/marketing-digital";
@@ -20,15 +20,15 @@ import type { IconoCategoria } from "@/lib/marketing-digital";
  *
  *  - Una pila de tarjetas: la del frente se lee; detrás asoman otras dos,
  *    un poco giradas y más chicas.
- *  - "Ver otro caso" (o arrastrar la tarjeta, o las flechas del teclado):
- *    la del frente SALE VOLANDO con un giro, la de atrás pasa adelante y la
- *    que se fue vuelve a aparecer al fondo de la pila.
+ *  - "Ver otro caso" (o un clic en la tarjeta, arrastrarla, o las flechas
+ *    del teclado): la del frente SALE VOLANDO con un giro, la de atrás pasa
+ *    adelante y la que se fue vuelve a aparecer al fondo de la pila.
  *  - Contador "02 / 03" y, si el paso automático está activo, una línea de
  *    progreso.
  *
- * El caso al frente lo decide el padre (CasosGiros): es el MISMO estado que
- * abre el giro y cambia la imagen del carrusel de al lado. Este componente
- * solo pinta y avisa lo que pide el visitante (onPasar).
+ * El caso al frente lo decide el padre (CasosGiros, o LogrosAsesorias en la
+ * seccion de Logros): es el MISMO estado que cambia la imagen de al lado. Este
+ * componente solo pinta y avisa lo que pide el visitante (onPasar).
  *
  * MOVIMIENTO REDUCIDO: sin vuelo ni inclinación; el cambio es un fundido.
  */
@@ -153,16 +153,21 @@ function TarjetaFrente({
   children,
   reducido,
   onSoltar,
+  onTocar,
 }: {
   children: React.ReactNode;
   reducido: boolean;
   onSoltar: (dir: 1 | -1, desde: { x: number; rotate: number }) => void;
+  /** Clic (o toque) sin arrastrar: pasar a la siguiente. */
+  onTocar: () => void;
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-260, 0, 260], [-14, 0, 14]);
   const inclX = useSpring(0, { stiffness: 220, damping: 22 });
   const inclY = useSpring(0, { stiffness: 220, damping: 22 });
   const arrastrando = useRef(false);
+  /** Hubo arrastre en este gesto: el clic que llega al soltar no cuenta. */
+  const huboArrastre = useRef(false);
 
   function alMover(e: React.PointerEvent<HTMLDivElement>) {
     if (reducido || e.pointerType !== "mouse" || arrastrando.current) return;
@@ -189,16 +194,23 @@ function TarjetaFrente({
 
   return (
     <motion.div
-      className="h-full cursor-grab touch-pan-y active:cursor-grabbing"
+      className="h-full cursor-pointer touch-pan-y active:cursor-grabbing"
       style={{ x, rotate, rotateX: inclX, rotateY: inclY, transformPerspective: 900 }}
       drag={reducido ? false : "x"}
       dragSnapToOrigin
       dragElastic={0.55}
       onDragStart={() => {
         arrastrando.current = true;
+        huboArrastre.current = true;
         alSalir();
       }}
       onDragEnd={alSoltarArrastre}
+      onPointerDown={() => {
+        huboArrastre.current = false;
+      }}
+      onClick={() => {
+        if (!huboArrastre.current) onTocar();
+      }}
       onPointerMove={alMover}
       onPointerLeave={alSalir}
     >
@@ -214,6 +226,9 @@ export function MazoCasos({
   onPasar,
   progreso,
   anunciar,
+  textoBoton = "Ver otro caso",
+  etiqueta = "Casos de éxito",
+  pista,
 }: {
   casos: CasoExito[];
   indice: number;
@@ -226,6 +241,11 @@ export function MazoCasos({
   /** Anunciar el cambio a lectores de pantalla (solo cuando lo pidió el
    *  visitante: un aviso por cada paso automático sería ruido). */
   anunciar: boolean;
+  textoBoton?: string;
+  /** Nombre del carrusel para lectores de pantalla. */
+  etiqueta?: string;
+  /** Ayuda chica junto al contador (Logros: «Toca para ver otro logro»). */
+  pista?: string;
 }) {
   const reducido = useReducedMotion() ?? false;
   const n = casos.length;
@@ -297,13 +317,13 @@ export function MazoCasos({
     <div
       role="region"
       aria-roledescription="carrusel"
-      aria-label="Casos de éxito"
+      aria-label={etiqueta}
       tabIndex={0}
       onKeyDown={alTeclear}
       className="rounded-[28px] outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-4 focus-visible:ring-offset-canvas"
     >
       <p className="sr-only" aria-live={anunciar ? "polite" : "off"}>
-        Caso {indice + 1} de {n}: {actual.titulo}
+        {indice + 1} de {n}: {actual.titulo}
       </p>
 
       {/* La pila. Todas las tarjetas comparten la misma celda: la altura es la
@@ -344,7 +364,7 @@ export function MazoCasos({
                 }}
               >
                 {k === 0 ? (
-                  <TarjetaFrente reducido={reducido} onSoltar={(dir, desde) => pasar(1, dir, desde)}>
+                  <TarjetaFrente reducido={reducido} onSoltar={(dir, desde) => pasar(1, dir, desde)} onTocar={() => pasar(1, 1)}>
                     <Tarjeta caso={caso} numero={i + 1} tema={TEMAS[i % TEMAS.length]} iconoGiro={iconoDeGiro(caso)} />
                   </TarjetaFrente>
                 ) : (
@@ -382,7 +402,7 @@ export function MazoCasos({
           onClick={() => pasar(1, 1)}
           className="group inline-flex items-center gap-2.5 rounded-full bg-brand px-6 py-3.5 font-display text-[15px] font-bold text-white shadow-[0_14px_30px_-16px_rgba(75,42,147,0.8)] transition-colors duration-300 hover:bg-brand-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
         >
-          Ver otro caso
+          {textoBoton}
           <ArrowRight
             size={18}
             weight="bold"
@@ -394,6 +414,15 @@ export function MazoCasos({
           {dos(indice + 1)}
           <span className="text-sm font-semibold text-ink-subtle"> / {dos(n)}</span>
         </p>
+        {pista && (
+          <p
+            aria-hidden="true"
+            className="hidden items-center gap-2 rounded-full bg-accent/10 px-3.5 py-2 font-sans text-[13px] font-semibold text-brand sm:inline-flex"
+          >
+            <HandTap size={16} weight="duotone" className="text-accent" />
+            {pista}
+          </p>
+        )}
       </div>
 
       {/* Paso automático: cuánto falta para el siguiente caso. */}

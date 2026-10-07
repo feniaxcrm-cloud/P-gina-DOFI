@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
   MotionConfig,
   useReducedMotion,
   type PanInfo,
-  type Variants,
 } from "motion/react";
 import {
   AirplaneTilt,
@@ -43,10 +42,18 @@ import type { EmpresaGiro, GiroNegocio, IconoCategoria, ImagenSanity } from "@/l
  *  - La etiqueta (barra + nombre) aparece abajo a la izquierda con un fade
  *    sincronizado, recortada por el borde mientras el panel todavia es angosto.
  *
- * DEBAJO, LOS LOGOS DEL GIRO ABIERTO. Al cambiar de giro salen con fade y
- * entran deslizando desde el lado hacia el que se avanza, escalonados. La
- * altura se reserva con el giro que mas empresas tiene: cambiar de giro nunca
- * mueve la pagina.
+ * DEBAJO, LOS LOGOS DEL GIRO ABIERTO, EN UNA SOLA FILA (pedido del
+ * 2026-10-07: la seccion entera tiene que entrar en una pantalla). Antes era
+ * una grilla que reservaba el alto del giro con mas empresas (18 logos = 5
+ * filas) y empujaba la seccion a ~1500px. Ahora la fila mide siempre lo
+ * mismo: si los logos del giro entran, quedan quietos; si no entran, la fila
+ * se desliza sola (como la marquesina de siempre) y se detiene con el cursor.
+ * Al cambiar de giro salen con fade y entran deslizando desde el lado hacia
+ * el que se avanza, escalonados. Cambiar de giro nunca mueve la pagina.
+ *
+ * ALTO DE LA TIRA: fijo en telefono y tablet; en escritorio la tira LLENA el
+ * alto que le deja su seccion (flex-1), asi el conjunto mide una pantalla en
+ * una laptop de 730px de alto y en un monitor de 1080 por igual.
  *
  * INTERACCION: cursor (como el video), clic o toque, teclado (flechas,
  * Inicio, Fin: patron de pestañas accesible) y deslizar el dedo en movil.
@@ -98,8 +105,12 @@ const MEDIDAS = {
   amplio: { separacion: 10, min: 52, max: 124, abiertoMin: 240 },
 };
 
-/** Alto de la tira. Compartido por el carrusel y su estructura vacia. */
-const ALTO_TIRA = "h-[300px] sm:h-[360px] lg:h-[400px] xl:h-[440px]";
+/** Alto de la tira. Compartido por el carrusel y su estructura vacia. En
+ *  escritorio no hay numero: crece hasta llenar la columna (ver arriba). */
+const ALTO_TIRA = "h-[300px] sm:h-[360px] lg:h-auto lg:min-h-[200px] lg:flex-1";
+
+/** Raiz del carrusel: en escritorio, columna flexible del alto de su padre. */
+const RAIZ = "min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col";
 
 type Distribucion = { inicio: number; visibles: number; plegado: number; abierto: number; separacion: number };
 
@@ -194,15 +205,15 @@ function CapaFotoCaso({ foto, visible, duracion }: { foto: FotoCaso | null; visi
 }
 
 /** Logos de proporciones distintas se ven del mismo "peso" si ocupan la
- *  misma AREA, no el mismo alto: un logo cuadrado a 44px de alto se ve chico
+ *  misma AREA, no el mismo alto: un logo cuadrado a 40px de alto se ve chico
  *  al lado de uno apaisado. Se reparte un area fija segun la proporcion real
- *  del archivo, sin pasarse de la celda, y object-contain evita deformar. */
+ *  del archivo, sin pasarse de la ficha, y object-contain evita deformar. */
 function tamanoLogo(ancho: number, alto: number) {
   const proporcion = ancho / alto;
-  const AREA = 2400;
+  const AREA = 1700;
   const w = Math.sqrt(AREA * proporcion);
   const h = Math.sqrt(AREA / proporcion);
-  const k = Math.min(1, 116 / w, 42 / h);
+  const k = Math.min(1, 84 / w, 40 / h);
   return { width: Math.round(w * k), height: Math.round(h * k) };
 }
 
@@ -210,38 +221,122 @@ function cantidad(n: number) {
   return `${n} ${n === 1 ? "empresa" : "empresas"}`;
 }
 
-const GRILLA_LOGOS = "mt-4 grid grid-cols-[repeat(auto-fill,minmax(132px,1fr))] gap-3";
-const CELDA_LOGO = "h-[72px]";
+/** Ficha de un logo: ancho fijo, asi se sabe sin medir cuantas entran. */
+const ANCHO_FICHA = 112;
+const SEPARACION_FICHA = 10;
+/** Velocidad de la fila cuando los logos no entran: la de la marquesina. */
+const PX_POR_SEGUNDO_FILA = 30;
 
-const ficha: Variants = {
-  entrada: (direccion: number) => ({ opacity: 0, x: 22 * direccion, scale: 0.96 }),
-  visible: { opacity: 1, x: 0, scale: 1, transition: { duration: DURACION_MS / 1000, ease: CURVA_MOTION } },
-  salida: {},
-};
-
-function FichaEmpresa({ empresa, direccion }: { empresa: EmpresaGiro; direccion: number }) {
+function FichaEmpresa({ empresa, oculta }: { empresa: EmpresaGiro; oculta?: boolean }) {
   return (
-    <motion.li
-      variants={ficha}
-      custom={direccion}
-      className={`${CELDA_LOGO} flex items-center justify-center rounded-2xl bg-white px-4 shadow-[0_10px_28px_-20px_rgba(26,15,61,0.35)]`}
+    <div
+      className="flex h-16 items-center justify-center rounded-2xl bg-white px-3 shadow-[0_10px_24px_-18px_rgba(26,15,61,0.4)]"
+      style={{ width: ANCHO_FICHA }}
     >
       {empresa.logo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={empresa.logo.url}
-          alt={empresa.nombre}
+          alt={oculta ? "" : empresa.nombre}
           loading="lazy"
           decoding="async"
           className="object-contain"
           style={tamanoLogo(empresa.logo.ancho, empresa.logo.alto)}
         />
       ) : (
-        <span className="line-clamp-2 text-center font-display text-[13.5px] font-semibold leading-tight text-ink">
+        <span className="line-clamp-2 text-center font-display text-[12.5px] font-semibold leading-tight text-ink">
           {empresa.nombre}
         </span>
       )}
-    </motion.li>
+    </div>
+  );
+}
+
+/**
+ * La fila de empresas del giro abierto. Alto fijo (encabezado + una fila de
+ * fichas): cambiar de giro nunca mueve la pagina. Si las fichas entran en el
+ * ancho, quedan quietas y entran escalonadas; si no, la fila se desliza sola
+ * en bucle (.wall-track, la misma mecanica de la marquesina: se detiene con
+ * el cursor y, con movimiento reducido, pasa a desplazamiento manual).
+ */
+function FilaEmpresas({
+  giro,
+  direccion,
+  ancho,
+  idPanel,
+  idPestana,
+}: {
+  giro: GiroNegocio;
+  direccion: number;
+  /** Ancho medido de la tira (el mismo de esta fila). null: sin medir. */
+  ancho: number | null;
+  idPanel: string;
+  idPestana: string;
+}) {
+  const n = giro.empresas.length;
+  const caben = ancho === null || n * (ANCHO_FICHA + SEPARACION_FICHA) - SEPARACION_FICHA <= ancho;
+  const duracion = `${Math.max(14, Math.round((n * (ANCHO_FICHA + SEPARACION_FICHA)) / PX_POR_SEGUNDO_FILA))}s`;
+
+  return (
+    <div id={idPanel} role="tabpanel" aria-labelledby={idPestana} className="relative mt-5 h-[104px] shrink-0 lg:mt-[clamp(0.75rem,2.2svh,1.5rem)]">
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={giro.key}
+          className="absolute inset-0"
+          initial={{ opacity: 0, x: 22 * direccion }}
+          animate={{ opacity: 1, x: 0, transition: { duration: DURACION_MS / 1000, ease: CURVA_MOTION } }}
+          exit={{ opacity: 0, transition: { duration: 0.2, ease: "easeOut" } }}
+        >
+          <p className="flex h-7 items-center gap-3">
+            <span aria-hidden="true" className="h-[3px] w-6 rounded-full bg-accent" />
+            <span className="font-display text-lg font-bold tracking-tight text-ink">{giro.nombre}</span>
+            {n > 0 && <span className="font-sans text-sm text-ink-subtle">· {cantidad(n)}</span>}
+          </p>
+
+          {n === 0 ? (
+            <p className="mt-3 flex h-16 w-fit max-w-full items-center rounded-2xl bg-white/70 px-5 font-sans text-[15px] text-ink-muted shadow-[0_10px_28px_-22px_rgba(26,15,61,0.35)]">
+              Pronto verás aquí las empresas de este giro.
+            </p>
+          ) : caben ? (
+            <ul className="mt-3 flex" style={{ gap: SEPARACION_FICHA }}>
+              {giro.empresas.map((empresa, i) => (
+                <motion.li
+                  key={empresa.key}
+                  className="shrink-0"
+                  initial={{ opacity: 0, x: 18 * direccion, scale: 0.96 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  transition={{ duration: DURACION_MS / 1000, ease: CURVA_MOTION, delay: Math.min(0.045, 0.24 / n) * i }}
+                >
+                  <FichaEmpresa empresa={empresa} />
+                </motion.li>
+              ))}
+            </ul>
+          ) : (
+            // -my/py: la sombra de las fichas no queda cortada por el recorte.
+            <div className="wall-viewport mascara-bordes -my-2 mt-1 py-2">
+              <ul className="wall-track flex w-max" style={{ animationDuration: duracion }}>
+                {[...giro.empresas, ...giro.empresas].map((empresa, i) => {
+                  // Solo la primera vuelta existe para lectores de pantalla.
+                  const copia = i >= n;
+                  return (
+                    <li
+                      key={`${empresa.key}-${i}`}
+                      aria-hidden={copia || undefined}
+                      className="shrink-0"
+                      // La separacion va dentro del item: las dos mitades de la
+                      // tira miden igual y el -50% cae justo en la costura.
+                      style={{ paddingRight: SEPARACION_FICHA }}
+                    >
+                      <FichaEmpresa empresa={empresa} oculta={copia} />
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -399,26 +494,14 @@ export function CarruselGiros({
   const distribucion = ancho !== null ? distribuir(ancho, n, activo, inicioVentana.current) : null;
   if (distribucion) inicioVentana.current = distribucion.inicio;
 
-  const maxEmpresas = Math.max(1, ...giros.map((g) => g.empresas.length));
   const giro = n > 0 ? giros[activo] : null;
-  const totalEmpresas = giro?.empresas.length ?? 0;
-
-  const escenario: Variants = useMemo(
-    () => ({
-      entrada: {},
-      // Escalonado corto aunque haya muchos logos: todo entra en menos de ~0,7s.
-      visible: { transition: { staggerChildren: Math.min(0.045, 0.24 / Math.max(1, totalEmpresas)) } },
-      salida: { opacity: 0, transition: { duration: 0.2, ease: "easeOut" } },
-    }),
-    [totalEmpresas]
-  );
 
   // SIN GIROS EN SANITY: no se inventa ninguno. Se muestra la estructura del
   // carrusel vacia (un panel ancho y cuatro angostos, sin nombres ni logos)
   // para que la composicion de dos columnas se mantenga, y una linea discreta.
   if (!giro) {
     return (
-      <div data-giros="vacio" className="min-w-0">
+      <div data-giros="vacio" className={RAIZ}>
         <div aria-hidden="true" className={`flex gap-1.5 sm:gap-2.5 ${ALTO_TIRA}`}>
           <span className="h-full flex-[2.9_1_0%] rounded-[22px] bg-[linear-gradient(165deg,rgba(109,75,201,0.16)_0%,rgba(75,42,147,0.07)_100%)]" />
           {[0, 1, 2, 3].map((i) => (
@@ -443,7 +526,7 @@ export function CarruselGiros({
       <motion.div
         ref={raiz}
         data-giros="true"
-        className="min-w-0"
+        className={RAIZ}
         style={{ touchAction: "pan-y pinch-zoom" }}
         onPanEnd={alDeslizar}
         onPointerEnter={(e) => {
@@ -657,59 +740,13 @@ export function CarruselGiros({
 
         {intermedio}
 
-        {/* Logos del giro abierto. La capa invisible reserva el alto del giro
-            con mas empresas: al cambiar de giro la pagina no salta. */}
-        <div className="relative mt-6 grid">
-          <div aria-hidden="true" className="invisible [grid-area:1/1]">
-            <div className="h-7" />
-            <ul className={GRILLA_LOGOS}>
-              {Array.from({ length: maxEmpresas }, (_, i) => (
-                <li key={i} className={CELDA_LOGO} />
-              ))}
-            </ul>
-          </div>
-
-          <div
-            id={`${id}-empresas`}
-            role="tabpanel"
-            aria-labelledby={`${id}-giro-${activo}`}
-            className="relative [grid-area:1/1]"
-          >
-            <AnimatePresence initial={false}>
-              <motion.div
-                key={giro.key}
-                className="absolute inset-x-0 top-0"
-                initial="entrada"
-                animate="visible"
-                exit="salida"
-                variants={escenario}
-              >
-                <motion.p variants={ficha} custom={direccion} className="flex h-7 items-center gap-3">
-                  <span aria-hidden="true" className="h-[3px] w-6 rounded-full bg-accent" />
-                  <span className="font-display text-lg font-bold tracking-tight text-ink">{giro.nombre}</span>
-                  {giro.empresas.length > 0 && (
-                    <span className="font-sans text-sm text-ink-subtle">· {cantidad(giro.empresas.length)}</span>
-                  )}
-                </motion.p>
-                {giro.empresas.length > 0 ? (
-                  <ul className={GRILLA_LOGOS}>
-                    {giro.empresas.map((empresa) => (
-                      <FichaEmpresa key={empresa.key} empresa={empresa} direccion={direccion} />
-                    ))}
-                  </ul>
-                ) : (
-                  <motion.p
-                    variants={ficha}
-                    custom={direccion}
-                    className="mt-4 flex w-fit max-w-full items-center rounded-2xl bg-white/70 px-5 py-4 font-sans text-[15px] text-ink-muted shadow-[0_10px_28px_-22px_rgba(26,15,61,0.35)]"
-                  >
-                    Pronto verás aquí las empresas de este giro.
-                  </motion.p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+        <FilaEmpresas
+          giro={giro}
+          direccion={direccion}
+          ancho={ancho}
+          idPanel={`${id}-empresas`}
+          idPestana={`${id}-giro-${activo}`}
+        />
       </motion.div>
     </MotionConfig>
   );

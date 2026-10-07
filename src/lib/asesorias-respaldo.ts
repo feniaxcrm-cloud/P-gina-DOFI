@@ -33,9 +33,18 @@ export const IMAGENES_ASESORIAS = {
     gastronomia: { archivo: "caso-gastronomia.webp", ancho: 300, alto: 667, alt: "Emprendedores de gastronomía (imagen de ejemplo)" },
     retail: { archivo: "caso-retail.webp", ancho: 300, alto: 667, alt: "Emprendedores de comercio y servicios (imagen de ejemplo)" },
   },
+  /** Fotos de ejemplo de los logros: recortes de la foto grupal sobre el
+   *  fondo de marca. Se reemplazan desde el Studio por las fotos reales. */
+  logros: {
+    construccion: { archivo: "logro-construccion.webp", ancho: 378, alto: 472, alt: "Emprendedor de construcción (imagen de ejemplo)" },
+    salud: { archivo: "logro-salud.webp", ancho: 403, alto: 505, alt: "Emprendedora de salud (imagen de ejemplo)" },
+    gastronomia: { archivo: "logro-gastronomia.webp", ancho: 373, alto: 468, alt: "Emprendedores de gastronomía (imagen de ejemplo)" },
+    comercio: { archivo: "logro-comercio.webp", ancho: 450, alto: 562, alt: "Emprendedoras de comercio (imagen de ejemplo)" },
+  },
 } as const;
 
 export type ClaveImagenCaso = keyof typeof IMAGENES_ASESORIAS.casos;
+export type ClaveImagenLogro = keyof typeof IMAGENES_ASESORIAS.logros;
 
 const CTA_ASESORIAS = { texto: TEXTO_CTA, enlace: enlaceFormulario("asesorias") };
 
@@ -81,7 +90,51 @@ export const COPY_ASESORIAS = {
     pasoAutomatico: true,
     segundosPorCaso: 7,
   },
-  resenas: { titulo: "Reseñas en Google" },
+  /** Logros (pedido del 2026-10-07): reemplazan a «Reseñas en Google» en esta
+   *  página. Tarjetas que se pasan con un clic (o solas) y, a la izquierda, la
+   *  foto de cada historia. SON DE PRUEBA, como los casos: textos sin cifras
+   *  ni nombres reales, firmados «Ejemplo — reemplázalo». La cantidad de
+   *  tarjetas, sus fotos y sus mensajes se editan en el Studio. */
+  logros: {
+    subtitulo: "Logros de nuestros emprendedores",
+    titulo: "Historias que nos enorgullecen",
+    items: [
+      {
+        titulo: "Ordenó su negocio",
+        texto: "y hoy sabe qué vender, a quién y cómo.",
+        etiqueta: "Construcción",
+        nombre: "Ejemplo",
+        firma: "Ejemplo — reemplázalo",
+        foto: "construccion" as ClaveImagenLogro,
+      },
+      {
+        titulo: "Encontró a su cliente ideal",
+        texto: "y enfocó sus ventas donde sí le compran.",
+        etiqueta: "Salud",
+        nombre: "Ejemplo",
+        firma: "Ejemplo — reemplázalo",
+        foto: "salud" as ClaveImagenLogro,
+      },
+      {
+        titulo: "Lanzó su nueva oferta",
+        texto: "con un precio y un mensaje que venden.",
+        etiqueta: "Gastronomía",
+        nombre: "Ejemplo",
+        firma: "Ejemplo — reemplázalo",
+        foto: "gastronomia" as ClaveImagenLogro,
+      },
+      {
+        titulo: "Volvió a creer en su marca",
+        texto: "con una ruta clara para los próximos meses.",
+        etiqueta: "Comercio",
+        nombre: "Ejemplo",
+        firma: "Ejemplo — reemplázalo",
+        foto: "comercio" as ClaveImagenLogro,
+      },
+    ],
+    pasoAutomatico: true,
+    segundosPorLogro: 6,
+  },
   cierre: {
     titulo: "¿Le damos a tu negocio otra oportunidad?",
     descripcion: "Agenda tu asesoría 1 a 1 y sal con una ruta clara para vender más.",

@@ -37,10 +37,9 @@ export function FeniaxPortada({
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar } = seccion;
   const Titulo = nivel;
   const [inicio, final] = partirFinal(titulo, 1);
-  const relleno = nivel === "h1" ? "pt-28 pb-20 md:pt-32 md:pb-24" : "py-20 md:py-24";
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative isolate overflow-hidden bg-abyss text-foam">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative isolate overflow-hidden bg-abyss text-foam">
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {imagen ? (
           <>
@@ -55,7 +54,7 @@ export function FeniaxPortada({
         <Puntos className="-bottom-28 -left-28 h-[360px] w-[420px] opacity-40" color="rgba(201,179,211,0.5)" />
       </div>
 
-      <div className={`relative mx-auto grid max-w-page grid-cols-1 items-center gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-8 lg:px-12 ${relleno}`}>
+      <div className="relative mx-auto grid w-full max-w-page grid-cols-1 items-center gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-8 lg:px-12">
         <div className="min-w-0 lg:col-span-6">
           <Anim animar={animar} y={12} duration={0.6}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -64,7 +63,7 @@ export function FeniaxPortada({
               alt="FENIAX · Ventas inteligentes"
               width={232}
               height={Math.round(232 / LOGOS_FENIAX.proporcion)}
-              className="mb-10 h-auto w-[188px] md:w-[232px]"
+              className="mb-[clamp(1rem,4svh,2.5rem)] h-auto w-[188px] md:w-[min(232px,28svh)]"
             />
           </Anim>
 
@@ -77,7 +76,7 @@ export function FeniaxPortada({
           <Anim animar={animar} y={16} delay={0.12} duration={0.6}>
             <Titulo
               id={`${id}-titulo`}
-              className="max-w-[16ch] text-balance font-display text-[clamp(2.5rem,1.4rem+4vw,4.75rem)] font-extrabold uppercase leading-[0.98] tracking-[-0.015em]"
+              className="max-w-[16ch] text-balance font-display text-[clamp(2.25rem,min(1.4rem+4vw,7.6svh),4.75rem)] font-extrabold uppercase leading-[0.98] tracking-[-0.015em]"
             >
               {inicio && <>{inicio} </>}
               <span className="texto-ia">{final}</span>
@@ -86,13 +85,13 @@ export function FeniaxPortada({
 
           {descripcion && (
             <Anim animar={animar} y={14} delay={0.2} duration={0.6}>
-              <p className="mt-7 max-w-[560px] font-sans text-lg leading-relaxed text-foam/80 md:text-xl">{descripcion}</p>
+              <p className="mt-[clamp(1rem,3.4svh,1.75rem)] max-w-[560px] font-sans text-lg leading-relaxed text-foam/80 md:text-xl">{descripcion}</p>
             </Anim>
           )}
 
           {destacado && (
             <Anim animar={animar} y={14} delay={0.26} duration={0.6}>
-              <p className="mt-7 flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-foam md:text-xl">
+              <p className="mt-[clamp(1rem,3.4svh,1.75rem)] flex items-center gap-3 font-display text-lg font-semibold tracking-tight text-foam md:text-xl">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={LOGOS_FENIAX.isotipo} alt="" aria-hidden="true" className="h-6 w-auto" />
                 {destacado}
@@ -102,7 +101,7 @@ export function FeniaxPortada({
 
           {cta && (
             <Anim animar={animar} y={14} delay={0.32} duration={0.6}>
-              <div className="mt-10">
+              <div className="mt-[clamp(1.5rem,4.6svh,2.5rem)]">
                 <BotonCta texto={cta.texto} enlace={cta.enlace} color="feniax" />
               </div>
             </Anim>
@@ -117,7 +116,7 @@ export function FeniaxPortada({
               descripcion="Animación del panel de FENIAX CRM: la IA está activa, los clientes avanzan de Nuevo a En curso y Cerrado, cada venta cerrada se avisa y la gráfica de crecimiento sube."
               variante="flotante"
               prioridad={nivel === "h1"}
-              className="mx-auto w-full max-w-[440px] sm:max-w-[500px] lg:ml-auto lg:mr-0 lg:max-w-[620px]"
+              className="mx-auto w-full max-w-[440px] sm:max-w-[500px] lg:ml-auto lg:mr-0 lg:max-w-[min(620px,var(--alto-util))]"
             />
           </Anim>
         </div>

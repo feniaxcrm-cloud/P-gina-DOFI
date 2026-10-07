@@ -17,7 +17,8 @@ import { MarcoTelefono } from "./MarcoTelefono";
  * ACCESIBILIDAD: la conversacion completa va tambien como texto (lista
  * oculta a la vista, leida por lectores de pantalla), porque un video no se
  * puede leer. Con movimiento reducido no se reproduce sola: queda en el
- * cuadro con la conversacion entera y el aviso del CRM.
+ * cuadro con la conversacion entera y el aviso del CRM. Sin controles: corre
+ * sola y se detiene con el cursor encima (ver ReproductorChat).
  */
 
 const ReproductorChat = dynamic(() => import("./ReproductorChat"), { ssr: false });
@@ -27,6 +28,7 @@ export function DemoWhatsApp({
   tema,
   clave,
   onTermina,
+  ajustarAlto = false,
   className = "",
 }: {
   chat: ChatDemo;
@@ -34,6 +36,10 @@ export function DemoWhatsApp({
   /** Identifica la conversacion: al cambiar, la demo vuelve a empezar. */
   clave: string;
   onTermina?: () => void;
+  /** Escritorio: el telefono llena el ALTO de su contenedor (que debe
+   *  tenerlo definido) y su ancho sale de su proporcion, sin pasarse del
+   *  ancho. Sin esta opcion, el telefono ocupa el ancho. */
+  ajustarAlto?: boolean;
   className?: string;
 }) {
   const raiz = useRef<HTMLDivElement>(null);
@@ -71,23 +77,28 @@ export function DemoWhatsApp({
   }, []);
 
   return (
-    <figure ref={raiz} className={`relative ${className}`}>
-      {cerca ? (
-        <ReproductorChat
-          chat={chat}
-          tema={tema}
-          activo={enVista}
-          reducido={reducido}
-          onTermina={onTermina}
-          clave={clave}
-        />
-      ) : (
-        <div aria-hidden="true">
-          <MarcoTelefono tema={tema} />
-          {/* Mismo alto que la barra de controles del reproductor. */}
-          <div className="mt-4 h-11" />
+    <figure ref={raiz} className={`relative ${ajustarAlto ? "flex flex-col" : ""} ${className}`}>
+      {/* Ajustado al alto: la caja mide el espacio libre (container-type:
+          size) y el telefono toma el mayor tamaño que entra en ella. Su alto
+          es el de la pantalla (ancho x 712/390) mas los 18 px del bisel. */}
+      <div className={ajustarAlto ? "min-h-0 flex-1 [container-type:size]" : ""}>
+        <div className={ajustarAlto ? "mx-auto w-[min(100cqw,calc((100cqh-18px)*390/712+18px))]" : ""}>
+          {cerca ? (
+            <ReproductorChat
+              chat={chat}
+              tema={tema}
+              activo={enVista}
+              reducido={reducido}
+              onTermina={onTermina}
+              clave={clave}
+            />
+          ) : (
+            <div aria-hidden="true">
+              <MarcoTelefono tema={tema} />
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <figcaption className="sr-only">
         <p>

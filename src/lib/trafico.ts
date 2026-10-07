@@ -8,13 +8,11 @@ import {
   IMG,
   bool,
   camposBase,
-  logosDeGiros,
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
   t,
   type BaseSeccion,
-  type ClienteMarquesina,
   type GiroNegocio,
   type GiroRaw,
   type RespuestaRaw,
@@ -89,7 +87,6 @@ export type SeccionClientesMetricas = BaseSeccion & {
   giros: GiroConMetricas[];
   /** Al terminar el recorrido de un giro, pasar solo al siguiente. */
   rotacionAutomatica: boolean;
-  clientes: ClienteMarquesina[];
 };
 
 export type SeccionTrafico =
@@ -149,7 +146,6 @@ function respaldo(girosMarketing: GiroConMetricas[], resenas: SeccionResenas["re
       tipo: "metricsClientsBanner",
       giros: girosMarketing,
       rotacionAutomatica: true,
-      clientes: logosDeGiros(girosMarketing),
     },
     {
       ...base("trafico-resenas", c.resenas),
@@ -157,8 +153,6 @@ function respaldo(girosMarketing: GiroConMetricas[], resenas: SeccionResenas["re
       enlaceGoogle: company.location.mapsUrl,
       resenas,
       cantidadMostrada: null,
-      autoplay: false,
-      velocidadAutoplay: 6,
     },
     { ...base("trafico-cierre", { ...c.cierre, cta: { ...c.cierre.cta } }), tipo: "ctaImageBanner" },
   ];
@@ -187,7 +181,7 @@ const QUERY_TRAFICO = `{
         "giros": categorias[]{ ${GIRO_GROQ}, ${METRICAS} },
         rotacionAutomatica
       },
-      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
+      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
   },
   "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
@@ -270,7 +264,6 @@ function normalizarSeccionTrafico(
         tipo: "metricsClientsBanner",
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
-        clientes: logosDeGiros(giros),
       };
     }
 

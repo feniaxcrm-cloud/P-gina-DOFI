@@ -7,13 +7,11 @@ import {
   IMG,
   bool,
   camposBase,
-  logosDeGiros,
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
   t,
   type BaseSeccion,
-  type ClienteMarquesina,
   type GiroNegocio,
   type GiroRaw,
   type RespuestaRaw,
@@ -62,7 +60,6 @@ export type SeccionClientesChat = BaseSeccion & {
   /** Al terminar una conversacion, pasar sola al siguiente giro. */
   rotacionAutomatica: boolean;
   temaChat: TemaChat;
-  clientes: ClienteMarquesina[];
 };
 
 export type SeccionFeniax =
@@ -115,7 +112,6 @@ function respaldo(girosMarketing: GiroConChat[], resenas: SeccionResenas["resena
       giros: girosMarketing,
       rotacionAutomatica: true,
       temaChat: "claro",
-      clientes: logosDeGiros(girosMarketing),
     },
     {
       ...base("feniax-resenas", c.resenas),
@@ -123,8 +119,6 @@ function respaldo(girosMarketing: GiroConChat[], resenas: SeccionResenas["resena
       enlaceGoogle: company.location.mapsUrl,
       resenas,
       cantidadMostrada: null,
-      autoplay: false,
-      velocidadAutoplay: 6,
     },
     { ...base("feniax-cierre", { ...c.cierre, cta: { ...c.cierre.cta } }), tipo: "ctaBanner", alineacion: "centro", overlay: "medio" },
   ];
@@ -150,7 +144,7 @@ const QUERY_FENIAX = `{
         "giros": categorias[]{ ${GIRO_GROQ}, "chat": chat{ ${CHAT} } },
         rotacionAutomatica, temaChat
       },
-      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada, autoplay, velocidadAutoplay }
+      _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
   },
   "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
@@ -238,7 +232,6 @@ function normalizarSeccionFeniax(
       giros,
       rotacionAutomatica: bool(raw.rotacionAutomatica, true),
       temaChat: t(raw.temaChat) === "oscuro" ? "oscuro" : "claro",
-      clientes: logosDeGiros(giros),
     };
   }
 

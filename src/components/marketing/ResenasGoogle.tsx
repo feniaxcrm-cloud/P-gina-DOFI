@@ -31,7 +31,7 @@ import type { SeccionResenas } from "@/lib/marketing-digital";
  * tarjeta ni botón -- no fingir contenido que no existe.
  */
 export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas; id: string; nivel: "h1" | "h2" }) {
-  const { subtitulo, titulo, descripcion, enlaceGoogle, animar, resenas, autoplay, velocidadAutoplay } = seccion;
+  const { subtitulo, titulo, descripcion, enlaceGoogle, animar, resenas } = seccion;
   const Titulo = nivel;
   const hayResenas = resenas.length > 0;
 
@@ -39,7 +39,7 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="group/nautico relative overflow-hidden bg-canvas py-20 md:py-28"
+      className="group/nautico relative overflow-hidden pantalla bg-canvas"
     >
       {/* Cierre de la pagina, con las tarjetas de reseñas como protagonistas:
           una ruta cruzando la franja superior y el oleaje cerrando abajo
@@ -82,7 +82,7 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
       <OrnamentoNodo className="left-[42%] top-[16%] h-3 w-3 sm:h-4 sm:w-4" retraso={1} />
       <OrnamentoNodo className="left-[22%] top-3 hidden h-3 w-3 sm:block" ambiente="pulsar" retraso={2.2} />
       <OrnamentoNodo className="right-[36%] bottom-4 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.4} />
-      <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
+      <div className="mx-auto w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <Anim animar={animar} className="max-w-[720px]">
             <p className="inline-flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-[0.14em] text-ink-subtle">
@@ -91,7 +91,7 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
             </p>
             <Titulo
               id={`${id}-titulo`}
-              className="mt-4 text-balance font-display text-[clamp(2.25rem,1.5rem+3vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.02em] text-ink"
+              className="mt-4 text-balance font-display text-titulo font-extrabold text-ink"
             >
               {titulo}
             </Titulo>
@@ -121,7 +121,9 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
         </div>
 
         {hayResenas ? (
-          <ResenasCarrusel resenas={resenas} animar={animar} autoplay={autoplay} velocidadSegundos={velocidadAutoplay} />
+          <Anim animar={animar} delay={0.1} className="mt-[clamp(1.75rem,5svh,3rem)]">
+            <ResenasCarrusel resenas={resenas} />
+          </Anim>
         ) : (
           <Anim animar={animar} delay={0.1} className="mt-12">
             <p className="max-w-[560px] font-sans text-lg leading-relaxed text-ink-muted">

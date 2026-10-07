@@ -40,13 +40,13 @@ export function TraficoCierre({ seccion, id, nivel }: { seccion: SeccionCierreIm
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      className="relative isolate overflow-hidden bg-abyss text-foam"
+      className="pantalla relative isolate overflow-hidden bg-abyss text-foam"
     >
       <div className="absolute inset-0 -z-10">
         <AtmosferaMar variante="cierre" />
       </div>
 
-      <div className="relative mx-auto grid w-full max-w-page grid-cols-1 items-center gap-12 px-5 py-20 sm:px-6 md:px-10 md:py-24 lg:grid-cols-12 lg:gap-10 lg:px-12">
+      <div className="relative mx-auto grid w-full max-w-page grid-cols-1 items-center gap-12 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-10 lg:px-12">
         <div className="flex min-w-0 flex-col items-start lg:col-span-6">
           {subtitulo && (
             <Anim animar={animar} y={12} duration={0.6}>
@@ -59,7 +59,7 @@ export function TraficoCierre({ seccion, id, nivel }: { seccion: SeccionCierreIm
           <Anim animar={animar} y={16} delay={0.08} duration={0.6}>
             <Titulo
               id={`${id}-titulo`}
-              className="max-w-[18ch] text-balance font-display text-[clamp(2.25rem,1.3rem+2.8vw,3.875rem)] font-extrabold leading-[1.05] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)]"
+              className="max-w-[18ch] text-balance font-display text-[clamp(2.25rem,min(1.3rem+2.8vw,7.6svh),3.875rem)] font-extrabold leading-[1.05] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(18,10,38,0.35)]"
             >
               {titulo}
             </Titulo>
@@ -91,7 +91,12 @@ export function TraficoCierre({ seccion, id, nivel }: { seccion: SeccionCierreIm
 
         <div className="min-w-0 lg:col-span-6">
           <Anim animar={animar} y={24} delay={0.12} duration={0.8}>
-            <div className="mx-auto w-full max-w-[560px] lg:ml-auto lg:mr-0 lg:max-w-none">
+            {/* La imagen se ve entera: si su proporcion la haria mas alta que
+                la pantalla, se limita por alto. */}
+            <div
+              className="mx-auto w-full max-w-[560px] lg:ml-auto lg:mr-0 lg:max-w-[var(--ancho-max)]"
+              style={{ "--ancho-max": `calc(var(--alto-util) * ${imagen.ancho} / ${imagen.alto})` } as React.CSSProperties}
+            >
               <PiezaCompleta imagen={imagen} imagenMovil={imagenMovil} alt={imagen.alt || titulo} sizes="(min-width: 1024px) 50vw, 100vw" />
             </div>
           </Anim>

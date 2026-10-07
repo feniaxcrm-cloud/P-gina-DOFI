@@ -33,14 +33,14 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
   const parrafos = parrafosDe(descripcion);
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="relative isolate overflow-hidden bg-abyss text-foam">
+    <section id={id} aria-labelledby={`${id}-titulo`} className="pantalla relative isolate overflow-hidden bg-abyss text-foam max-md:pb-32">
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-[radial-gradient(100%_110%_at_92%_10%,#2E1B68_0%,#1A0F3D_48%,#120A26_100%)]"
       />
       <div aria-hidden="true" className="absolute -bottom-40 -left-32 -z-10 h-[28rem] w-[28rem] rounded-full bg-accent/15 blur-[140px]" />
 
-      <div className="relative mx-auto max-w-page px-5 pb-32 pt-24 sm:px-6 md:px-10 md:pb-40 md:pt-32 lg:px-12">
+      <div className="relative mx-auto w-full max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
         <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-12 lg:gap-12">
           <div className="min-w-0 lg:col-span-7">
             {subtitulo && (
@@ -52,7 +52,7 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
             <Anim animar={animar} y={20} delay={0.06}>
               <Titulo
                 id={`${id}-titulo`}
-                className="max-w-[18ch] text-balance font-display text-[clamp(2.25rem,1.4rem+3.6vw,4.5rem)] font-extrabold leading-[1] tracking-[-0.03em]"
+                className="max-w-[18ch] text-balance font-display text-[clamp(2.25rem,min(1.4rem+3.6vw,8.4svh),4.5rem)] font-extrabold leading-[1] tracking-[-0.03em]"
               >
                 {inicio && <>{inicio} </>}
                 <span className="text-accent-lift">{ultima}</span>
@@ -60,7 +60,7 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
             </Anim>
 
             {parrafos.length > 0 && (
-              <div className="mt-9 grid max-w-[640px] gap-6">
+              <div className="mt-[clamp(1.25rem,4svh,2.25rem)] grid max-w-[640px] gap-6">
                 {parrafos.map((p, i) => (
                   <Anim key={i} animar={animar} y={14} delay={0.16 + i * 0.08}>
                     <p className="font-sans text-base leading-relaxed text-foam/80 md:text-lg">{p}</p>
@@ -71,7 +71,7 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
 
             {destacado && (
               <Anim animar={animar} y={14} delay={0.34}>
-                <p className="mt-9 flex max-w-[640px] items-start gap-4 font-display text-xl font-bold leading-snug tracking-tight text-foam md:text-2xl">
+                <p className="mt-[clamp(1.25rem,4svh,2.25rem)] flex max-w-[640px] items-start gap-4 font-display text-xl font-bold leading-snug tracking-tight text-foam md:text-2xl">
                   <span aria-hidden="true" className="mt-[0.75em] h-px w-12 shrink-0 bg-accent-lift/70" />
                   {destacado}
                 </p>
@@ -80,7 +80,7 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
 
             {cta && (
               <Anim animar={animar} y={14} delay={0.4}>
-                <div className="mt-10">
+                <div className="mt-[clamp(1.5rem,4.4svh,2.5rem)]">
                   <BotonCta texto={cta.texto} enlace={cta.enlace} />
                 </div>
               </Anim>
@@ -96,7 +96,7 @@ export function TraficoEcosistema({ seccion, id, nivel }: { seccion: SeccionEcos
                   src="/trafico/ecosistema.mp4"
                   poster="/trafico/ecosistema.jpg"
                   descripcion="Animación: una persona descubre una marca en Instagram, la busca en Google, visita su página web y finalmente la contacta por WhatsApp. Todo ese recorrido es tráfico."
-                  className="mx-auto w-full max-w-[480px]"
+                  className="mx-auto w-full max-w-[min(480px,var(--alto-util))]"
                 />
               )}
             </Anim>

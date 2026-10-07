@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { FilmSlate, Pause, Play, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
+import { FilmSlate, SpeakerHigh, SpeakerSlash } from "@phosphor-icons/react";
 import type { ImagenSanity, VideoSeccion } from "@/lib/marketing-digital";
 
 /**
@@ -13,8 +13,9 @@ import type { ImagenSanity, VideoSeccion } from "@/lib/marketing-digital";
  * ocupando todo el ancho. Tampoco se oculta en telefono: ahi va debajo de los
  * logos.
  *
- * TAMAÑO: en escritorio y tablet el marco ocupa toda su columna (el ~45% del
- * ancho) y todo el alto del carrusel de al lado. En telefono, 4:5.
+ * TAMAÑO: en escritorio el marco ocupa toda su columna (el ~45% del ancho) y
+ * el alto completo del cuerpo de la sección, que mide una pantalla (ver
+ * MarcoClientes): siempre se ve entero. En telefono y tablet, 4:5.
  *
  * AJUSTE (desde el Studio), sin deformar nunca:
  *  - "rellenar": el video cubre el marco (object-cover; puede recortar bordes).
@@ -22,12 +23,12 @@ import type { ImagenSanity, VideoSeccion } from "@/lib/marketing-digital";
  *
  * REPRODUCCION: en silencio, en bucle y en linea (muted + loop + playsInline),
  * solo mientras esta en pantalla. Con movimiento reducido no arranca solo.
- * Controles minimos: pausa/reproduccion siempre (un video que se mueve solo
- * tiene que poder detenerse) y sonido solo si el editor lo activa.
+ * Sin boton de play/pausa: corre solo (pedido del 2026-10-07). El unico
+ * control es el del sonido, y solo si el editor lo activa.
  */
 
 const MARCO =
-  "relative w-full overflow-hidden rounded-[28px] aspect-[4/5] md:aspect-auto md:h-full md:min-h-[420px] shadow-[0_32px_64px_-36px_rgba(26,15,61,0.6)]";
+  "relative w-full overflow-hidden rounded-[28px] aspect-[4/5] sm:aspect-[16/10] lg:aspect-auto lg:h-full shadow-[0_32px_64px_-36px_rgba(26,15,61,0.6)]";
 
 const BOTON =
   "flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors duration-300 hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
@@ -59,8 +60,6 @@ export function VideoClientes({
   titulo: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const pausaManual = useRef(false);
-  const [reproduciendo, setReproduciendo] = useState(false);
   const [silenciado, setSilenciado] = useState(true);
   const url = video?.url;
 
@@ -73,8 +72,8 @@ export function VideoClientes({
 
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && !pausaManual.current) v.play().catch(() => {});
-        else if (!e.isIntersecting) v.pause();
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
       },
       { threshold: 0.3 }
     );
@@ -84,27 +83,12 @@ export function VideoClientes({
 
   if (!video) return <VideoVacio />;
 
-  function alternarReproduccion() {
-    const v = ref.current;
-    if (!v) return;
-    if (v.paused) {
-      pausaManual.current = false;
-      v.play().catch(() => {});
-    } else {
-      pausaManual.current = true;
-      v.pause();
-    }
-  }
-
   function alternarSonido() {
     const v = ref.current;
     if (!v) return;
     v.muted = !v.muted;
     setSilenciado(v.muted);
-    if (!v.muted && v.paused) {
-      pausaManual.current = false;
-      v.play().catch(() => {});
-    }
+    if (!v.muted && v.paused) v.play().catch(() => {});
   }
 
   const completo = video.ajuste === "completo";
@@ -120,8 +104,6 @@ export function VideoClientes({
         playsInline
         preload="metadata"
         aria-label={`Video: ${titulo}`}
-        onPlay={() => setReproduciendo(true)}
-        onPause={() => setReproduciendo(false)}
         className={`absolute inset-0 h-full w-full ${completo ? "object-contain" : "object-cover"}`}
       />
       <span
@@ -139,14 +121,6 @@ export function VideoClientes({
             {silenciado ? <SpeakerSlash size={18} weight="fill" /> : <SpeakerHigh size={18} weight="fill" />}
           </button>
         )}
-        <button
-          type="button"
-          onClick={alternarReproduccion}
-          aria-label={reproduciendo ? "Pausar video" : "Reproducir video"}
-          className={BOTON}
-        >
-          {reproduciendo ? <Pause size={18} weight="fill" /> : <Play size={18} weight="fill" />}
-        </button>
       </div>
     </div>
   );

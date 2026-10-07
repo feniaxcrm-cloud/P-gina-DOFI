@@ -8,7 +8,10 @@ import { miembroGiro } from "./giroNegocio";
  *
  *   Giros de negocio  -> cada giro con sus empresas (y el logo de cada una)
  *   Video             -> columna derecha
- *   Marquesina        -> automática: las Cuentas activas (no se carga acá)
+ *
+ * SIN MARQUESINA DEBAJO (pedido del 2026-10-07: la sección entra entera en
+ * una pantalla): los logos se ven en la fila del giro abierto, que se
+ * desliza sola cuando no entran.
  *
  * EMPRESAS DE UN GIRO, sin duplicar datos: lo normal es elegir una Cuenta
  * existente (su nombre y su logo son los de la Cuenta; cambiar el logo en la
@@ -25,7 +28,7 @@ export const clientsBanner = defineType({
   title: "Clientes y casos de éxito",
   type: "object",
   description:
-    "Carrusel de giros de negocio con sus empresas, un video y, debajo, la marquesina de clientes (muestra sola las Cuentas activas).",
+    "Carrusel de giros de negocio con sus empresas y, al lado, un video. Los logos de cada giro se ven al abrirlo.",
   fieldsets: [
     {
       name: "giros",

@@ -57,4 +57,6 @@ reemplázalo". Están en el respaldo del código (`src/lib/asesorias-respaldo.ts
    sube logo, foto y casos y carga las secciones, y redesplegar el Studio con los tipos nuevos
    (`splitHeroBanner`, `casesClientsBanner`, selector de giro). Se hacen juntos para que el
    Studio no muestre secciones de un tipo que ya no existe.
+   **2026-10-07**: el script ya existe (`npm run sembrar:asesorias`, que también carga los
+   Logros que reemplazan a las reseñas). Ver `AJUSTES-2026-10-07-RESULTADOS.md`.
 2. **Banners del Home con Remotion**: en curso (las tres composiciones existen, falta conectarlas).

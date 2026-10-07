@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "@phosphor-icons/react";
+import { useEffect, useRef } from "react";
 
 /**
  * Un motion graphic en bucle (renderizado con HyperFrames: ver video/ en la
@@ -10,8 +9,8 @@ import { Pause, Play } from "@phosphor-icons/react";
  *
  * Se reproduce en silencio y en bucle SOLO mientras esta en pantalla; con
  * movimiento reducido no arranca (se ve el poster, que es un cuadro del mismo
- * video con la composicion completa). Siempre tiene boton de pausa: un
- * movimiento continuo tiene que poder detenerse.
+ * video con la composicion completa). Sin botones de reproduccion: corre solo
+ * (pedido del 2026-10-07).
  *
  * VARIANTES
  *  - "tarjeta" (por defecto): el video dentro de una tarjeta cuadrada con
@@ -41,8 +40,6 @@ export function VideoBucle({
   className?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const pausaManual = useRef(false);
-  const [reproduciendo, setReproduciendo] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
@@ -51,26 +48,14 @@ export function VideoBucle({
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting && !pausaManual.current) v.play().catch(() => {});
-        else if (!e.isIntersecting) v.pause();
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
       },
       { threshold: 0.35 }
     );
     io.observe(v);
     return () => io.disconnect();
   }, []);
-
-  function alternar() {
-    const v = ref.current;
-    if (!v) return;
-    if (v.paused) {
-      pausaManual.current = false;
-      v.play().catch(() => {});
-    } else {
-      pausaManual.current = true;
-      v.pause();
-    }
-  }
 
   const flotante = variante === "flotante";
 
@@ -89,8 +74,6 @@ export function VideoBucle({
         playsInline
         preload={prioridad ? "auto" : "none"}
         aria-label={descripcion}
-        onPlay={() => setReproduciendo(true)}
-        onPause={() => setReproduciendo(false)}
         className="block aspect-square h-auto w-full object-cover"
         style={
           flotante
@@ -106,16 +89,6 @@ export function VideoBucle({
             : undefined
         }
       />
-      <button
-        type="button"
-        onClick={alternar}
-        aria-label={reproduciendo ? "Pausar animación" : "Reproducir animación"}
-        className={`absolute flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors duration-300 hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-          flotante ? "bottom-[5%] right-[5%]" : "bottom-4 right-4"
-        }`}
-      >
-        {reproduciendo ? <Pause size={18} weight="fill" /> : <Play size={18} weight="fill" />}
-      </button>
     </div>
   );
 }

@@ -1,168 +1,49 @@
-import { Anim } from "./Anim";
 import { CarruselGiros } from "./CarruselGiros";
-import { OrnamentoIcono, OrnamentoNodo, OrnamentoOlas, OrnamentoRuta } from "./OrnamentoNautico";
+import { MarcoClientes } from "./MarcoClientes";
 import { VideoClientes } from "./VideoClientes";
-import type { ClienteMarquesina, SeccionClientes } from "@/lib/marketing-digital";
+import type { SeccionClientes } from "@/lib/marketing-digital";
 
 /**
  * 5 · Clientes y casos de éxito (clientsBanner).
  *
- *   Título (una línea en escritorio, morado DOFI)
+ *   Título
  *   ┌──────────────────────────┬──────────────┐
- *   │ Carrusel de giros + logos │    Video     │
+ *   │ Carrusel de giros        │    Video     │
+ *   │ Fila de logos del giro   │              │
  *   └──────────────────────────┴──────────────┘
- *   Marquesina continua de clientes (la de siempre)
  *
- * DOS COLUMNAS REALES, SIEMPRE: carrusel ~55% y video ~45% desde tablet
- * (en telefono se apilan: carrusel, logos, video). Ninguna de las dos se
- * oculta por falta de datos: cada una tiene su estado vacio discreto, asi el
- * carrusel nunca se estira a todo el ancho (con la columna al 55% el panel
- * abierto tiene la misma proporcion que en el video de referencia).
+ * TODO EN UNA PANTALLA (pedido del 2026-10-07): el marco (MarcoClientes) mide
+ * el alto de la ventana, la tira del carrusel se queda con lo que dejan el
+ * título y la fila de logos, y el video ocupa el alto completo de su columna.
+ * Antes el video se estiraba hasta el alto de la grilla de logos (5 filas en
+ * Construcción) y se veía cortado a la mitad.
+ *
+ * DOS COLUMNAS REALES desde escritorio (lg): carrusel ~55% y video ~45%. En
+ * telefono y tablet se apilan: carrusel, logos, video. Ninguna se oculta por
+ * falta de datos: cada una tiene su estado vacío discreto.
  *
  * GIROS: solo los que existen en el Studio, con sus empresas y logos
  * (CarruselGiros). No hay giros de respaldo ni contenido de relleno.
  *
  * VIDEO: archivo, ajuste y portada desde el Studio (VideoClientes).
  *
- * MARQUESINA: mismo componente, mismas clases, misma velocidad y mismos
- * sentidos que siempre -- lo unico que cambia es de donde saca los datos.
- * Antes mostraba TODAS las Cuentas activas (con su nombre como texto cuando
- * no tenian logo, que era casi siempre). Ahora reutiliza los logos que YA
- * estan cargados en los giros de arriba (logosDeGiros(), en
- * marketing-digital.ts): solo empresas CON logo real, nunca su nombre como
- * sustituto. Se pausa con el cursor y, con movimiento reducido, pasa a
- * desplazamiento manual (.wall-track / .wall-viewport en globals.css).
- *
  * SIN BOTÓN: el "Ver casos de éxito" que cerraba la sección se quitó por
- * pedido explícito (2026-10-01), en esta página y en la de FENIAX. El campo
- * tampoco existe ya en el Studio (clientsBanner omite "cta").
+ * pedido explícito (2026-10-01), en esta página y en la de FENIAX.
  */
-
-/** Ancho medio de un elemento (tile 168px + separacion 16px) y velocidad
- *  sobria. La duracion sale de estos dos numeros, asi la velocidad real no
- *  cambia con la cantidad de clientes. */
-const ANCHO_ELEMENTO = 184;
-const PX_POR_SEGUNDO = 38;
-
-/** Exportada: la reutiliza la seccion Clientes de FENIAX (misma marquesina). */
-export function FilaMarquesina({ clientes, reverso }: { clientes: ClienteMarquesina[]; reverso: boolean }) {
-  const duracion = `${Math.max(18, Math.round((clientes.length * ANCHO_ELEMENTO) / PX_POR_SEGUNDO))}s`;
-  const tira = [...clientes, ...clientes];
-
-  return (
-    <div className="wall-viewport mascara-bordes">
-      <ul
-        className={`wall-track flex w-max items-center gap-4 py-2 ${reverso ? "wall-track--reverse" : ""}`}
-        style={{ animationDuration: duracion }}
-      >
-        {tira.map((c, i) => {
-          // Solo la primera copia existe para el lector de pantalla.
-          const esCopia = i >= clientes.length;
-          return (
-            <li key={`${c.slug || c.nombre}-${i}`} aria-hidden={esCopia || undefined} className="shrink-0">
-              {/* Solo el logo: nunca el nombre como sustituto (regla explicita
-                  del brief). Todas las fichas de aca ya tienen logo real,
-                  cargado en el Studio dentro de un giro de negocio. */}
-              <div className="flex h-20 min-w-[168px] items-center justify-center rounded-2xl border border-brand/10 bg-white px-6 shadow-[0_10px_26px_-16px_rgba(26,15,61,0.3)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.logo}
-                  alt={esCopia ? "" : c.nombre}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-h-11 w-auto max-w-[140px] object-contain"
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
 export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes; id: string; nivel: "h1" | "h2" }) {
-  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, animar, clientes } = seccion;
-  const Titulo = nivel;
-  const filaA = clientes.filter((_, i) => i % 2 === 0);
-  const filaB = clientes.filter((_, i) => i % 2 === 1);
+  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, animar } = seccion;
 
   return (
-    <section
-      id={id}
-      aria-labelledby={`${id}-titulo`}
-      className="group/nautico relative overflow-hidden bg-[linear-gradient(180deg,#FDFBF7_0%,#F4EFFB_100%)] py-20 md:py-28"
-    >
-      {/* Velero arriba a la derecha, timon entrando arriba a la izquierda,
-          brujula girando muy despacio abajo cerca del boton, una ruta
-          punteada cruzando el margen entre el titulo y el carrusel, oleaje
-          chico cerrando el fondo y varios nodos sueltos -- distribuido por
-          toda la seccion, nunca sobre la marquesina ni el carrusel/video:
-          esos ya tienen su propio fondo opaco encima, y las piezas grandes
-          quedan siempre en el margen exterior. Lineas primero (quedan
-          "atras"), piezas despues. */}
-      <OrnamentoRuta ambiente="derivar" duracion={12} retraso={1.5} className="right-[6%] top-[10%] hidden h-20 w-[55%] md:block lg:h-24" />
-      <OrnamentoOlas ambiente="derivar" duracion={11} retraso={0.6} className="inset-x-0 bottom-0 h-12 opacity-70 md:h-16 lg:h-20" />
-      <OrnamentoIcono
-        motivo="velero"
-        capa="principal"
-        ambiente="flotar"
-        duracion={7}
-        className="-right-8 -top-6 h-32 w-32 rotate-6 sm:-right-10 sm:h-44 sm:w-44 lg:-right-12 lg:h-56 lg:w-56"
-      />
-      <OrnamentoIcono
-        motivo="brujula"
-        capa="secundario"
-        ambiente="girar"
-        duracion={100}
-        className="-left-6 bottom-6 hidden h-24 w-24 md:block lg:h-32 lg:w-32"
-      />
-      <OrnamentoIcono
-        motivo="timon"
-        capa="secundario"
-        ambiente="flotar"
-        duracion={8}
-        retraso={0.5}
-        className="-left-10 -top-8 hidden h-28 w-28 rotate-[8deg] lg:block lg:h-36 lg:w-36"
-      />
-      <OrnamentoNodo className="left-[30%] top-[6%] h-3 w-3 sm:h-4 sm:w-4" retraso={2} />
-      <OrnamentoNodo className="right-[24%] top-3 hidden h-3 w-3 sm:block" ambiente="pulsar" retraso={1} />
-      <OrnamentoNodo className="left-[8%] bottom-3 hidden h-3 w-3 md:block" ambiente="pulsar" retraso={0.4} />
-      <div className="mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12">
-        <Anim animar={animar}>
-          {subtitulo && (
-            <p className="mb-5 font-sans text-sm font-semibold uppercase tracking-[0.16em] text-brand">{subtitulo}</p>
-          )}
-          {/* Sin ancho maximo: "Clientes y casos de éxito" entra en una linea
-              desde tablet; en telefono se parte en dos, balanceado. */}
-          <Titulo
-            id={`${id}-titulo`}
-            className="text-balance font-display text-[clamp(2.25rem,1.5rem+3vw,4rem)] font-extrabold leading-[1.04] tracking-[-0.02em] text-brand"
-          >
-            {titulo}
-          </Titulo>
-          {descripcion && (
-            <p className="mt-6 max-w-[760px] font-sans text-lg leading-relaxed text-ink-muted md:text-xl">{descripcion}</p>
-          )}
-        </Anim>
-
-        {/* 11fr / 9fr = 55% carrusel, 45% video. */}
-        <div className="mt-12 grid grid-cols-1 gap-10 md:mt-16 md:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] md:gap-8 lg:gap-10">
-          <Anim animar={animar} delay={0.08} className="min-w-0">
-            <CarruselGiros giros={giros} rotacion={rotacionAutomatica} animar={animar} />
-          </Anim>
-          <Anim animar={animar} delay={0.16} className="min-w-0 md:h-full">
-            <VideoClientes video={video} portada={imagen} titulo={titulo} />
-          </Anim>
+    <MarcoClientes id={id} nivel={nivel} subtitulo={subtitulo} titulo={titulo} descripcion={descripcion} animar={animar}>
+      {/* 11fr / 9fr = 55% carrusel, 45% video. */}
+      <div className="grid grid-cols-1 gap-10 lg:h-full lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:gap-10">
+        <div className="min-w-0 lg:h-full lg:min-h-0">
+          <CarruselGiros giros={giros} rotacion={rotacionAutomatica} animar={animar} />
         </div>
-
-        {clientes.length > 0 && (
-          <Anim animar={animar} delay={0.12} className="mt-12 flex min-w-0 flex-col gap-4">
-            {filaA.length > 0 && <FilaMarquesina clientes={filaA} reverso={false} />}
-            {filaB.length > 0 && <FilaMarquesina clientes={filaB} reverso />}
-          </Anim>
-        )}
+        <div className="min-w-0 lg:h-full lg:min-h-0">
+          <VideoClientes video={video} portada={imagen} titulo={titulo} />
+        </div>
       </div>
-    </section>
+    </MarcoClientes>
   );
 }

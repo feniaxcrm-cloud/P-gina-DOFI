@@ -150,7 +150,7 @@ export function CasosGiros({
     // (display: none) no se ve ni la lee un lector de pantalla.
     <div
       ref={raiz}
-      className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:gap-14"
+      className="grid grid-cols-1 gap-12 lg:h-full lg:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] lg:gap-14"
       onPointerEnter={(e) => {
         if (e.pointerType === "mouse") setPausado(true);
       }}
@@ -162,7 +162,7 @@ export function CasosGiros({
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setPausado(false);
       }}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 lg:h-full lg:min-h-0">
         <CarruselGiros
           giros={giros}
           rotacion={false}
@@ -175,9 +175,9 @@ export function CasosGiros({
         />
       </div>
 
-      {/* En escritorio el mazo acompaña el scroll mientras se recorren los
-          logos del giro (la columna de la izquierda es más alta). */}
-      <div className="hidden min-w-0 lg:sticky lg:top-24 lg:block lg:self-start lg:pt-2">{mazo}</div>
+      {/* En escritorio el mazo queda centrado en el alto de su columna: la
+          sección mide una pantalla y todo entra en ella (MarcoClientes). */}
+      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:justify-center">{mazo}</div>
     </div>
   );
 }

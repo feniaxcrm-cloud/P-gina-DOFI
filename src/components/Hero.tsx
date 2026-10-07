@@ -1,124 +1,56 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
+import { BotonCta } from "./BotonCta";
 import { CapabilityBand } from "./CapabilityBand";
+import { EscenaHero } from "./hero/EscenaHero";
 import type { HeroContent, Capacidad } from "@/lib/sanity";
 
 /**
- * Hero DOFI — composición única integrada, imagen editable desde Sanity.
- * (Sprint "Corrección Hero final"; ancho corregido en "Corrección del Hero +
- * actualización de tarjetas".)
+ * Hero del Home — versión premium (pedido del 2026-10-07: "que se vea más
+ * premium; si necesita algo, Remotion").
  *
- * ANCHO COMPLETO — LA CAUSA REAL DEL VACÍO LATERAL
- * -----------------------------------------------------------------
- * El Hero anterior ENVOLVÍA la capa visual (imagen + scrim + overlays)
- * dentro del mismo `<div className="... mx-auto max-w-page px-5 ...">` que
- * contiene el copy — el mismo contenedor angosto y con padding que usa el
- * resto del sitio. Aunque la imagen ya no tenía su propia tarjeta bordeada
- * (Sprint anterior), seguía topando contra ese `max-w-page` (1320px) más el
- * padding lateral, así que a partir de ~1400px de viewport aparecían franjas
- * blancas a los lados — exactamente el problema reportado.
+ *   ┌───────────────────────────────────────────────┬─────────────────────┐
+ *   │ ● DOFI AGENCIA CREATIVA                       │  01 · Atraer        │
+ *   │ Un Mar de                                     │      ↘              │
+ *   │ Ideas  (la última palabra con la marea de      │  02 · Convertir     │
+ *   │         color y un brillo que la recorre)     │      ↙              │
+ *   │ Convertimos atención en Ventas Inteligentes   │  03 · Escalar       │
+ *   │ [Quiero Mejorar mis Ventas →] [Mira…]         │  (Remotion, bucle)  │
+ *   ├───────────┬───────────┬───────────┬───────────┴─────────────────────┤
+ *   │ capacidad │ capacidad │ capacidad │ capacidad   (vidrio, una fila)  │
+ *   └───────────┴───────────┴───────────┴─────────────────────────────────┘
  *
- * La corrección usa la técnica estándar "full-bleed dentro de un contenedor
- * centrado": `md:left-1/2 md:w-screen md:-translate-x-1/2` saca la capa
- * visual del ancho del contenedor SIN moverla de lugar (queda relativa al
- * viewport, no al padded div) y SIN tocar su alto (`md:inset-y-0` conserva
- * el alto que ya definía `md:min-h-[460px] lg:min-h-[520px]` en el wrapper
- * padre). El copy y la banda de capacidades NO se tocan: siguen dentro del
- * `max-w-page` con el mismo padding del resto del sitio (spec §4: "el copy
- * puede mantenerse dentro de un ancho controlado").
+ * UNA PANTALLA: el hero entero (con las cuatro tarjetas) mide el alto de la
+ * ventana; la animación se mide por el alto que queda (.pantalla y
+ * --alto-util, globals.css).
  *
- * REEMPLAZA EL SPLIT ANTERIOR (texto | caja de imagen)
- * -----------------------------------------------------------------
- * El Hero anterior (Sprint "Navbar + Hero + Sanity") era dos columnas: copy
- * a la izquierda, la imagen encerrada en su propia tarjeta bordeada a la
- * derecha (55/45). Ese "media slot" separado desaparece por completo — ni
- * el contenedor, ni el placeholder de atmósfera que pintaba cuando faltaba
- * imagen, ni el degradado `.hero-media-gradient` que corría sobre él (ver
- * globals.css, retirado en este sprint). La imagen ahora ES el fondo visual
- * de todo el Hero: llena el mismo contenedor que ya usa el resto del sitio
- * (`max-w-page`, los mismos márgenes que el Header), sin borde ni radio en
- * escritorio — nunca se lee como una tarjeta, es la escena completa. El
- * copy vive delante, protegido por un scrim + formas geométricas moradas
- * (ver más abajo), nunca dentro de su propia caja.
+ * FONDO: el mar de DOFI de noche -- el morado profundo de la marca con dos
+ * resplandores (violeta y naranja) que se mueven muy despacio y el oleaje de
+ * líneas. La FOTO DEL STUDIO (Hero → imagen) sigue mandando: si hay una, se
+ * funde con el fondo en duotono morado a la derecha (textura, nunca compite
+ * con el texto). Sin foto, el fondo de marca solo.
  *
- * SIN SLIDER — UNA SOLA IMAGEN
- * -----------------------------------------------------------------
- * No hay array de imágenes, no hay estado de "slide activo", no hay
- * flechas ni dots. `content.imagen` es un único asset de Sanity (o `null`
- * si el Studio todavía no lo cargó, ver más abajo).
+ * LA ANIMACIÓN (columna derecha): "Ventas Inteligentes" en 12 segundos —
+ * atraer con contenido en redes, convertir por WhatsApp con IA y CRM, escalar
+ * las ventas. Sin cifras inventadas. Carga diferida: el título se pinta
+ * primero (ver EscenaHero).
  *
- * IMAGEN — SANITY, HOTSPOT, NO CROP DEL SERVIDOR (spec §6-7)
- * -----------------------------------------------------------------
- * Mismo mecanismo que ya existía: `object-position` calculado en el
- * cliente a partir del hotspot {x,y} de Sanity, sin instalar
- * @sanity/image-url. Lo único que cambia es CUÁNTO espacio ocupa la imagen
- * (todo el Hero, no 45vw) — por eso el ancho pedido a Sanity sube de 1600 a
- * 2400px (ver src/lib/sanity.ts) para no perder nitidez en pantallas
- * retina al tamaño nuevo, mucho mayor.
+ * MOVIMIENTO DEL TEXTO: las mismas clases hero-anim-* (entrada solo con
+ * transform y una flotación mínima): el H1 nunca nace invisible (regla de
+ * LCP). Con movimiento reducido todo queda quieto.
  *
- * SIN IMAGEN TODAVÍA: en vez de un hueco roto, se pinta la misma atmósfera
- * de manchas de luz que ya existía como placeholder, ahora ocupando todo
- * el Hero en lugar de una caja lateral.
- *
- * OVERLAYS GEOMÉTRICOS — DECORAN Y PROTEGEN A LA VEZ (spec §10-13, §22)
- * -----------------------------------------------------------------
- * Tres capas con `clip-path: polygon(...)` (paneles diagonales, no
- * rectángulos ni un gradient plano) en morado/lila DOFI, más un scrim
- * degradado fijo (sin animar) que oscurece la mitad izquierda —zona del
- * copy— y se aclara hacia la derecha, para que el texto siga siendo
- * legible SIN DEPENDER de que la foto que llegue desde Sanity tenga
- * contraste propio (spec §22). Los paneles solo animan `transform`
- * (translate + rotate + scale muy sutiles, "compositor-friendly", nunca
- * layout ni clip-path en sí) — la fotografía de abajo nunca se mueve. Ver
- * globals.css (`.hero-shape-*`) para las curvas exactas: 11-16s,
- * ease-in-out, `alternate` (va y vuelve sin salto perceptible al reinicio,
- * spec §14 — no hace falta duplicar contenido como en las marquesinas
- * porque no es un tile, es una forma que respira). En mobile los paneles
- * animados se ocultan (`hidden md:block`, spec §27 "los overlays pueden
- * simplificarse"); el scrim de legibilidad sigue activo siempre.
- *
- * COLOR DEL COPY — CLARO EN MOBILE, OSCURO SOBRE EL SCRIM DESDE `md:`
- * -----------------------------------------------------------------
- * El scrim solo protege al copy cuando la imagen está DETRÁS de él, y eso
- * únicamente pasa desde `md:` (en mobile la imagen es un bloque aparte,
- * más abajo, sobre el lienzo claro normal — ver "RESPONSIVE"). Por eso el
- * H1/marca/propuesta/CTA secundario usan los tokens oscuros (`ink`) como
- * base para mobile, y cambian a los tokens claros (`foam`/`mist`) desde
- * `md:` — verificado con Puppeteer: con los tokens oscuros fijos en las
- * dos resoluciones, "DOFI AGENCIA CREATIVA" (`ink-subtle`) quedaba casi
- * invisible sobre el scrim morado oscuro en desktop.
- *
- * SIN CTA REPETIDO, DOS NUEVOS (spec §16-19)
- * -----------------------------------------------------------------
- * "Empecemos" / "Conoce lo que hacemos" desaparecen. Principal: "Quiero
- * Mejorar mis Ventas" → /contactanos (misma ruta de siempre, sigue siendo
- * la de conversión real). Secundario: "Mira Nuestro Trabajo" → /clientes
- * (la ruta real de portafolio/casos que ya existe — se revisó
- * src/app/ antes de escribir el href, no se inventó /casos ni /portfolio).
- * El icono de flecha se conserva en el principal (ya es parte del
- * lenguaje visual del sitio); el secundario pierde el icono de play — ya
- * no apunta a un contenido audiovisual, apuntar a "ver trabajo" con un
- * ícono de reproducción hubiera sido engañoso.
- *
- * RESPONSIVE — LA IMAGEN CAMBIA DE ESTRATEGIA, NO DE ORIGEN (spec §27)
- * -----------------------------------------------------------------
- * Un solo <Image>, nunca dos instancias (evita duplicar la descarga). En
- * mobile vive en flujo normal, DESPUÉS del grupo de CTA (orden pedido:
- * copy → CTA → imagen → cards) dentro de una caja contenida con radio,
- * como cualquier bloque de media del sitio. Desde `md:` se vuelve
- * `position: absolute; inset: 0` sobre el mismo contenedor relativo,
- * saliendo del flujo por completo y quedando detrás del copy (z-index),
- * sin importar su posición en el DOM — así no hace falta ninguna utilidad
- * `order`, la reubicación es puramente CSS.
- *
- * MOTION DE TEXTO/CTA — SIN CAMBIOS DE TÉCNICA (spec §20-21)
- * -----------------------------------------------------------------
- * Mismas clases `hero-anim-*` (entrada transform-only + flotación continua
- * muy leve). Los dos botones siguen flotando como UN SOLO GRUPO: viven
- * dentro del mismo `.hero-anim-cta`, nunca animados por separado. Transform
- * nunca opacity — el H1 no puede nacer invisible (regla de LCP).
+ * TODO EL TEXTO SALE DEL STUDIO (paginaInicio → hero) con su respaldo en
+ * src/lib/sanity.ts, igual que antes: título, marca, mensaje y los dos
+ * botones. La última palabra del título es la que lleva el color.
  */
+
+function partirUltima(titulo: string): [string, string] {
+  const limpio = titulo.trim();
+  const i = limpio.lastIndexOf(" ");
+  return i < 0 ? ["", limpio] : [limpio.slice(0, i), limpio.slice(i + 1)];
+}
+
 export function Hero({
   content,
   capacidades,
@@ -129,98 +61,98 @@ export function Hero({
   const objectPosition = content.hotspot
     ? `${Math.round(content.hotspot.x * 100)}% ${Math.round(content.hotspot.y * 100)}%`
     : "50% 50%";
+  const [inicio, ultima] = partirUltima(content.titulo);
 
   return (
-    <section className="relative overflow-hidden bg-canvas pb-20 pt-[80px] md:pb-[84px] lg:pt-[84px]">
-      <div className="relative mx-auto max-w-page px-5 sm:px-6 md:px-10 lg:px-12 xl:px-14">
-        <div className="relative flex flex-col md:min-h-[460px] md:justify-center lg:min-h-[520px]">
-          {/* ---------- Copy: delante de la imagen, alineado a la izquierda ---------- */}
-          <div className="relative z-20 max-w-[560px] text-left">
-            <h1 className="hero-anim-h1 max-w-[520px] text-[clamp(2.75rem,1.6rem+4.5vw,5.25rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-ink md:text-foam">
-              {content.titulo}
-            </h1>
+    <section className="pantalla relative isolate overflow-hidden bg-abyss text-foam">
+      {/* ---------- Fondo ---------- */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(120%_120%_at_12%_0%,#2E1B68_0%,#1A0F3D_46%,#120A26_100%)]" />
 
-            <p className="hero-anim-brand mt-6 font-display text-sm font-semibold uppercase tracking-[0.14em] text-ink-subtle sm:text-base md:text-mist">
+        {content.imagen && (
+          <div className="absolute inset-y-0 right-0 w-full md:w-[62%] [mask-image:linear-gradient(90deg,transparent_0%,#000_45%)]">
+            <Image
+              src={content.imagen}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 62vw, 100vw"
+              priority
+              className="object-cover opacity-[0.32] mix-blend-luminosity"
+              style={{ objectPosition }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(75,42,147,0.55)_0%,rgba(18,10,38,0.35)_60%,rgba(244,123,32,0.18)_100%)] mix-blend-color" />
+          </div>
+        )}
+
+        <span className="hero-aurora hero-aurora-1" />
+        <span className="hero-aurora hero-aurora-2" />
+        <span className="hero-aurora hero-aurora-3" />
+
+        <svg className="absolute inset-x-0 bottom-0 h-[46%] w-full" viewBox="0 0 1440 400" preserveAspectRatio="none" fill="none">
+          <path d="M0 250 C 240 190, 480 310, 720 250 S 1200 190, 1440 240" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" />
+          <path d="M0 292 C 260 232, 520 352, 760 292 S 1220 232, 1440 282" stroke="rgba(244,123,32,0.30)" strokeWidth="1.5" />
+          <path d="M0 334 C 280 284, 540 384, 800 334 S 1240 284, 1440 324" stroke="rgba(255,255,255,0.06)" strokeWidth="1.5" />
+          <path d="M0 376 C 300 336, 560 416, 840 376 S 1260 336, 1440 368" stroke="rgba(109,75,201,0.45)" strokeWidth="1.5" />
+        </svg>
+      </div>
+
+      {/* En escritorio el contenedor mide exacto el alto util: la banda de abajo
+          toma lo suyo y la fila de arriba (texto + animacion) el resto. */}
+      <div className="relative mx-auto flex w-full max-w-page flex-col px-5 sm:px-6 md:px-10 lg:h-[var(--alto-util)] lg:min-h-[500px] lg:px-12 xl:px-14">
+        <div className="grid grid-cols-1 items-center gap-10 lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-8">
+          {/* ---------- Texto ---------- */}
+          <div className="relative z-10 min-w-0 lg:col-span-7">
+            <p className="hero-anim-brand inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.07] px-4 py-2 font-display text-xs font-semibold uppercase tracking-[0.18em] text-foam/90 backdrop-blur-sm sm:text-[13px]">
+              <span aria-hidden="true" className="relative flex h-2 w-2">
+                <span className="hero-latido absolute inset-0 rounded-full bg-accent-lift" />
+                <span className="relative h-2 w-2 rounded-full bg-accent-lift" />
+              </span>
               {content.marca}
             </p>
 
-            <p className="hero-anim-proposal mt-5 max-w-[440px] text-balance font-sans text-lg leading-relaxed text-ink/90 md:text-xl md:text-foam/90">
+            {/* La ultima palabra va sola en su linea ("Un Mar de / Ideas"): es la
+                que lleva la marea de color. */}
+            <h1 className="hero-anim-h1 mt-[clamp(1rem,3svh,1.75rem)] font-display text-[clamp(2.9rem,min(1.6rem+4.6vw,10svh),6rem)] font-extrabold leading-[0.96] tracking-[-0.035em]">
+              {inicio && (
+                <>
+                  {inicio}
+                  <br />
+                </>
+              )}
+              <span className="texto-marea">{ultima}</span>
+            </h1>
+
+            <p className="hero-anim-proposal mt-[clamp(0.9rem,2.8svh,1.75rem)] max-w-[460px] text-balance font-sans text-lg leading-relaxed text-foam/85 md:text-xl">
               {content.mensaje}
             </p>
 
-            <div className="hero-anim-cta mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="hero-anim-cta mt-[clamp(1.25rem,4svh,2.5rem)] flex flex-col gap-4 sm:flex-row sm:items-center">
+              <BotonCta texto={content.ctaPrincipalTexto} enlace={content.ctaPrincipalEnlace} />
               <Link
-                href={content.ctaPrincipalEnlace}
-                className="group inline-flex h-[52px] items-center justify-center gap-2 rounded-full bg-accent px-8 font-display text-button text-fg-on-accent transition-colors duration-200 hover:bg-accent-lift active:scale-[0.98]"
+                href={content.ctaSecundarioEnlace}
+                className="group inline-flex min-h-[56px] items-center justify-center gap-2 rounded-full border border-white/25 bg-white/[0.06] px-7 font-display text-button text-foam backdrop-blur-sm transition-colors duration-300 hover:border-white/50 hover:bg-white/[0.12] md:min-h-[64px]"
               >
-                {content.ctaPrincipalTexto}
-                <ArrowRight
+                {content.ctaSecundarioTexto}
+                <ArrowUpRight
                   size={18}
                   weight="bold"
                   aria-hidden="true"
-                  className="transition-transform duration-200 group-hover:translate-x-0.5"
+                  className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
-              </Link>
-
-              <Link
-                href={content.ctaSecundarioEnlace}
-                className="inline-flex h-[52px] items-center justify-center rounded-full border border-brand/25 px-7 font-display text-button text-ink transition-colors duration-200 hover:border-brand/50 hover:bg-brand/5 md:border-white/35 md:text-foam md:hover:border-white/60 md:hover:bg-white/10"
-              >
-                {content.ctaSecundarioTexto}
               </Link>
             </div>
           </div>
 
-          {/* ---------- Imagen: bloque contenido en mobile, full-bleed desde md: ----------
-              md:left-1/2 + md:w-screen + md:-translate-x-1/2 es la tecnica
-              estandar de "full-bleed dentro de un contenedor centrado": sale
-              del ancho del `max-w-page` padre sin salir de su alto
-              (md:inset-y-0 conserva el alto que ya fijaba el wrapper padre
-              via md:min-h-[460px] lg:min-h-[520px]). Funciona sin importar
-              que ancestro sea el "positioned container" porque left-1/2 se
-              resuelve sobre un arbol centrado con mx-auto — su centro YA
-              coincide con el centro real del viewport. */}
-          <div className="relative mt-8 aspect-[4/3] overflow-hidden rounded-[20px] md:absolute md:inset-y-0 md:left-1/2 md:mt-0 md:aspect-auto md:w-screen md:-translate-x-1/2 md:rounded-none">
-            {content.imagen ? (
-              <Image
-                src={content.imagen}
-                alt={content.imagenAlt}
-                fill
-                sizes="100vw"
-                priority
-                className="object-cover"
-                style={{ objectPosition }}
-              />
-            ) : (
-              // Sin imagen todavia en Sanity: atmosfera propia, no un hueco roto.
-              <div aria-hidden="true" className="absolute inset-0 bg-canvas-raised">
-                <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/12 blur-[80px]" />
-                <div className="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-accent/10 blur-[90px]" />
-              </div>
-            )}
-
-            {/* Scrim de legibilidad: fijo, nunca animado, mas fuerte a la
-                izquierda (zona del copy en desktop) y se aclara hacia la
-                derecha. Protege el texto sin depender del contraste propio
-                de la foto (spec §22). */}
-            <div aria-hidden="true" className="hero-scrim pointer-events-none absolute inset-0" />
-
-            {/* Overlays geometricos animados: solo desde md: (spec §27,
-                "los overlays pueden simplificarse" en mobile). La imagen en
-                si nunca se mueve — solo estas capas. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 hidden overflow-hidden md:block"
-            >
-              <span className="hero-shape hero-shape-1" />
-              <span className="hero-shape hero-shape-2" />
-              <span className="hero-shape hero-shape-3" />
-            </div>
+          {/* ---------- Animación ---------- */}
+          <div className="relative min-w-0 lg:col-span-5 lg:h-full lg:min-h-0">
+            {/* En escritorio se mide por el alto de la fila (el ancho sale de su
+                proporcion). */}
+            <EscenaHero className="mx-auto w-full max-w-[440px] lg:h-full lg:max-h-[620px] lg:w-auto lg:max-w-full" />
           </div>
         </div>
 
-        {/* ---------- Banda de capacidades, superpuesta ---------- */}
-        <div className="relative z-10 -mt-10 md:-mt-14">
+        {/* ---------- Banda de capacidades ---------- */}
+        <div className="relative z-10 mt-[clamp(1.25rem,3.4svh,2.5rem)] shrink-0">
           <CapabilityBand capacidades={capacidades} />
         </div>
       </div>

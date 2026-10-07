@@ -21,6 +21,7 @@ import { ctaImageBanner } from "./marketing/ctaImageBanner";
 import { metricsClientsBanner } from "./marketing/metricsClientsBanner";
 import { splitHeroBanner } from "./marketing/splitHeroBanner";
 import { casesClientsBanner } from "./marketing/casesClientsBanner";
+import { achievementsBanner } from "./marketing/achievementsBanner";
 import { metricasDemo } from "./objects/metricasDemo";
 import { chatDemo } from "./objects/chatDemo";
 import { reviewsBanner } from "./marketing/reviewsBanner";
@@ -66,6 +67,7 @@ export const schemaTypes = [
   metricasDemo,
   splitHeroBanner,
   casesClientsBanner,
+  achievementsBanner,
   reviewsBanner,
   ctaBanner,
 ];
