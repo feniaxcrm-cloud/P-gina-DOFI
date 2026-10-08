@@ -1,0 +1,1319 @@
+{
+  "_createdAt": "2026-09-28T21:23:56Z",
+  "_id": "traficoAdsPage",
+  "_rev": "FT2rlw4aEWhoXASJmm3gVB",
+  "_type": "traficoAdsPage",
+  "_updatedAt": "2026-10-02T20:08:20Z",
+  "sections": [
+    {
+      "_key": "eb11d4fc8f03",
+      "_type": "teamBanner",
+      "activo": true,
+      "alineacion": "izquierda",
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=pauta",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Convertimos la atención en clientes: campañas que llevan a las personas correctas a escribirte, registrarse o comprar.",
+      "destacado": "Tráfico con propósito.",
+      "overlay": "medio",
+      "subtitulo": "Tráfico / Ads",
+      "titulo": "Muchos likes, muchas vistas… pero ¿y las ventas?"
+    },
+    {
+      "_key": "a6f799feb6a3",
+      "_type": "aboutBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Ninguna marca se parece a otra, ni siquiera en el mismo nicho. Diseñamos campañas a la medida de tus objetivos, con la mirada puesta en vender y posicionar tu marca.\n\nNuestra ciencia son los datos: los medimos e interpretamos para tomar las decisiones correctas.",
+      "destacado": "Cada campaña tiene un rumbo.",
+      "subtitulo": "Nuestro sistema",
+      "titulo": "Tráfico inteligente. Estrategias que se adaptan."
+    },
+    {
+      "_key": "1c0ad3af2063",
+      "_type": "navigationBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Antes de invertir un dólar, definimos a dónde llevar el tráfico y qué debe pasar cuando llegue.",
+      "subtitulo": "¿Cómo lo hacemos?",
+      "titulo": "Construimos el mapa antes de zarpar."
+    },
+    {
+      "_key": "bdb93bd15e62",
+      "_type": "methodBanner",
+      "activo": true,
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=pauta",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Medimos cada campaña y ajustamos sobre la marcha para que tu inversión rinda más.",
+      "destacado": "Medir. Analizar. Optimizar.",
+      "mostrarPasos": true,
+      "pasos": [
+        {
+          "_key": "5e0d3b275393",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Objetivo"
+        },
+        {
+          "_key": "dd01ee8a83f9",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Audiencia"
+        },
+        {
+          "_key": "6795dc09711a",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Oferta"
+        },
+        {
+          "_key": "f1a0bc0f9172",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Canal"
+        },
+        {
+          "_key": "35abdde4f9bb",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Creatividad"
+        },
+        {
+          "_key": "a9521ada35a3",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Conversión"
+        },
+        {
+          "_key": "004128e1da56",
+          "_type": "pasoMetodo",
+          "descripcion": "",
+          "titulo": "Datos"
+        }
+      ],
+      "subtitulo": "Analizamos",
+      "titulo": "Para nosotros, todo son datos."
+    },
+    {
+      "_key": "6d16e8eed822",
+      "_type": "platformsBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Elegimos la plataforma donde está tu audiencia.",
+      "plataformas": [
+        {
+          "_key": "4129952c0828",
+          "_type": "plataforma",
+          "descripcion": "Reconocimiento, mensajes, clientes potenciales y ventas.",
+          "etiqueta": "Facebook + Instagram",
+          "icono": "meta",
+          "nombre": "Meta Ads"
+        },
+        {
+          "_key": "e07bd5e904eb",
+          "_type": "plataforma",
+          "descripcion": "Contenido que capta atención y llega a nuevas audiencias.",
+          "etiqueta": "Descubrimiento + atención + acción",
+          "icono": "tiktok",
+          "nombre": "TikTok Ads"
+        },
+        {
+          "_key": "3858bbba0e6e",
+          "_type": "plataforma",
+          "descripcion": "Te encuentran justo cuando buscan lo que ofreces.",
+          "etiqueta": "Cuando ya hay intención",
+          "icono": "google",
+          "nombre": "Google Ads"
+        },
+        {
+          "_key": "0ce7c81db7a9",
+          "_type": "plataforma",
+          "descripcion": "Medimos qué hace cada visita y mejoramos el camino hacia la compra.",
+          "etiqueta": "Visitas que se convierten",
+          "icono": "web",
+          "nombre": "Tráfico web"
+        }
+      ],
+      "subtitulo": "¿Dónde traficamos?",
+      "titulo": "El tráfico no tiene un solo destino."
+    },
+    {
+      "_key": "12afa6451435",
+      "_type": "ecosystemBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Te descubren en Instagram, te buscan en Google, visitan tu web y te escriben por WhatsApp.",
+      "destacado": "Estar en los lugares correctos, con estrategia.",
+      "subtitulo": "Ecosistema",
+      "titulo": "No hacemos campañas aisladas. Construimos ecosistemas."
+    },
+    {
+      "_key": "6d6a33c852f6",
+      "_type": "metricsClientsBanner",
+      "activo": true,
+      "animar": true,
+      "categorias": [
+        {
+          "_key": "4e25c6ff17e8",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "386cd8de827c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-169099e9c020819023891e32538c2ed96ab910c8-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cámara de la Construcción de Cuenca"
+            },
+            {
+              "_key": "7cb020ff8f7d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b898d6450603c263de85f2f0322fb4765ce78972-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Adelca"
+            },
+            {
+              "_key": "d852b29d5325",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f0509effa2ce320893750a206ec2b9630af2f048-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "CEMIX"
+            },
+            {
+              "_key": "9a5f1b156a94",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-eb89ccf94798e1b404d35e086ff82769d42c8a33-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial Luna Pazmiño"
+            },
+            {
+              "_key": "817093d394e2",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f434637d916094636ff1a4ffbb6a5bbdc8ae56cc-500x500-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Construgypsum"
+            },
+            {
+              "_key": "c1fbe31dedff",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-9bef08afcf62d693b56e6a3de2ef8cdc54aa7338-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ecuaceramica"
+            },
+            {
+              "_key": "e924f2d2868b",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cad2f1fdb4d8c1d8d7ef14a8359d06ec1eec46d9-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Electro Comercial MZ"
+            },
+            {
+              "_key": "c3544b2495fa",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-16aaf7af0146acadebb601db90ffa58092a9fe92-450x150-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Eternit Ecuador"
+            },
+            {
+              "_key": "b3ea88689654",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cb4b535a25d4ae9a5c42298e3e7729cad2b66a57-596x335-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Fabián Pintado S.A."
+            },
+            {
+              "_key": "9c7dfa3be066",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-a3ebc81f49a06b153896f87819dc24f06fa9e813-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ferricenter Arenal"
+            },
+            {
+              "_key": "ff7768f59744",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-20746ef4242e769d937af65c323ac41304cf8712-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Guapan"
+            },
+            {
+              "_key": "925c73e25a87",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-216c389f06b86a002a7571396f17aee4d889db8a-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dar Ceramics"
+            },
+            {
+              "_key": "488fdfa3a42e",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-220482103b5eae7814ec966d37f5a47fe37d04e3-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Ferreteria Vasquez Brito"
+            },
+            {
+              "_key": "856e26060d60",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-80fcdeee25483e147b69553f2d2f06f79155692e-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Italpisos"
+            },
+            {
+              "_key": "3b3dafdee939",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-2cf6ffeb1e5d05457115248bd5cb6d6bda1e9afb-1200x600-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Casa Del Calefón"
+            },
+            {
+              "_key": "3d7b10ad2af2",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-c5b074cc1e125cb699b0d5e848df328888b83128-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Macosa"
+            },
+            {
+              "_key": "9b2cac8f62ed",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ffb0d8311f31909ccb753e4ed505288a5e81b2ad-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "MEGAHIERRO"
+            },
+            {
+              "_key": "6f5f19131974",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f1f3f88476edabd81a4af4732a0f0cfccab54eda-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "VESBO"
+            }
+          ],
+          "icono": "construccion",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Visitas de obra",
+            "alcance": 61000,
+            "campana": "Cotizaciones de obra",
+            "cpa": 38,
+            "cpr": 4.6,
+            "ctr": 1.4,
+            "hitos": [
+              {
+                "_key": "39cfee2057d8",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "da765eaba025",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "c35e7f1bd6dc",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 900,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "clientes_potenciales",
+            "resultado": "Clientes potenciales",
+            "visualizaciones": 148000
+          },
+          "nombre": "Construcción"
+        },
+        {
+          "_key": "9fe616495db5",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "96381071c125",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8f4986e477b55274c0045532b8d324c887d65f4d-844x844-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Universidad Católica de Cuenca"
+            },
+            {
+              "_key": "969cdcb832db",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-bdef9de957fecedc2e70880e095b780d019ead75-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Academia Cuenca"
+            },
+            {
+              "_key": "151117457f17",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-55be6c7f4f836c882d4ec9fbb4316cb67c4a8fc6-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Clap Clap Kinder Kids"
+            },
+            {
+              "_key": "872d4fe3dc48",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e1546ec857a9e34b545537c93ecbce32b07d6733-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cosbell School"
+            },
+            {
+              "_key": "5a1efcdfc1d8",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-7a3107062c52d89a1c84db79d81e8fda3c8cf3e1-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Estudia Inteligente"
+            },
+            {
+              "_key": "510330ba1fcf",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e179f013523945a0e7a0ab3368f76763a1bfb8c3-512x512-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Inntrade"
+            },
+            {
+              "_key": "12c667f2e25d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-496cbe6501965a9b99a3aa865991ff27ee63c26b-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Unitec Discovery"
+            }
+          ],
+          "icono": "servicios",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Inscripciones",
+            "alcance": 55000,
+            "campana": "Inscripciones a cursos",
+            "cpa": 25,
+            "cpr": 2.4,
+            "ctr": 1.7,
+            "hitos": [
+              {
+                "_key": "a8328b98adb0",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "7f7b1ed4c1c7",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "b993d49f4cb1",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 500,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "clientes_potenciales",
+            "resultado": "Clientes potenciales",
+            "visualizaciones": 119000
+          },
+          "nombre": "Educación y Servicios"
+        },
+        {
+          "_key": "c1fdfe9df0cf",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "3342e3b928b2",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-c75f79452be9258faa0548d025529e52d617bf53-512x512-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "DS"
+            },
+            {
+              "_key": "4b1efc4a58d4",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fd8c7e837066b42d83608f6961737824b6e1e359-204x204-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Atemporal"
+            },
+            {
+              "_key": "5346211d5487",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8191de2a6e55c01f68563ccb653fd5f8a9554aba-655x655-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Baby Dance Vayoleth"
+            },
+            {
+              "_key": "fe5ee1bf426b",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-f7cc42fdfa493a9a1e282a24ac94666f7fe0eab7-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dental Estudio"
+            },
+            {
+              "_key": "91f39a189093",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-16c1284cc3ddcd086e46417841f29ed51e1ec7bb-784x784-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dentine Odontología"
+            },
+            {
+              "_key": "6e29e148670a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-71b22cce2d262b8ca86363d4929cd26621028f57-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Gimnasio Dorian"
+            },
+            {
+              "_key": "3e1bffb4cc6d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-495526964a6826e0160b903e07be25485014c8fe-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "GS Ópticas"
+            },
+            {
+              "_key": "83007b18c259",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-558b156d511af29b69bc3adafc187c5999153743-735x272-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Catedral del Futbol"
+            },
+            {
+              "_key": "4d6d05242e9c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6965e9878f6f0860375c8fb4767973a5e4d71bc1-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "La Pesa Artesana"
+            },
+            {
+              "_key": "f0b9c10e786d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-378173d501096839d6e95f677831f6322650fa31-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Scan 3D"
+            },
+            {
+              "_key": "319511a7b99a",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8ea030db24150bdd5f0fd8382fe6776c71d49bc2-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Derma Stethic"
+            },
+            {
+              "_key": "e69be6cec627",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6bce7bd1c2f0390f4a155a73189f90cd6aad40a3-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Spazio Sthetic Center"
+            },
+            {
+              "_key": "2a7082a0fbf7",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-3ba0916645816efa1685ebf3ac2a127941d38cda-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Sparta Gym"
+            },
+            {
+              "_key": "436dd1371fac",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ed5511431c67c5edea55ce2a5df36f92bae493e4-192x192-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Sport Center"
+            },
+            {
+              "_key": "98cc6005984c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-9f741773b338cdea4cb2d44d8e1a4114f08aa6e4-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "X Ray Solution"
+            }
+          ],
+          "icono": "belleza",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Membresías",
+            "alcance": 52800,
+            "campana": "Planes y clases de prueba",
+            "cpa": 14,
+            "cpr": 1.9,
+            "ctr": 1.9,
+            "hitos": [
+              {
+                "_key": "4300e258039c",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "be2ab8009643",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "ceac79ede0b3",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 420,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "clientes_potenciales",
+            "resultado": "Clientes potenciales",
+            "visualizaciones": 112000
+          },
+          "nombre": "Fitness, salud y belleza"
+        },
+        {
+          "_key": "d5ddfff3eafb",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "84961a2b1976",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-40cfe32d3a24d18fc02a697fbd6e5ddea97ee6d0-1000x1000-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Bondia"
+            },
+            {
+              "_key": "859d34ef7c95",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ac15e13446fb1f879c8803b4a55338f20237a389-2017x2017-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Buffalo Steak House"
+            },
+            {
+              "_key": "ae95608771d2",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-36599b1be1be753ceff9f193be0683cbd0513ecf-1000x1000-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Carbonazo"
+            },
+            {
+              "_key": "64c805378873",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-aee3c54355488f43b72e7a94e2220ff905d8efdc-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Casona del Zam"
+            },
+            {
+              "_key": "02ebf06a8149",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-1002fddafb266eaf0ff3ae93884561a3760a4c43-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Los Ceviches de la Huayna Capac"
+            },
+            {
+              "_key": "a8105befb5a7",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-cc264a413d71adff507dcadf45113fa47700610d-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Chico Gato"
+            },
+            {
+              "_key": "4a767e13a8db",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b25de139346276d2733d2e93bb55d8999ac0c6df-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Cobayo"
+            },
+            {
+              "_key": "813b18a9def2",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ff0684fffb537287dd57f7a555d14f1da3ffbfb1-447x447-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Horno"
+            },
+            {
+              "_key": "f71bd5223450",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-34d41714664b2d4d50b44e7737187e686bba827a-700x700-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Hornero"
+            },
+            {
+              "_key": "c61f5057dc95",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6958462cfbaab3317e204c26c17aedf5033feb6d-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "El Parce"
+            },
+            {
+              "_key": "517cf8bc84ef",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-50ae33194b3549371bd73a20e80f78d8125880af-512x485-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Mi Escondite"
+            },
+            {
+              "_key": "1c5130e89988",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-2729ab048beb869f4d6704c4ca7dfd5438e56b4b-437x457-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Silvestra"
+            },
+            {
+              "_key": "3972fdb7b4ec",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fd2a4678787e3f84bc112196f8a72acc8404d09b-500x241-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Taitico"
+            }
+          ],
+          "icono": "gastronomia",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Reservas",
+            "alcance": 48200,
+            "campana": "Reservas por WhatsApp",
+            "cpa": 3.4,
+            "cpr": 0.85,
+            "ctr": 2.8,
+            "hitos": [
+              {
+                "_key": "c36d6b16e162",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "e11b68730640",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "ee7447f7b38b",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 450,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "mensajes",
+            "resultado": "Conversaciones",
+            "visualizaciones": 126500
+          },
+          "nombre": "Gastronomía"
+        },
+        {
+          "_key": "a1b7d4f4301d",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "c3be469eafdb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b83d91474d1f2d934fa83c04305e91e7ec1f314f-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Abus"
+            },
+            {
+              "_key": "bdea4ebd0bb0",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-09f079e6810a64af17f79e8fc2e45588ba27a018-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Almacenes Lolita"
+            },
+            {
+              "_key": "bf48babec868",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-fae6acfcf99c51fd7674a924e80e8348b6e27112-801x801-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Anto Carboné"
+            },
+            {
+              "_key": "38cedec3a8de",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-b1651d7f3a5bd6618e5e826e3012967e4b0eb1e8-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Casa del Repuesto Japonés"
+            },
+            {
+              "_key": "d02ca61efa51",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-396138c34ea89bff05178cd80886086b9c24428f-1000x1000-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial JyC"
+            },
+            {
+              "_key": "0ac4824d966d",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-95dd3260a2180e8a360a310bc2401e4b4a903aad-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Comercial Solís"
+            },
+            {
+              "_key": "23e5c4d20cae",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ea0304e39241f5477722c57fa3f4640499de5b2e-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Dukare"
+            },
+            {
+              "_key": "10b36da2accf",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e4412d9919ee5efbe2adf14799ecd29da219d69a-807x807-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Frada Sport"
+            },
+            {
+              "_key": "b364eb313328",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-deadebfd6540f7e3d3c5c46b9b196d3b0b0a29b6-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Home Solis"
+            },
+            {
+              "_key": "fa1a974cb9fe",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-5f0ece3ed8caafea52bdcf9d0d6148279e59792a-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Importadora GP"
+            },
+            {
+              "_key": "3b62eea7041c",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-ef5977084fd755efd03bf929aedf4c171ddfbcbd-447x447-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Universal"
+            },
+            {
+              "_key": "9e365e874543",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-8bdb056d7df1ae9a0f5558d06d54e910b94d2f63-2042x527-webp",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Marcimex"
+            },
+            {
+              "_key": "0f643c482743",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-caaccd66c7239d0499dc400430d9fca4865fb145-554x554-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Muebles Vera Vázquez"
+            },
+            {
+              "_key": "93a3fd76a97f",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-7abf204540c84f33a62ef729dda3fa7fc1978d1f-445x449-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Royal Enfield"
+            },
+            {
+              "_key": "3caacaf76e67",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-6eae30f888629bc32689c1c650f495fad0aa0e4d-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Blu 360"
+            }
+          ],
+          "icono": "comercio",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Clientes nuevos",
+            "alcance": 70400,
+            "campana": "Ventas de la tienda online",
+            "cpa": 9.4,
+            "cpr": 5.9,
+            "ctr": 1.6,
+            "hitos": [
+              {
+                "_key": "0df2212cddf3",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "52278859e3bb",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "2a2c0b73e70e",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 600,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "ventas",
+            "resultado": "Compras",
+            "visualizaciones": 168000
+          },
+          "nombre": "Retail"
+        },
+        {
+          "_key": "4571adeddd23",
+          "_type": "categoriaIcono",
+          "empresas": [
+            {
+              "_key": "721661a6dfeb",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-5822718142b5773b45a03077d762beaf3e535cb3-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cuenca Tour 360"
+            },
+            {
+              "_key": "1f5f674d3488",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-172dd8b39a67f85435405e95a8f409ebbdd066e7-881x881-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Hotel Cisne"
+            },
+            {
+              "_key": "8db1f5a5b07f",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-51251ecedd6dbc945e2ebd3645e9f914aa86c375-1080x1080-jpg",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Mallki Hostel"
+            },
+            {
+              "_key": "6ffd94f41288",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-e5847bbff936029b828a55495cce7955e11abc1d-447x447-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Cooperativa Loja"
+            },
+            {
+              "_key": "a78ab5e25974",
+              "_type": "empresaGiro",
+              "logo": {
+                "_type": "image",
+                "asset": {
+                  "_ref": "image-0a8368740d56d1755b05248417ba5d0e86fb72f0-1080x1080-png",
+                  "_type": "reference"
+                }
+              },
+              "nombre": "Easy Trip"
+            }
+          ],
+          "icono": "emprendedores",
+          "metricas": {
+            "_type": "metricasDemo",
+            "adquisicion": "Reservas",
+            "alcance": 59000,
+            "campana": "Cotizaciones de paquetes",
+            "cpa": 22,
+            "cpr": 1.25,
+            "ctr": 2.4,
+            "hitos": [
+              {
+                "_key": "e02575d9d8f1",
+                "_type": "hito",
+                "dia": 7,
+                "texto": "Nueva creatividad"
+              },
+              {
+                "_key": "121c3f45ee46",
+                "_type": "hito",
+                "dia": 14,
+                "texto": "Audiencia ajustada"
+              },
+              {
+                "_key": "a363a1cb3e21",
+                "_type": "hito",
+                "dia": 21,
+                "texto": "Presupuesto escalado"
+              }
+            ],
+            "inversion": 550,
+            "nota": "Cifras de ejemplo con fines ilustrativos: no corresponden a un cliente real.",
+            "objetivo": "mensajes",
+            "resultado": "Conversaciones",
+            "visualizaciones": 131000
+          },
+          "nombre": "Turismo"
+        }
+      ],
+      "descripcion": "Elige un giro y mira cómo medimos una campaña de Meta Ads.",
+      "rotacionAutomatica": true,
+      "titulo": "Clientes y casos de éxito"
+    },
+    {
+      "_key": "7388bc8bd004",
+      "_type": "reviewsBanner",
+      "activo": true,
+      "animar": true,
+      "titulo": "Reseñas en Google"
+    },
+    {
+      "_key": "6f7df486b9d3",
+      "_type": "ctaImageBanner",
+      "activo": true,
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=pauta",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Convierte tu presupuesto en tráfico, oportunidades y crecimiento.",
+      "destacado": "Zarpemos juntos.",
+      "titulo": "¿Listos para poner tu inversión en movimiento?"
+    }
+  ],
+  "titulo": "Tráfico / Ads"
+}
