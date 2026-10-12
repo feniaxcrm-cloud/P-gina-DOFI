@@ -29,6 +29,19 @@ const sora = localFont({
 });
 
 /**
+ * Archivo (con su eje de ancho): SOLO para el titulo condensado del banner de
+ * Pauta del Home, recreado con Remotion. `preload: false`: no se descarga en
+ * las paginas que no lo usan; el navegador lo pide cuando el banner lo pinta.
+ */
+const archivo = localFont({
+  src: "./fonts/archivo-variable.woff2",
+  variable: "--font-archivo",
+  display: "swap",
+  weight: "800 900",
+  preload: false,
+});
+
+/**
  * URL publica y permiso de indexacion: ambos salen de src/config/site.ts.
  *
  * Antes aqui estaba escrito a mano `const siteUrl = "https://dofi.agency"`,
@@ -87,7 +100,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${sora.variable} ${GeistSans.variable}`}>
+    <html lang="es" className={`${sora.variable} ${GeistSans.variable} ${archivo.variable}`}>
       <body>
         {/*
           THESIS: El lienzo blanco reemplaza el canvas oscuro en Navbar,

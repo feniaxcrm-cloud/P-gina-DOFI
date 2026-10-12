@@ -4,20 +4,21 @@
  * respaldo, para que todo quede EDITABLE en el Studio:
  *
  *  - Las 5 secciones, en orden: Portada (título, logo, frase, botón y la foto
- *    grupal), ¿Qué es Rescatando Emprendedores?, Clientes y casos de éxito
- *    (el mazo de casos), Logros (las tarjetas con foto que reemplazan a las
- *    reseñas, pedido del 2026-10-07) y Cierre, con los textos de
- *    src/lib/asesorias-respaldo.ts.
- *  - Sube el logo, la foto de la portada, las imágenes de los casos y las
- *    fotos de los logros (public/asesorias/), cada una con su texto
- *    alternativo.
- *  - Clientes no lleva giros propios: usa los de Marketing Digital (las mismas
- *    empresas y logos, sin cargarlos dos veces).
+ *    grupal), ¿Qué es Rescatando Emprendedores?, Clientes y casos de éxito,
+ *    Logros (las tarjetas con foto que reemplazan a las reseñas, pedido del
+ *    2026-10-07) y Cierre, con los textos de src/lib/asesorias-respaldo.ts.
+ *  - CLIENTES Y CIERRE SON LOS DE MARKETING DIGITAL, TAL CUAL (pedido del
+ *    2026-10-08): Clientes lleva el mismo título, la misma portada y el MISMO
+ *    VIDEO (el archivo ya subido, no se vuelve a subir) y usa los giros de
+ *    Marketing Digital (las mismas empresas y logos); el Cierre lleva las dos
+ *    imágenes que acompañan al de Marketing (el hombre y el delfín: el mismo
+ *    archivo). Todo se puede reemplazar en el Studio, en esta página.
+ *  - Sube el logo, la foto de la portada y las fotos de los logros
+ *    (public/asesorias/), cada una con su texto alternativo.
  *
- * LOS CASOS Y LOS LOGROS SON DE EJEMPLO (firman «Ejemplo — reemplázalo»):
- * quedan cargados para reemplazarlos en el Studio por los reales. Ahí se
- * agregan, borran y reordenan las tarjetas, y se cambia la foto y el mensaje
- * de cada una.
+ * LOS LOGROS SON DE EJEMPLO (firman «Ejemplo — reemplázalo»): quedan cargados
+ * para reemplazarlos en el Studio por los reales. Ahí se agregan, borran y
+ * reordenan las tarjetas, y se cambia la foto y el mensaje de cada una.
  *
  * SEGURO POR DEFECTO:
  *  - Sin --aplicar solo muestra lo que haría (no sube ni escribe nada).
@@ -30,7 +31,7 @@
  * .env.local, o una sesión de la CLI de Sanity (`sanity exec
  * --with-user-token`); la simulación no necesita ninguno. Después de
  * correrlo, redeploy del Studio para ver los tipos nuevos (splitHeroBanner,
- * casesClientsBanner, achievementsBanner).
+ * achievementsBanner).
  *
  * Uso: npx tsx --env-file=.env.local scripts/sembrar-asesorias.mts [--aplicar] [--forzar]
  */
@@ -58,22 +59,19 @@ const raiz = process.cwd();
 
 const client = createClient({ projectId, dataset, token: aplicar ? token : undefined, apiVersion: "2024-01-01", useCdn: false });
 
-/** Igual que claveGiro() de src/lib/asesorias.ts: sin mayúsculas, tildes ni
- *  espacios de más («CONSTRUCCIÓN» y «Construccion» son el mismo giro). */
-const claveGiro = (nombre: string) =>
-  nombre
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-
 // ---------------------------------------------------------------- datos
 const existente = await client.getDocument("asesoriasPage");
 const girosMarketing =
   (await client.fetch<Array<string | null> | null>(
     `*[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[].nombre`
   )) ?? [];
+// Lo de Marketing Digital que Asesorías replica (referencias a los mismos archivos).
+const clientesMarketing = await client.fetch<Record<string, unknown> | null>(
+  `*[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0]{ subtitulo, titulo, descripcion, rotacionAutomatica, imagen, video, ajusteVideo, sonidoVideo }`
+);
+const cierreMarketing = await client.fetch<{ imagen?: Record<string, unknown> } | null>(
+  `*[_type == "marketingDigitalPage"][0].sections[_type == "ctaBanner"][0]{ imagen }`
+);
 
 const seccionesActivas = ((existente?.sections as Array<Record<string, unknown>>) ?? []).filter(
   (s) => s.activo !== false && typeof s.titulo === "string" && s.titulo.trim()
@@ -121,22 +119,6 @@ const img = IMAGENES_ASESORIAS;
 const cta = (x: { texto: string; enlace: string }) => ({ _type: "ctaSimple", texto: x.texto, enlace: x.enlace });
 
 // En serie, no en paralelo: así un mismo archivo nunca se sube dos veces.
-const casos = [];
-for (const caso of c.clientes.casos) {
-  if (caso.giro && !girosMarketing.some((g) => g && claveGiro(g) === claveGiro(caso.giro))) {
-    console.log(`  AVISO: el caso «${caso.titulo}» abre el giro «${caso.giro}», que no está en Marketing Digital. Elige otro en el Studio.`);
-  }
-  casos.push({
-    _key: clave(),
-    _type: "casoExito",
-    titulo: caso.titulo,
-    texto: caso.texto,
-    giro: caso.giro,
-    cliente: caso.cliente,
-    imagen: await imagenDe(img.casos[caso.imagen]),
-  });
-}
-
 const logros = [];
 for (const l of c.logros.items) {
   logros.push({
@@ -166,11 +148,16 @@ const doc = {
     },
     { _type: "aboutBanner", ...c.queEs },
     {
-      _type: "casesClientsBanner",
-      titulo: c.clientes.titulo,
-      casos,
-      pasoAutomatico: c.clientes.pasoAutomatico,
-      segundosPorCaso: c.clientes.segundosPorCaso,
+      // El mismo Clientes de Marketing Digital: título, portada y video.
+      _type: "clientsBanner",
+      subtitulo: (clientesMarketing?.subtitulo as string | undefined) ?? undefined,
+      titulo: (clientesMarketing?.titulo as string | undefined) || c.clientes.titulo,
+      descripcion: (clientesMarketing?.descripcion as string | undefined) ?? undefined,
+      rotacionAutomatica: (clientesMarketing?.rotacionAutomatica as boolean | undefined) ?? true,
+      ...(clientesMarketing?.imagen ? { imagen: clientesMarketing.imagen } : {}),
+      ...(clientesMarketing?.video ? { video: clientesMarketing.video } : {}),
+      ...(clientesMarketing?.ajusteVideo ? { ajusteVideo: clientesMarketing.ajusteVideo } : {}),
+      ...(typeof clientesMarketing?.sonidoVideo === "boolean" ? { sonidoVideo: clientesMarketing.sonidoVideo } : {}),
     },
     {
       _type: "achievementsBanner",
@@ -187,12 +174,14 @@ const doc = {
       cta: cta(c.cierre.cta),
       alineacion: "centro",
       overlay: "medio",
+      // Las dos imágenes que acompañan el cierre de Marketing (el mismo archivo).
+      ...(cierreMarketing?.imagen ? { imagen: cierreMarketing.imagen } : {}),
     },
   ].map((s) => ({ _key: clave(), activo: true, animar: true, ...s })),
 };
 
 console.log(`\nSecciones: ${doc.sections.map((s) => s._type).join(", ")}`);
-console.log(`Casos: ${casos.length} · Logros: ${logros.length} · Imágenes: ${subidas.size}`);
+console.log(`Logros: ${logros.length} · Imágenes subidas: ${subidas.size}`);
 console.log(`Giros de Marketing Digital (Clientes los usa): ${girosMarketing.filter(Boolean).join(", ") || "(ninguno)"}`);
 
 if (!aplicar) {

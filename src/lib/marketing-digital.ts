@@ -450,7 +450,7 @@ export function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[
     }));
 }
 
-function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
+export function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
   const url = t(raw.videoUrl);
   if (!url) return null;
   return { url, ajuste: unoDe(raw.ajusteVideo, AJUSTES_VIDEO, "rellenar"), sonido: bool(raw.sonidoVideo, false) };

@@ -44,6 +44,276 @@
         "value": "15px",
         "createdAt": "2026-10-01T13:40:01.560Z",
         "reason": "Claude: paso ya usado en los componentes publicados de Marketing Digital (PiezaGrafica, RutaMetodo, ResenasCarrusel), replicado en la pagina FENIAX"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,120,60,0.40)",
+        "createdAt": "2026-10-08T20:35:58.860Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(150,90,255,0.40)",
+        "createdAt": "2026-10-08T20:35:58.961Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,255,255,0.85)",
+        "createdAt": "2026-10-08T20:35:59.057Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#d9c8ff",
+        "createdAt": "2026-10-08T20:35:59.173Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#9a72ff",
+        "createdAt": "2026-10-08T20:35:59.284Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#fff",
+        "createdAt": "2026-10-08T20:35:59.427Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#1877f2",
+        "createdAt": "2026-10-08T20:35:59.545Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(140,100,255,0.35)",
+        "createdAt": "2026-10-08T20:35:59.672Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,255,255,0.95)",
+        "createdAt": "2026-10-08T20:35:59.801Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#b79cff",
+        "createdAt": "2026-10-08T20:35:59.959Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,255,255,0.75)",
+        "createdAt": "2026-10-08T20:36:00.087Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#2347dd",
+        "createdAt": "2026-10-08T20:36:00.207Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#0b1260",
+        "createdAt": "2026-10-08T20:36:00.316Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#070b3e",
+        "createdAt": "2026-10-08T20:36:00.439Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#2e1d44",
+        "createdAt": "2026-10-08T20:36:00.543Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#ffffff",
+        "createdAt": "2026-10-08T20:36:00.649Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#1f1e1d",
+        "createdAt": "2026-10-08T20:36:00.764Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#6fa8ff",
+        "createdAt": "2026-10-08T20:36:00.870Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#2f6bff",
+        "createdAt": "2026-10-08T20:36:00.978Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#1237c8",
+        "createdAt": "2026-10-08T20:36:01.093Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(190,90,255,0.30)",
+        "createdAt": "2026-10-08T20:36:01.212Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,90,170,0.22)",
+        "createdAt": "2026-10-08T20:36:01.321Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#feda75",
+        "createdAt": "2026-10-08T20:36:01.430Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#d62976",
+        "createdAt": "2026-10-08T20:36:01.539Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#962fbf",
+        "createdAt": "2026-10-08T20:36:01.654Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#4f5bd5",
+        "createdAt": "2026-10-08T20:36:01.776Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(40,0,90,0.35)",
+        "createdAt": "2026-10-08T20:36:01.922Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgba(255,255,255,0.9)",
+        "createdAt": "2026-10-08T20:36:02.054Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(150,40,245)",
+        "createdAt": "2026-10-08T20:36:02.163Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(96,14,180)",
+        "createdAt": "2026-10-08T20:36:02.279Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(30,12,86)",
+        "createdAt": "2026-10-08T20:36:02.400Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(14,26,128)",
+        "createdAt": "2026-10-08T20:36:02.506Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(66,16,150)",
+        "createdAt": "2026-10-08T20:36:02.632Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(82,6,170)",
+        "createdAt": "2026-10-08T20:36:02.738Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#ffc03a",
+        "createdAt": "2026-10-08T20:36:02.842Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#ff9a1f",
+        "createdAt": "2026-10-08T20:36:02.945Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#ff7a12",
+        "createdAt": "2026-10-08T20:36:03.048Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#4a24f2",
+        "createdAt": "2026-10-08T20:36:03.158Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#6b2fe0",
+        "createdAt": "2026-10-08T20:36:03.264Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#120c5c",
+        "createdAt": "2026-10-08T20:36:03.384Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#190f6b",
+        "createdAt": "2026-10-08T20:36:03.490Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#3a1c98",
+        "createdAt": "2026-10-08T20:36:03.603Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#7fe6ff",
+        "createdAt": "2026-10-08T20:36:03.713Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#1fb6ff",
+        "createdAt": "2026-10-08T20:36:03.847Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#3e8cff",
+        "createdAt": "2026-10-08T20:36:11.052Z",
+        "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
       }
     ]
   }

@@ -5,6 +5,7 @@ import {
   type SocialLinks,
 } from "@/data/clients";
 import { whatsappUrl } from "@/lib/whatsapp";
+import { CLAVES_ESCENA, type ClaveEscena } from "@/remotion/home/tema";
 
 /**
  * Conexion a Sanity para las Cuentas (carrusel, muro de logos, pagina
@@ -511,6 +512,14 @@ export type CtaBanner = {
   mobile: PosicionCta;
 };
 
+/** La foto de primer plano de un banner hibrido (escena Remotion + foto). */
+export type FotoPrimerPlano = {
+  url: string;
+  ancho: number;
+  alto: number;
+  hotspot: { x: number; y: number } | null;
+};
+
 export type SeccionContenido = {
   /** Clave estable del item dentro del arreglo de Sanity, usada como key de
    *  React (antes se usaba el titulo, que ya no existe). Se llama "id" y no
@@ -533,6 +542,16 @@ export type SeccionContenido = {
   /** null cuando el banner no tiene texto o enlace cargados: en ese caso se
    *  pinta la imagen sola, sin boton (no un boton vacio). */
   cta: CtaBanner | null;
+  /** BANNER HIBRIDO (pedido del 2026-10-08): la escena que se dibuja con
+   *  Remotion (redes, pauta, crm, asesorias). null = el banner de siempre, una
+   *  sola imagen. Con escena, la mitad es la escena y la otra mitad la foto
+   *  de primer plano. */
+  escena: ClaveEscena | null;
+  /** El texto de la escena, linea por linea (vacio = el que trae de fabrica). */
+  lineas: string[];
+  /** La foto de primer plano, editable en el Studio (null = la de fabrica). */
+  foto: FotoPrimerPlano | null;
+  ajusteFoto: "cubrir" | "completa";
 };
 
 // --- Forma cruda que devuelve Sanity (antes de validar/limpiar) -----------
@@ -597,6 +616,10 @@ type SeccionContenidoRaw = {
   hotspot: { x: number; y: number } | null;
   ancho: number | null;
   alto: number | null;
+  escena: string | null;
+  lineas: (string | null)[] | null;
+  foto: { url: string | null; ancho: number | null; alto: number | null; hotspot: { x: number; y: number } | null } | null;
+  ajusteFoto: string | null;
   ctaTexto: string | null;
   ctaEnlace: string | null;
   ctaColor: string | null;
@@ -659,6 +682,15 @@ const QUERY_PAGINA_INICIO = `{
       "hotspot": backgroundImage.hotspot{ x, y },
       "ancho": backgroundImage.asset->metadata.dimensions.width,
       "alto": backgroundImage.asset->metadata.dimensions.height,
+      escena,
+      lineas,
+      ajusteFoto,
+      "foto": fotoPrimerPlano{
+        "url": asset->url + "?w=1600&auto=format",
+        "ancho": asset->metadata.dimensions.width,
+        "alto": asset->metadata.dimensions.height,
+        "hotspot": hotspot{ x, y }
+      },
       ctaTexto,
       ctaEnlace,
       ctaColor,
@@ -794,6 +826,10 @@ const SECCIONES_CONTENIDO_FALLBACK: SeccionContenido[] = [1, 2, 3, 4].map((n) =>
   ancho: null,
   alto: null,
   cta: null,
+  escena: null,
+  lineas: [],
+  foto: null,
+  ajusteFoto: "cubrir",
 }));
 
 const POSICIONES_H = new Set<PosicionHorizontalCta>([
@@ -928,23 +964,41 @@ function normalizarCapacidades(raw: CapacidadRaw[] | null): Capacidad[] {
   return validas.length > 0 ? validas : CAPACIDADES_FALLBACK;
 }
 
-/** El banner es solo su imagen, asi que un item sin imagen no tiene nada
- *  que mostrar y se descarta. Si no queda ninguno valido, se usan los 4 de
- *  respaldo — la home nunca pierde su estructura de 4 bloques. */
+/** La escena de un banner hibrido, si es una de las que existen. */
+function normalizarEscena(v: string | null | undefined): ClaveEscena | null {
+  return v && (CLAVES_ESCENA as readonly string[]).includes(v) ? (v as ClaveEscena) : null;
+}
+
+/** La foto de primer plano: con URL y medidas validas, o null (se usa la de
+ *  fabrica de esa escena). */
+function normalizarFoto(raw: SeccionContenidoRaw["foto"]): FotoPrimerPlano | null {
+  if (!raw?.url || !(raw.ancho && raw.ancho > 0) || !(raw.alto && raw.alto > 0)) return null;
+  return { url: raw.url, ancho: raw.ancho, alto: raw.alto, hotspot: raw.hotspot ?? null };
+}
+
+/** Un banner es su imagen (el de siempre) o una escena Remotion con su foto
+ *  (hibrido): un item sin ninguna de las dos no tiene nada que mostrar y se
+ *  descarta. Si no queda ninguno valido, se usan los 4 de respaldo — la home
+ *  nunca pierde su estructura de 4 bloques. */
 function normalizarSeccionesContenido(raw: SeccionContenidoRaw[] | null): SeccionContenido[] {
   const validos = (raw ?? [])
-    .filter((s): s is SeccionContenidoRaw & { backgroundImage: string } =>
-      Boolean(s.backgroundImage)
-    )
-    .map((s, i) => ({
-      id: s.id ?? `banner-${i}`,
-      backgroundImage: s.backgroundImage,
-      backgroundImageAlt: s.backgroundImageAlt ?? "",
-      hotspot: s.hotspot ?? null,
-      ancho: typeof s.ancho === "number" && s.ancho > 0 ? s.ancho : null,
-      alto: typeof s.alto === "number" && s.alto > 0 ? s.alto : null,
-      cta: normalizarCtaBanner(s),
-    }));
+    .filter((s) => Boolean(s.backgroundImage) || normalizarEscena(s.escena) !== null)
+    .map((s, i): SeccionContenido => {
+      const escena = normalizarEscena(s.escena);
+      return {
+        id: s.id ?? `banner-${i}`,
+        backgroundImage: s.backgroundImage ?? null,
+        backgroundImageAlt: s.backgroundImageAlt ?? "",
+        hotspot: s.hotspot ?? null,
+        ancho: typeof s.ancho === "number" && s.ancho > 0 ? s.ancho : null,
+        alto: typeof s.alto === "number" && s.alto > 0 ? s.alto : null,
+        cta: normalizarCtaBanner(s),
+        escena,
+        lineas: (s.lineas ?? []).map((l) => (typeof l === "string" ? l.trim() : "")).filter(Boolean),
+        foto: escena ? normalizarFoto(s.foto) : null,
+        ajusteFoto: s.ajusteFoto === "completa" ? "completa" : "cubrir",
+      };
+    });
 
   return validos.length > 0 ? validos : SECCIONES_CONTENIDO_FALLBACK;
 }

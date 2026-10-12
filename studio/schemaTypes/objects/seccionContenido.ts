@@ -16,6 +16,11 @@ import { defineType, defineField } from "sanity";
  * El nombre del TIPO no cambia ("seccionContenido"): renombrarlo dejaria
  * huerfanos los 4 items ya publicados, que se identifican por su _type.
  *
+ * Pedido del 2026-10-08, BANNER HIBRIDO: un banner puede ser mitad ESCENA
+ * (dibujada con codigo y movimiento, Remotion) y mitad FOTO de primer plano.
+ * La escena la elige el campo "escena"; la foto se sube y se cambia aca, sin
+ * tocar codigo. Con "Imagen entera" el banner es el de siempre.
+ *
  * options.hotspot: true activa hotspot Y recorte (crop) -- son la misma
  * herramienta en el editor de Sanity. Es clave aca: la imagen se usa como
  * banner recortado a lo ancho, asi que el punto focal decide que parte
@@ -27,6 +32,13 @@ export const seccionContenido = defineType({
   type: "object",
   fieldsets: [
     {
+      name: "hibrido",
+      title: "Escena y foto (banner híbrido)",
+      description:
+        "Un banner puede ser mitad escena animada y mitad foto. La escena se dibuja con código (no hay que subirla); la foto la subís vos y la cambiás cuando quieras.",
+      options: { collapsible: true, collapsed: false },
+    },
+    {
       name: "cta",
       title: "Botón (CTA)",
       description:
@@ -36,13 +48,75 @@ export const seccionContenido = defineType({
   ],
   fields: [
     defineField({
+      name: "escena",
+      title: "Tipo de banner",
+      type: "string",
+      fieldset: "hibrido",
+      options: {
+        list: [
+          { title: "Imagen entera (como antes)", value: "imagen" },
+          { title: "Híbrido · Redes Sociales (escena a la izquierda, foto a la derecha)", value: "redes" },
+          { title: "Híbrido · Pauta Inteligente (foto a la izquierda, escena a la derecha)", value: "pauta" },
+          { title: "Híbrido · CRM y Chatbots (escena a la izquierda, foto a la derecha)", value: "crm" },
+          { title: "Híbrido · Rescatando Emprendedores (foto a la izquierda, escena a la derecha)", value: "asesorias" },
+        ],
+      },
+      initialValue: "imagen",
+      description:
+        "Si elegís un híbrido, el banner muestra la escena animada de ese tema junto a la foto de primer plano que subas acá abajo.",
+    }),
+    defineField({
+      name: "fotoPrimerPlano",
+      title: "Foto de primer plano",
+      type: "image",
+      fieldset: "hibrido",
+      options: { hotspot: true },
+      hidden: ({ parent }) => !parent?.escena || parent.escena === "imagen",
+      description:
+        "La foto que acompaña a la escena (la persona, el equipo, el producto). Idealmente un PNG o WebP con el fondo recortado o del mismo color del banner, alta resolución (mín. 1100 px de ancho). Si no subís ninguna, se usa la foto que ya trae el banner.",
+    }),
+    defineField({
+      name: "ajusteFoto",
+      title: "Cómo se acomoda la foto",
+      type: "string",
+      fieldset: "hibrido",
+      options: {
+        list: [
+          { title: "Llenar el espacio (puede recortar los bordes)", value: "cubrir" },
+          { title: "Mostrar completa (puede dejar aire alrededor)", value: "completa" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "cubrir",
+      hidden: ({ parent }) => !parent?.escena || parent.escena === "imagen",
+      description:
+        'Con "Llenar" la foto cubre toda su mitad; el punto focal decide qué parte se mantiene. Con "Completa" se ve entera, apoyada abajo.',
+    }),
+    defineField({
+      name: "lineas",
+      title: "Texto de la escena (línea por línea)",
+      type: "array",
+      of: [{ type: "string" }],
+      fieldset: "hibrido",
+      hidden: ({ parent }) => !parent?.escena || parent.escena === "imagen",
+      validation: (Rule) => Rule.max(4),
+      description:
+        'Opcional. Cada línea es una fila del título de la escena (máx. 4). Si lo dejás vacío se usa el texto de fábrica. Ej. Redes: "Redes Sociales que" / "SÍ VENDEN".',
+    }),
+    defineField({
       name: "backgroundImage",
       title: "Imagen de fondo del banner",
       type: "image",
       options: { hotspot: true },
+      hidden: ({ parent }) => Boolean(parent?.escena) && parent.escena !== "imagen",
       description:
         "La pieza gráfica completa: ocupa todo el ancho de la pantalla. Usá el recorte y el punto focal (hotspot) para elegir qué parte se mantiene visible cuando el banner se achica en mobile.",
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.custom((valor, contexto) => {
+          const escena = (contexto.parent as { escena?: string } | undefined)?.escena;
+          if (escena && escena !== "imagen") return true;
+          return valor ? true : "Falta la imagen del banner (o elegí un tipo híbrido arriba).";
+        }),
     }),
     defineField({
       name: "backgroundImageAlt",
@@ -116,6 +190,8 @@ export const seccionContenido = defineType({
   preview: {
     select: {
       media: "backgroundImage",
+      foto: "fotoPrimerPlano",
+      escena: "escena",
       alt: "backgroundImageAlt",
       cta: "ctaTexto",
       color: "ctaColor",
@@ -126,7 +202,9 @@ export const seccionContenido = defineType({
       mh: "ctaPosicionMobile.horizontal",
       mv: "ctaPosicionMobile.vertical",
     },
-    prepare: ({ media, alt, cta, color, dh, dv, dx, dy, mh, mv }) => {
+    prepare: ({ media, foto, escena, alt, cta, color, dh, dv, dx, dy, mh, mv }) => {
+      const tipo = escena && escena !== "imagen" ? `Híbrido ${escena} · ` : "";
+      media = escena && escena !== "imagen" && foto ? foto : media;
       const PUNTO: Record<string, string> = {
         naranja: "🟠",
         morado: "🟣",
@@ -134,7 +212,7 @@ export const seccionContenido = defineType({
         oscuro: "⚫",
       };
       if (!cta) {
-        return { title: alt || "Banner sin texto alternativo", subtitle: "Sin botón", media };
+        return { title: alt || "Banner sin texto alternativo", subtitle: `${tipo}Sin botón`, media };
       }
       const conSigno = (n: number) => (n > 0 ? `+${n}` : `${n}`);
       const ejeX = dx ?? 0;
@@ -144,7 +222,7 @@ export const seccionContenido = defineType({
       const movil = mh && mv ? `${mh}·${mv}` : "sin posición";
       return {
         title: alt || "Banner sin texto alternativo",
-        subtitle: `${PUNTO[color] ?? "🟠"} ${color ?? "naranja"} · PC ${pc} · Móvil ${movil}`,
+        subtitle: `${tipo}${PUNTO[color] ?? "🟠"} ${color ?? "naranja"} · PC ${pc} · Móvil ${movil}`,
         media,
       };
     },

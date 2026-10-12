@@ -3,9 +3,9 @@ import { Footer } from "@/components/Footer";
 import { MetodoDofi } from "@/components/marketing/MetodoDofi";
 import { NavegacionEditorial } from "@/components/marketing/NavegacionEditorial";
 import { PiezaGrafica } from "@/components/marketing/PiezaGrafica";
+import { BannerFoto } from "@/components/marketing/BannerFoto";
 import { ResenasGoogle } from "@/components/marketing/ResenasGoogle";
 import { getPaginaTrafico, type SeccionTrafico, type TipoSeccionTrafico } from "@/lib/trafico";
-import { TraficoCierre } from "./TraficoCierre";
 import { TraficoClientes } from "./TraficoClientes";
 import { TraficoEcosistema } from "./TraficoEcosistema";
 import { TraficoPlataformas } from "./TraficoPlataformas";
@@ -21,8 +21,9 @@ import { TraficoPortada } from "./TraficoPortada";
  * Reutiliza los componentes de Marketing Digital donde la seccion es la misma
  * (Qué es -> PiezaGrafica, mapa -> NavegacionEditorial, método -> MetodoDofi
  * con los iconos de tráfico, reseñas) y tiene los suyos donde cambia: la
- * portada del problema, ¿Dónde traficamos?, el ecosistema, Clientes con el
- * panel de métricas de Meta y el cierre con la imagen a la derecha.
+ * portada del problema, ¿Dónde traficamos?, el ecosistema y Clientes con el
+ * panel de métricas de Meta. El cierre es el de Marketing Digital (BannerFoto,
+ * con las dos imágenes acompañantes).
  */
 const ANCLA: Record<TipoSeccionTrafico, string> = {
   teamBanner: "inicio",
@@ -33,15 +34,15 @@ const ANCLA: Record<TipoSeccionTrafico, string> = {
   ecosystemBanner: "ecosistema",
   metricsClientsBanner: "clientes",
   reviewsBanner: "resenas",
-  ctaImageBanner: "contacto",
+  ctaBanner: "contacto",
 };
 
 function Seccion({ seccion, id, nivel }: { seccion: SeccionTrafico; id: string; nivel: "h1" | "h2" }) {
   switch (seccion.tipo) {
     case "teamBanner":
       return <TraficoPortada seccion={seccion} id={id} nivel={nivel} />;
-    case "ctaImageBanner":
-      return <TraficoCierre seccion={seccion} id={id} nivel={nivel} />;
+    case "ctaBanner":
+      return <BannerFoto seccion={seccion} id={id} nivel={nivel} />;
     case "aboutBanner":
       return <PiezaGrafica seccion={seccion} id={id} nivel={nivel} />;
     case "navigationBanner":

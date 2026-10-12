@@ -17,10 +17,8 @@ import { clientsBanner } from "./marketing/clientsBanner";
 import { chatClientsBanner } from "./marketing/chatClientsBanner";
 import { platformsBanner } from "./marketing/platformsBanner";
 import { ecosystemBanner } from "./marketing/ecosystemBanner";
-import { ctaImageBanner } from "./marketing/ctaImageBanner";
 import { metricsClientsBanner } from "./marketing/metricsClientsBanner";
 import { splitHeroBanner } from "./marketing/splitHeroBanner";
-import { casesClientsBanner } from "./marketing/casesClientsBanner";
 import { achievementsBanner } from "./marketing/achievementsBanner";
 import { metricasDemo } from "./objects/metricasDemo";
 import { chatDemo } from "./objects/chatDemo";
@@ -62,11 +60,9 @@ export const schemaTypes = [
   chatDemo,
   platformsBanner,
   ecosystemBanner,
-  ctaImageBanner,
   metricsClientsBanner,
   metricasDemo,
   splitHeroBanner,
-  casesClientsBanner,
   achievementsBanner,
   reviewsBanner,
   ctaBanner,

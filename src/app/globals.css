@@ -432,6 +432,16 @@ body {
   animation: cta-destello-ya 0.9s cubic-bezier(0.45, 0, 0.55, 1) 1;
 }
 
+/* Un fundido de entrada (las escenas Remotion de los banners del Home). */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes cta-destello {
   0% {
     background-position: 100% 0;

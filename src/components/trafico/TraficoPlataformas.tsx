@@ -8,12 +8,21 @@ import {
 import type { SeccionPlataformas } from "@/lib/trafico";
 import { IconoPlataforma } from "./IconoPlataforma";
 
+/** Columnas segun cuantas tarjetas hay: con dos (o tres) no se dejan huecos a la
+ *  derecha. Cadenas literales para que Tailwind las vea al compilar. */
+const COLUMNAS: Record<number, string> = {
+  1: "max-w-[420px]",
+  2: "sm:grid-cols-2 lg:max-w-[880px]",
+  3: "sm:grid-cols-2 lg:grid-cols-3",
+};
+const COLUMNAS_MUCHAS = "sm:grid-cols-2 xl:grid-cols-4";
+
 /**
  * 5 · ¿Dónde traficamos? (tipo platformsBanner).
  *
- * "El tráfico no tiene un solo destino": una tarjeta por plataforma (WhatsApp,
- * Meta, TikTok, Google...) con su marca, la frase que la resume y lo
- * que hacemos en ella. Las plataformas se agregan, quitan y reordenan en el
+ * "El tráfico no tiene un solo destino": una tarjeta por plataforma (hoy Meta
+ * Ads, con Facebook, Instagram y WhatsApp, y TikTok Ads) con su marca, la frase
+ * que la resume y lo que hacemos en ella. Las plataformas se agregan, quitan y reordenan en el
  * Studio; cada una elige su icono de una lista.
  *
  * Mismo lenguaje que el resto de las secciones claras de DOFI: lienzo
@@ -67,7 +76,7 @@ export function TraficoPlataformas({ seccion, id, nivel }: { seccion: SeccionPla
         </Anim>
 
         {plataformas.length > 0 && (
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 md:mt-[clamp(2rem,6svh,3.5rem)] xl:grid-cols-4">
+          <ul className={`mt-10 grid gap-5 md:mt-[clamp(2rem,6svh,3.5rem)] ${COLUMNAS[plataformas.length] ?? COLUMNAS_MUCHAS}`}>
             {plataformas.map((p, i) => (
               <li key={p.key} className="min-w-0">
                 <Anim animar={animar} delay={0.06 + i * 0.07} y={20} className="h-full">

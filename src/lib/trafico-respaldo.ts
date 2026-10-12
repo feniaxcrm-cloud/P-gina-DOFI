@@ -60,37 +60,27 @@ export const COPY_TRAFICO = {
     pasos: ["Objetivo", "Audiencia", "Oferta", "Canal", "Creatividad", "Conversión", "Datos"],
   },
   /** 04 · ¿Dónde traficamos?
-   *  WhatsApp va primero y «Tráfico web» ya no está (pedido del 2026-10-07):
-   *  el tráfico termina en una conversación, no en una visita.
-   *  scripts/ajustar-paginas.mts hace el mismo cambio en Sanity. */
+   *  DOS tarjetas (pedido del 2026-10-08): Meta Ads, que ahora incluye
+   *  WhatsApp («Facebook + Instagram + WhatsApp»: el anuncio termina en el
+   *  chat), y TikTok Ads. Ya no hay tarjetas sueltas de WhatsApp ni de Google
+   *  Ads ni de Tráfico web. scripts/ajustar-2026-10-08.mts hace el mismo
+   *  cambio en Sanity. */
   plataformas: {
     subtitulo: "¿Dónde traficamos?",
     titulo: "El tráfico no tiene un solo destino.",
     descripcion: "Elegimos la plataforma donde está tu audiencia.",
     items: [
       {
-        nombre: "WhatsApp",
-        etiqueta: "Del anuncio al chat",
-        icono: "whatsapp",
-        descripcion: "Campañas de mensajes que llevan a tus clientes directo a conversar contigo.",
-      },
-      {
         nombre: "Meta Ads",
-        etiqueta: "Facebook + Instagram",
+        etiqueta: "Facebook + Instagram + WhatsApp",
         icono: "meta",
-        descripcion: "Reconocimiento, mensajes, clientes potenciales y ventas.",
+        descripcion: "Reconocimiento, mensajes por WhatsApp, clientes potenciales y ventas.",
       },
       {
         nombre: "TikTok Ads",
         etiqueta: "Descubrimiento + atención + acción",
         icono: "tiktok",
         descripcion: "Contenido que capta atención y llega a nuevas audiencias.",
-      },
-      {
-        nombre: "Google Ads",
-        etiqueta: "Cuando ya hay intención",
-        icono: "google",
-        descripcion: "Te encuentran justo cuando buscan lo que ofreces.",
       },
     ],
   },

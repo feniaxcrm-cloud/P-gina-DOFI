@@ -9,12 +9,17 @@ import { LinkBreak, LinkSimple } from "@phosphor-icons/react";
  * PLATAFORMA (Meta Ads, TikTok Ads y Google Ads), con las cifras contando
  * desde cero.
  *
- * LA HISTORIA, en 5 segundos (cuando la composicion entra en pantalla):
+ * LA HISTORIA (16 segundos, y en bucle mientras la composicion se ve):
  *  1. Meta Ads: los me gusta suben (0 -> 18,4 mil).
  *  2. TikTok Ads: las visualizaciones suben (0 -> 412 mil).
  *  3. Google Ads: las ventas están "sin conexión" (¿?) ... y se conectan: el
  *     panel se enciende y las ventas cuentan desde cero (0 -> 1,2 mil).
  * Lo que DOFI hace es ese tercer paso: conectar el tráfico con las ventas.
+ * LARGA A PROPOSITO (pedido del 2026-10-08): antes todo pasaba en 6 segundos y
+ * el visitante llegaba cuando ya habia terminado. Ahora cada cifra tarda 6 s
+ * en llegar, las lineas se dibujan al mismo ritmo (van con la cifra, no por
+ * su cuenta), el resultado se queda a la vista unos segundos y la historia
+ * vuelve a empezar.
  *
  * ES UNA ILUSTRACION, no datos: las cifras son redondas a proposito y debajo
  * lleva «Cifras ilustrativas». Las demostraciones con cifras de una campaña
@@ -22,11 +27,12 @@ import { LinkBreak, LinkSimple } from "@phosphor-icons/react";
  * pantalla recibe una frase equivalente (sr-only).
  *
  * UN SOLO RELOJ: un requestAnimationFrame mueve `t` (segundos) y cada panel
- * saca de ahi su avance (con su retraso). Corre una vez, al entrar en pantalla.
- * Con movimiento reducido no corre: se ve el cuadro final, con todo conectado.
+ * saca de ahi su avance (con su retraso), cifra y linea. Corre mientras la
+ * composicion esta en pantalla (se detiene al salir y sigue donde iba). Con
+ * movimiento reducido no corre: se ve el cuadro final, con todo conectado.
  * Los logos llegan como trazos desde el servidor (simple-icons no viaja al
- * navegador). Las flotaciones y el dibujo de las lineas son CSS
- * (.trafico-flotar y .trafico-trazo, globals.css).
+ * navegador). La flotacion de los paneles es CSS (.trafico-flotar,
+ * globals.css).
  */
 
 export type MarcaPlataforma = { path: string; hex: string };
@@ -37,17 +43,22 @@ type Props = {
 };
 
 /** Segundos. */
-const CUENTA = 2.6; // lo que tarda cada cifra en llegar a su valor
-const SALIDA = { meta: 0.4, tiktok: 0.9, google: 3.7 }; // cuando arranca cada conteo
-const CONECTA = 3.4; // cuando el panel de ventas pasa de "sin conexión" a conectado
-const TOTAL = SALIDA.google + CUENTA + 0.2;
+const CUENTA = 6; // lo que tarda cada cifra en llegar a su valor
+const SALIDA = { meta: 0.5, tiktok: 1.8, google: 10.2 }; // cuando arranca cada conteo
+const CONECTA = 9.6; // cuando el panel de ventas pasa de "sin conexión" a conectado
+const CUENTAS = SALIDA.google + CUENTA; // todo ha llegado a su valor
+const REPOSO = 4.5; // el resultado se queda a la vista
+const FUNDIDO = 0.7; // se apaga y vuelve a empezar
+const CICLO = CUENTAS + REPOSO + FUNDIDO;
 
-const salida = (p: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 3);
+/** Frena hacia el final: la cifra "se asienta" en vez de frenar en seco. */
+const salida = (p: number) => 1 - Math.pow(1 - Math.min(1, Math.max(0, p)), 2.4);
 
 const NUMERO = new Intl.NumberFormat("es-EC", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const ENTERO = new Intl.NumberFormat("es-EC", { maximumFractionDigits: 0 });
 
-function Linea({ d, retraso }: { d: string; retraso: string }) {
+/** La linea de tendencia: se dibuja a la par de la cifra (`progreso` 0 -> 1). */
+function Linea({ d, progreso }: { d: string; progreso: number }) {
   return (
     <svg viewBox="0 0 120 36" className="h-9 w-full" fill="none" aria-hidden="true">
       <path
@@ -57,8 +68,8 @@ function Linea({ d, retraso }: { d: string; retraso: string }) {
         strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="trafico-trazo"
-        style={{ "--trazo-retraso": retraso } as React.CSSProperties}
+        strokeDasharray={1}
+        strokeDashoffset={1 - progreso}
       />
     </svg>
   );
@@ -84,43 +95,53 @@ const CHIP = "rounded-full bg-positive/15 px-2.5 py-1 font-sans text-xs font-sem
 export function HeroProblema({ marcas, className = "" }: Props) {
   const raiz = useRef<HTMLDivElement>(null);
   const [t, setT] = useState(0);
+  const [enVista, setEnVista] = useState(false);
+  const [reducido, setReducido] = useState(false);
+  // El reloj sigue donde iba cuando la composicion sale y vuelve a la pantalla.
+  const reloj = useRef(0);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducido(mq.matches);
+    const alCambiar = () => setReducido(mq.matches);
+    mq.addEventListener("change", alCambiar);
+    return () => mq.removeEventListener("change", alCambiar);
+  }, []);
 
   useEffect(() => {
     const el = raiz.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setT(TOTAL);
-      return;
-    }
-    let cuadro = 0;
-    let corrio = false;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting || corrio) return;
-        corrio = true;
-        io.disconnect();
-        const inicio = performance.now();
-        const paso = (ahora: number) => {
-          const seg = Math.min(TOTAL, (ahora - inicio) / 1000);
-          setT(seg);
-          if (seg < TOTAL) cuadro = requestAnimationFrame(paso);
-        };
-        cuadro = requestAnimationFrame(paso);
-      },
-      { threshold: 0.3 }
-    );
+    const io = new IntersectionObserver(([e]) => setEnVista(e.isIntersecting), { threshold: 0.3 });
     io.observe(el);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(cuadro);
-    };
+    return () => io.disconnect();
   }, []);
 
-  const avance = (desde: number) => salida((t - desde) / CUENTA);
+  useEffect(() => {
+    if (reducido || !enVista) return;
+    let cuadro = 0;
+    let anterior = performance.now();
+    const paso = (ahora: number) => {
+      reloj.current = (reloj.current + (ahora - anterior) / 1000) % CICLO;
+      anterior = ahora;
+      setT(reloj.current);
+      cuadro = requestAnimationFrame(paso);
+    };
+    cuadro = requestAnimationFrame(paso);
+    return () => cancelAnimationFrame(cuadro);
+  }, [enVista, reducido]);
+
+  // Con movimiento reducido: el cuadro final, todo conectado y a la vista.
+  const tt = reducido ? CUENTAS : t;
+  // Entra y sale con un fundido: el reinicio no se ve como un salto.
+  const visible = reducido
+    ? 1
+    : Math.min(1, tt / 0.5, Math.max(0, (CICLO - tt) / FUNDIDO));
+
+  const avance = (desde: number) => salida((tt - desde) / CUENTA);
   const meta = avance(SALIDA.meta);
   const tiktok = avance(SALIDA.tiktok);
   const google = avance(SALIDA.google);
-  const conectada = t >= CONECTA;
+  const conectada = tt >= CONECTA;
 
   return (
     <div ref={raiz} className={`relative mx-auto h-[520px] w-full max-w-[440px] sm:h-[590px] lg:h-[min(590px,var(--alto-util))] lg:min-h-[480px] ${className}`}>
@@ -129,7 +150,7 @@ export function HeroProblema({ marcas, className = "" }: Props) {
         el tráfico se conecta con las ventas, en Google Ads también suben las ventas.
       </p>
 
-      <div aria-hidden="true" className="absolute inset-0">
+      <div aria-hidden="true" className="absolute inset-0" style={{ opacity: visible }}>
         {/* Meta Ads · Me gusta */}
         <div
           className="trafico-flotar absolute left-0 top-0 w-[74%] sm:w-[66%]"
@@ -148,7 +169,7 @@ export function HeroProblema({ marcas, className = "" }: Props) {
               <span className={CHIP}>▲ {ENTERO.format(24 * meta)}%</span>
             </div>
             <div className="mt-3">
-              <Linea d="M2 31 C 12 29, 16 24, 26 25 S 42 18, 52 19 S 66 12, 78 10 S 98 6, 118 3" retraso="0.5s" />
+              <Linea d="M2 31 C 12 29, 16 24, 26 25 S 42 18, 52 19 S 66 12, 78 10 S 98 6, 118 3" progreso={meta} />
             </div>
           </div>
         </div>
@@ -171,7 +192,7 @@ export function HeroProblema({ marcas, className = "" }: Props) {
               <span className={CHIP}>▲ {ENTERO.format(38 * tiktok)}%</span>
             </div>
             <div className="mt-3">
-              <Linea d="M2 33 C 14 32, 22 28, 34 26 S 52 20, 62 14 S 84 8, 96 7 S 110 3, 118 2" retraso="0.9s" />
+              <Linea d="M2 33 C 14 32, 22 28, 34 26 S 52 20, 62 14 S 84 8, 96 7 S 110 3, 118 2" progreso={tiktok} />
             </div>
           </div>
         </div>
@@ -213,7 +234,7 @@ export function HeroProblema({ marcas, className = "" }: Props) {
             </div>
             <div className="mt-3">
               {conectada ? (
-                <Linea d="M2 33 C 12 31, 20 30, 30 26 S 48 22, 58 17 S 80 12, 92 8 S 108 4, 118 2" retraso="0.2s" />
+                <Linea d="M2 33 C 12 31, 20 30, 30 26 S 48 22, 58 17 S 80 12, 92 8 S 108 4, 118 2" progreso={google} />
               ) : (
                 <svg viewBox="0 0 120 36" className="h-9 w-full" fill="none" aria-hidden="true">
                   <path d="M2 24 L118 24" stroke="var(--color-accent)" strokeOpacity={0.7} strokeWidth={2.5} strokeLinecap="round" strokeDasharray="1 7" />

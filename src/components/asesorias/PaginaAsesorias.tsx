@@ -1,13 +1,13 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { BannerFoto } from "@/components/marketing/BannerFoto";
+import { ClientesCasos } from "@/components/marketing/ClientesCasos";
 import { MetodoDofi } from "@/components/marketing/MetodoDofi";
 import { NavegacionEditorial } from "@/components/marketing/NavegacionEditorial";
 import { PiezaGrafica } from "@/components/marketing/PiezaGrafica";
 import { ResenasGoogle } from "@/components/marketing/ResenasGoogle";
 import { getPaginaAsesorias, type SeccionAsesorias, type TipoSeccionAsesorias } from "@/lib/asesorias";
 import type { GiroNegocio } from "@/lib/marketing-digital";
-import { AsesoriasClientes } from "./AsesoriasClientes";
 import { AsesoriasPortada } from "./AsesoriasPortada";
 import { LogrosAsesorias } from "./LogrosAsesorias";
 
@@ -20,15 +20,16 @@ import { LogrosAsesorias } from "./LogrosAsesorias";
  *
  * Reutiliza los componentes de Marketing Digital donde la sección es la misma
  * (¿Qué es...? → PiezaGrafica, cierre) y tiene los suyos donde cambia: la
- * portada con logo e imagen, Clientes con el mazo de casos y Logros (las
- * tarjetas con foto que reemplazan a las reseñas, pedido del 2026-10-07).
+ * portada con logo e imagen y Logros (las tarjetas con foto que reemplazan a
+ * las reseñas, pedido del 2026-10-07). Clientes y el cierre son los de
+ * Marketing Digital, tal cual (pedido del 2026-10-08).
  */
 const ANCLA: Record<TipoSeccionAsesorias, string> = {
   splitHeroBanner: "inicio",
   aboutBanner: "rescatando-emprendedores",
   navigationBanner: "como-trabajamos",
   methodBanner: "metodo",
-  casesClientsBanner: "clientes",
+  clientsBanner: "clientes",
   achievementsBanner: "logros",
   reviewsBanner: "resenas",
   ctaBanner: "contacto",
@@ -55,8 +56,8 @@ function Seccion({
       return <NavegacionEditorial seccion={seccion} id={id} nivel={nivel} />;
     case "methodBanner":
       return <MetodoDofi seccion={seccion} id={id} nivel={nivel} />;
-    case "casesClientsBanner":
-      return <AsesoriasClientes seccion={seccion} id={id} nivel={nivel} />;
+    case "clientsBanner":
+      return <ClientesCasos seccion={seccion} id={id} nivel={nivel} />;
     case "achievementsBanner":
       return <LogrosAsesorias seccion={seccion} giros={giros} id={id} nivel={nivel} />;
     case "reviewsBanner":
@@ -69,7 +70,7 @@ function Seccion({
 export async function PaginaAsesorias() {
   const { secciones } = await getPaginaAsesorias();
   const vistas = new Map<string, number>();
-  const giros = secciones.find((s) => s.tipo === "casesClientsBanner")?.giros ?? [];
+  const giros = secciones.find((s) => s.tipo === "clientsBanner")?.giros ?? [];
 
   return (
     <>

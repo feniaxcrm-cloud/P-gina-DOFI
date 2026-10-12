@@ -8,11 +8,10 @@ import { TEXTO_CTA, enlaceFormulario } from "@/lib/cta";
  * (la experiencia de Dani con más de 500 empresas, la reunión 1 a 1, la ruta
  * estratégica, que no es una charla motivacional).
  *
- * LOS CASOS SON DE PRUEBA: los tres textos son los ejemplos del brief y las
- * imágenes, recortes de la foto grupal de la portada. Están para probar el
- * mazo y la sincronía con el carrusel; se reemplazan desde el Studio por los
- * casos reales (por eso firman "Ejemplo — reemplázalo", como en el video de
- * referencia).
+ * LOS LOGROS SON DE PRUEBA: textos y fotos de ejemplo (recortes de la foto
+ * grupal de la portada) que se reemplazan desde el Studio por los reales (por
+ * eso firman "Ejemplo — reemplázalo"). Clientes y el cierre son los de
+ * Marketing Digital.
  *
  * Datos planos: los usa la web como respaldo (src/lib/asesorias.ts, mientras
  * el documento no tenga ninguna sección activa) y el script que los carga en
@@ -28,11 +27,6 @@ export const IMAGENES_ASESORIAS = {
     alto: 667,
     alt: "Dani junto a emprendedores de distintos rubros: construcción, salud, gastronomía, comercio y servicios",
   },
-  casos: {
-    construccion: { archivo: "caso-construccion.webp", ancho: 300, alto: 667, alt: "Emprendedores de construcción y salud (imagen de ejemplo)" },
-    gastronomia: { archivo: "caso-gastronomia.webp", ancho: 300, alto: 667, alt: "Emprendedores de gastronomía (imagen de ejemplo)" },
-    retail: { archivo: "caso-retail.webp", ancho: 300, alto: 667, alt: "Emprendedores de comercio y servicios (imagen de ejemplo)" },
-  },
   /** Fotos de ejemplo de los logros: recortes de la foto grupal sobre el
    *  fondo de marca. Se reemplazan desde el Studio por las fotos reales. */
   logros: {
@@ -43,7 +37,6 @@ export const IMAGENES_ASESORIAS = {
   },
 } as const;
 
-export type ClaveImagenCaso = keyof typeof IMAGENES_ASESORIAS.casos;
 export type ClaveImagenLogro = keyof typeof IMAGENES_ASESORIAS.logros;
 
 const CTA_ASESORIAS = { texto: TEXTO_CTA, enlace: enlaceFormulario("asesorias") };
@@ -63,32 +56,6 @@ export const COPY_ASESORIAS = {
   },
   clientes: {
     titulo: "Clientes y casos de éxito",
-    casos: [
-      {
-        titulo: "Sus ventas volvieron a moverse",
-        texto:
-          "Ayudamos a identificar qué estaba frenando sus ventas y construimos una estrategia comercial enfocada en resultados.",
-        giro: "Gastronomía",
-        cliente: "Ejemplo — reemplázalo",
-        imagen: "gastronomia" as ClaveImagenCaso,
-      },
-      {
-        titulo: "Más clientes con el mismo esfuerzo",
-        texto: "Analizamos su proceso comercial y encontramos nuevas oportunidades para convertir más clientes.",
-        giro: "Construcción",
-        cliente: "Ejemplo — reemplázalo",
-        imagen: "construccion" as ClaveImagenCaso,
-      },
-      {
-        titulo: "Una dirección clara para crecer",
-        texto: "Redefinimos su estrategia para que su negocio pueda crecer con una dirección más clara.",
-        giro: "Retail",
-        cliente: "Ejemplo — reemplázalo",
-        imagen: "retail" as ClaveImagenCaso,
-      },
-    ],
-    pasoAutomatico: true,
-    segundosPorCaso: 7,
   },
   /** Logros (pedido del 2026-10-07): reemplazan a «Reseñas en Google» en esta
    *  página. Tarjetas que se pasan con un clic (o solas) y, a la izquierda, la

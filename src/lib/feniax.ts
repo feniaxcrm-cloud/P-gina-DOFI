@@ -1,6 +1,7 @@
 import { sanityQuery } from "@/lib/sanity";
 import { obtenerResenasGoogle } from "@/lib/google-places";
 import { COPY_FENIAX } from "@/lib/feniax-respaldo";
+import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import { GIRO_GROQ, iconoDe } from "@/lib/giros";
 import { company } from "@/config/company";
 import {
@@ -120,7 +121,12 @@ function respaldo(girosMarketing: GiroConChat[], resenas: SeccionResenas["resena
       resenas,
       cantidadMostrada: null,
     },
-    { ...base("feniax-cierre", { ...c.cierre, cta: { ...c.cierre.cta } }), tipo: "ctaBanner", alineacion: "centro", overlay: "medio" },
+    {
+      ...base("feniax-cierre", { ...c.cierre, cta: { ...c.cierre.cta }, imagen: IMAGEN_CIERRE_SOCIOS }),
+      tipo: "ctaBanner",
+      alineacion: "centro",
+      overlay: "medio",
+    },
   ];
 }
 

@@ -53,10 +53,10 @@ function FotoCubierta({
 }) {
   const {
     props: { srcSet: srcEscritorio, style, ...resto },
-  } = getImageProps({ src: imagen.url, alt: imagen.alt, fill: true, sizes: "100vw", priority: prioridad });
+  } = getImageProps({ src: imagen.url, alt: imagen.alt, fill: true, sizes: "100vw", priority: prioridad, unoptimized: imagen.url.startsWith("/") });
 
   const srcMovil = imagenMovil
-    ? getImageProps({ src: imagenMovil.url, alt: imagen.alt, fill: true, sizes: "100vw" }).props.srcSet
+    ? getImageProps({ src: imagenMovil.url, alt: imagen.alt, fill: true, sizes: "100vw", unoptimized: imagenMovil.url.startsWith("/") }).props.srcSet
     : undefined;
 
   const posEscritorio = aPosicion(imagen.hotspot);

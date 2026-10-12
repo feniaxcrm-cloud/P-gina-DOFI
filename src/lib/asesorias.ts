@@ -2,6 +2,7 @@ import { sanityQuery } from "@/lib/sanity";
 import { obtenerResenasGoogle } from "@/lib/google-places";
 import { GIRO_GROQ } from "@/lib/giros";
 import { COPY_ASESORIAS, IMAGENES_ASESORIAS } from "@/lib/asesorias-respaldo";
+import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import {
   IMG,
   bool,
@@ -10,6 +11,7 @@ import {
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
+  normalizarVideo,
   t,
   type BaseSeccion,
   type GiroNegocio,
@@ -18,6 +20,7 @@ import {
   type ImgRaw,
   type RespuestaRaw,
   type SeccionCierre,
+  type SeccionClientes,
   type SeccionMetodo,
   type SeccionNavegacion,
   type SeccionQueEs,
@@ -33,17 +36,21 @@ import {
  * sección es la misma (¿Qué es...?, reseñas, cierre). Lo propio de esta
  * página:
  *  - "splitHeroBanner": portada con título, logo, frase e imagen a la derecha.
- *  - "casesClientsBanner": Clientes con un MAZO DE CASOS al lado del carrusel
- *    de giros. Cada caso trae texto, imagen y (opcional) su giro: al pasar de
- *    caso, el carrusel abre ese giro y muestra la imagen del caso.
+ *  - Clientes y casos de éxito es EXACTAMENTE el de Marketing Digital
+ *    (pedido del 2026-10-08): el carrusel de giros con sus logos y, al lado, el
+ *    video. Es el mismo tipo ("clientsBanner"); lo que no se carga acá (giros,
+ *    video, portada) se toma de Marketing Digital.
  *  - "achievementsBanner": LOGROS (pedido del 2026-10-07, reemplaza a las
  *    reseñas en esta página): un mazo de tarjetas y, al lado, la foto de la
  *    historia al frente. Cada clic en la tarjeta pasa a otra historia y cambia
  *    la foto. Cuántas tarjetas, sus fotos y sus textos se editan en el Studio.
  *
- * CLIENTES SIN GIROS PROPIOS: igual que Tráfico y FENIAX, si la sección no
- * tiene giros cargados usa los de Marketing Digital (las mismas empresas y
- * logos, sin cargarlos dos veces).
+ * CLIENTES SIN GIROS NI VIDEO PROPIOS: igual que Tráfico y FENIAX, si la
+ * sección no tiene giros cargados usa los de Marketing Digital (las mismas
+ * empresas y logos, sin cargarlos dos veces); y con el video pasa lo mismo.
+ *
+ * CIERRE: el de Marketing Digital, con las dos imágenes que lo acompañan (el
+ * hombre y el delfín), editables en el Studio.
  *
  * RESPALDO: mientras el documento no tenga NINGUNA sección activa, la página
  * se arma con respaldo() (abajo), con los textos e imágenes de
@@ -85,20 +92,12 @@ export type SeccionLogros = BaseSeccion & {
   segundosPorLogro: number;
 };
 
-export type SeccionCasos = BaseSeccion & {
-  tipo: "casesClientsBanner";
-  giros: GiroNegocio[];
-  casos: CasoExito[];
-  pasoAutomatico: boolean;
-  segundosPorCaso: number;
-};
-
 export type SeccionAsesorias =
   | SeccionPortadaAsesorias
   | SeccionQueEs
   | SeccionNavegacion
   | SeccionMetodo
-  | SeccionCasos
+  | SeccionClientes
   | SeccionLogros
   | SeccionResenas
   | SeccionCierre;
@@ -140,7 +139,10 @@ function imagenLocal(i: { archivo: string; ancho: number; alto: number; alt: str
   return { url: `/asesorias/${i.archivo}`, ancho: i.ancho, alto: i.alto, hotspot: null, alt: i.alt };
 }
 
-function respaldo(girosMarketing: GiroNegocio[]): SeccionAsesorias[] {
+/** Lo de Clientes que Asesorías toma de Marketing Digital cuando no lo trae. */
+type ClientesMarketing = Pick<SeccionClientes, "subtitulo" | "titulo" | "descripcion" | "imagen" | "video" | "rotacionAutomatica">;
+
+function respaldo(girosMarketing: GiroNegocio[], marketing: ClientesMarketing | null): SeccionAsesorias[] {
   const c = COPY_ASESORIAS;
   const img = IMAGENES_ASESORIAS;
   return [
@@ -156,19 +158,16 @@ function respaldo(girosMarketing: GiroNegocio[]): SeccionAsesorias[] {
     },
     { ...base("asesorias-que-es", c.queEs), tipo: "aboutBanner" },
     {
-      ...base("asesorias-clientes", { titulo: c.clientes.titulo }),
-      tipo: "casesClientsBanner",
+      ...base("asesorias-clientes", {
+        subtitulo: marketing?.subtitulo ?? "",
+        titulo: marketing?.titulo || c.clientes.titulo,
+        descripcion: marketing?.descripcion ?? "",
+        imagen: marketing?.imagen ?? null,
+      }),
+      tipo: "clientsBanner",
       giros: girosMarketing,
-      casos: c.clientes.casos.map((caso, i) => ({
-        key: `caso-${i}`,
-        titulo: caso.titulo,
-        texto: caso.texto,
-        giro: caso.giro,
-        cliente: caso.cliente,
-        imagen: imagenLocal(img.casos[caso.imagen]),
-      })),
-      pasoAutomatico: c.clientes.pasoAutomatico,
-      segundosPorCaso: c.clientes.segundosPorCaso,
+      rotacionAutomatica: marketing?.rotacionAutomatica ?? true,
+      video: marketing?.video ?? null,
     },
     {
       ...base("asesorias-logros", { subtitulo: c.logros.subtitulo, titulo: c.logros.titulo }),
@@ -186,7 +185,12 @@ function respaldo(girosMarketing: GiroNegocio[]): SeccionAsesorias[] {
       segundosPorLogro: c.logros.segundosPorLogro,
     },
     {
-      ...base("asesorias-cierre", { titulo: c.cierre.titulo, descripcion: c.cierre.descripcion, cta: { ...c.cierre.cta } }),
+      ...base("asesorias-cierre", {
+        titulo: c.cierre.titulo,
+        descripcion: c.cierre.descripcion,
+        cta: { ...c.cierre.cta },
+        imagen: IMAGEN_CIERRE_SOCIOS,
+      }),
       tipo: "ctaBanner",
       alineacion: "centro",
       overlay: "medio",
@@ -208,11 +212,10 @@ const QUERY_ASESORIAS = `{
       _type in ["teamBanner", "ctaBanner"] => { alineacion, overlay },
       _type == "methodBanner" => { mostrarPasos, pasos[]{ titulo, descripcion } },
       _type == "splitHeroBanner" => { "logo": logo{ ${IMG} } },
-      _type == "casesClientsBanner" => {
+      _type == "clientsBanner" => {
         "giros": categorias[]{ ${GIRO_GROQ} },
-        "casos": casos[]{ _key, titulo, texto, giro, cliente, "imagen": imagen{ ${IMG} } },
-        pasoAutomatico,
-        segundosPorCaso
+        rotacionAutomatica,
+        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
       },
       _type == "achievementsBanner" => {
         "logros": logros[]{ _key, titulo, texto, etiqueta, nombre, firma, "foto": foto{ ${IMG} } },
@@ -223,6 +226,11 @@ const QUERY_ASESORIAS = `{
     }
   },
   "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
+  "clientesMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0]{
+    subtitulo, titulo, descripcion, rotacionAutomatica,
+    "imagen": imagen{ ${IMG} },
+    "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
+  },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
     "id": _id, nombre, empresa, estrellas, comentario, fecha,
     "foto": foto.asset->url + "?w=160&h=160&fit=crop&auto=format",
@@ -231,8 +239,6 @@ const QUERY_ASESORIAS = `{
 }`;
 
 type Txt = string | null | undefined;
-
-type CasoRaw = { _key?: Txt; titulo?: Txt; texto?: Txt; giro?: Txt; cliente?: Txt; imagen?: ImgRaw } | null;
 
 type LogroRaw = {
   _key?: Txt;
@@ -246,36 +252,21 @@ type LogroRaw = {
 
 type SeccionAsesoriasRaw = SeccionRaw & {
   logo?: ImgRaw;
-  casos?: CasoRaw[] | null;
   logros?: LogroRaw[] | null;
   pasoAutomatico?: boolean | null;
-  segundosPorCaso?: number | null;
   segundosPorLogro?: number | null;
 };
 
 type RespuestaAsesorias = {
   pagina: { sections?: SeccionAsesoriasRaw[] | null } | null;
   girosMarketing: GiroRaw[] | null;
+  clientesMarketing: SeccionAsesoriasRaw | null;
   resenas: RespuestaRaw["resenas"];
 };
 
 // ============================================================
 // Normalizado
 // ============================================================
-
-/** Un caso sin título no es una tarjeta a medias: no se muestra. */
-function normalizarCasos(raw: CasoRaw[] | null | undefined): CasoExito[] {
-  return (raw ?? [])
-    .filter((c): c is NonNullable<CasoRaw> => Boolean(c && t(c.titulo)))
-    .map((c, i) => ({
-      key: t(c._key) || `caso-${i}`,
-      titulo: t(c.titulo),
-      texto: t(c.texto),
-      giro: t(c.giro),
-      cliente: t(c.cliente),
-      imagen: imagen(c.imagen, 900, t(c.titulo)),
-    }));
-}
 
 /** Un logro sin titulo no es una tarjeta a medias: no se muestra. */
 function normalizarLogros(raw: LogroRaw[] | null | undefined): Logro[] {
@@ -300,7 +291,8 @@ function segundos(v: number | null | undefined, porDefecto: number): number {
 function normalizarSeccionAsesorias(
   raw: SeccionAsesoriasRaw,
   resenas: SeccionResenas["resenas"],
-  girosMarketing: GiroNegocio[]
+  girosMarketing: GiroNegocio[],
+  marketing: ClientesMarketing | null
 ): SeccionAsesorias | null {
   if (!raw || raw.activo === false) return null;
 
@@ -308,18 +300,16 @@ function normalizarSeccionAsesorias(
     case "splitHeroBanner":
       return { ...camposBase(raw, false), tipo: "splitHeroBanner", logo: imagen(raw.logo, 1400) };
 
-    case "casesClientsBanner": {
-      const propios = normalizarGiros(raw.giros);
-      const giros = propios.length > 0 ? propios : girosMarketing;
+    case "clientsBanner": {
+      // La normalización es la de Marketing Digital; lo que falta (giros, video,
+      // portada del video) se completa con lo que tiene Marketing Digital.
+      const s = normalizarSeccion(raw, resenas);
+      if (!s || s.tipo !== "clientsBanner") return null;
       return {
-        ...camposBase(raw, false),
-        // Sin botón: "Ver casos de éxito" se quitó de Clientes en todas las páginas.
-        cta: null,
-        tipo: "casesClientsBanner",
-        giros,
-        casos: normalizarCasos(raw.casos),
-        pasoAutomatico: bool(raw.pasoAutomatico, true),
-        segundosPorCaso: segundos(raw.segundosPorCaso, 7),
+        ...s,
+        giros: s.giros.length > 0 ? s.giros : girosMarketing,
+        video: s.video ?? marketing?.video ?? null,
+        imagen: s.imagen ?? marketing?.imagen ?? null,
       };
     }
 
@@ -336,10 +326,10 @@ function normalizarSeccionAsesorias(
 
     default: {
       // Los demás tipos son los de Marketing Digital, con la misma
-      // normalización. La portada de foto (teamBanner) y Clientes con video
-      // (clientsBanner) no forman parte de esta página.
+      // normalización. La portada de foto (teamBanner) no forma parte de esta
+      // página: tiene la suya (splitHeroBanner).
       const s = normalizarSeccion(raw, resenas);
-      if (!s || s.tipo === "teamBanner" || s.tipo === "clientsBanner") return null;
+      if (!s || s.tipo === "teamBanner") return null;
       return s;
     }
   }
@@ -353,10 +343,21 @@ export async function getPaginaAsesorias(): Promise<{ secciones: SeccionAsesoria
   const resenas =
     resenasGoogle && resenasGoogle.length > 0 ? resenasGoogle : normalizarResenas(respuesta?.resenas);
   const girosMarketing = normalizarGiros(respuesta?.girosMarketing);
+  const raw = respuesta?.clientesMarketing;
+  const marketing: ClientesMarketing | null = raw
+    ? {
+        subtitulo: t(raw.subtitulo),
+        titulo: t(raw.titulo),
+        descripcion: t(raw.descripcion),
+        imagen: imagen(raw.imagen, 1400, ""),
+        video: normalizarVideo(raw),
+        rotacionAutomatica: bool(raw.rotacionAutomatica, true),
+      }
+    : null;
 
   const secciones = (respuesta?.pagina?.sections ?? [])
-    .map((s) => normalizarSeccionAsesorias(s, resenas, girosMarketing))
+    .map((s) => normalizarSeccionAsesorias(s, resenas, girosMarketing, marketing))
     .filter((s): s is SeccionAsesorias => s !== null);
 
-  return { secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing) };
+  return { secciones: secciones.length > 0 ? secciones : respaldo(girosMarketing, marketing) };
 }

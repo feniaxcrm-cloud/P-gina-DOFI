@@ -34,7 +34,7 @@ export function FeniaxCierre({ seccion, id, nivel }: { seccion: SeccionCierre; i
         {imagen ? (
           <>
             <FotoFondo imagen={imagen} imagenMovil={imagenMovil} />
-            <div className="absolute inset-0 bg-abyss/70" />
+            <div className="absolute inset-0 bg-abyss/55" />
           </>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(50%_60%_at_50%_40%,rgba(237,109,25,0.28)_0%,rgba(121,40,131,0.35)_40%,transparent_75%),linear-gradient(180deg,#2A1638_0%,#160A20_100%)]" />

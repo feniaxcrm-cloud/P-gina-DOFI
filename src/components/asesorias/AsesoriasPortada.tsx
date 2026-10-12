@@ -15,9 +15,11 @@ import type { SeccionPortadaAsesorias } from "@/lib/asesorias";
  *
  * Fondo morado profundo con brillos naranja y violeta y unas líneas de luz
  * en diagonal: el mismo mundo que el banner de «Rescatando Emprendedores» del
- * Home. La imagen (un recorte con fondo transparente) se apoya en el borde
- * inferior, como si la gente estuviera parada en la sección; en teléfono va
- * debajo del texto.
+ * Home. La imagen (un recorte con fondo transparente) va a la derecha y su
+ * borde de abajo queda A LA ALTURA DEL BORDE INFERIOR DEL BOTÓN (pedido del
+ * 2026-10-08; antes se apoyaba en el borde de la sección): las dos columnas
+ * se apoyan en la misma línea, separada de abajo por --apoyo. En teléfono la
+ * imagen va debajo del texto.
  *
  * El logo y la imagen se muestran completos (sin recortes ni punto focal):
  * son piezas terminadas.
@@ -46,7 +48,7 @@ export function AsesoriasPortada({
     <section
       id={id}
       aria-labelledby={`${id}-titulo`}
-      // pb-0: la gente de la foto se apoya en el borde inferior de la sección.
+      // pb-0: el aire de abajo lo pone --apoyo en las dos columnas, no la sección.
       className="pantalla relative isolate overflow-hidden bg-abyss text-foam lg:pb-0"
     >
       <div
@@ -79,8 +81,13 @@ export function AsesoriasPortada({
         <path d="M120 760 C 560 640, 980 500, 1520 330" stroke={`url(#${id}-luz-naranja)`} strokeWidth="1.4" />
       </svg>
 
-      <div className="relative mx-auto grid w-full max-w-page flex-1 grid-cols-1 items-end gap-8 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-6 lg:px-12">
-        <div className="min-w-0 pb-4 lg:col-span-6 lg:self-center lg:pb-[var(--pantalla-abajo)]">
+      <div
+        className="relative mx-auto grid w-full max-w-page flex-1 grid-cols-1 items-end gap-8 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-6 lg:px-12"
+        // --apoyo: a que distancia del borde de abajo queda la linea donde se
+        // apoyan el boton (columna izquierda) y la imagen (derecha).
+        style={{ "--apoyo": "clamp(2.5rem, 13svh, 7rem)" } as React.CSSProperties}
+      >
+        <div className="min-w-0 pb-4 lg:col-span-6 lg:self-end lg:pb-[var(--apoyo)]">
           {subtitulo && (
             <Anim animar={animar} y={12} duration={0.6}>
               <p className="mb-6 inline-flex w-fit items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 font-sans text-sm text-foam/90 backdrop-blur-sm">
@@ -146,7 +153,7 @@ export function AsesoriasPortada({
         </div>
 
         {imagen && (
-          <div className="relative min-w-0 lg:col-span-6 lg:self-end">
+          <div className="relative min-w-0 lg:col-span-6 lg:self-end lg:pb-[var(--apoyo)]">
             {/* Halo detrás de la gente: la despega del fondo sin recuadro. */}
             <div
               aria-hidden="true"
@@ -164,7 +171,7 @@ export function AsesoriasPortada({
                   decoding="async"
                   fetchPriority={prioridad ? "high" : undefined}
                   className="mx-auto block h-auto w-full object-contain"
-                  style={{ maxWidth: `min(760px, calc((var(--alto-util) + var(--pantalla-abajo)) * ${imagen.ancho} / ${imagen.alto}))` }}
+                  style={{ maxWidth: `min(760px, calc((var(--alto-util) + var(--pantalla-abajo) - var(--apoyo)) * ${imagen.ancho} / ${imagen.alto}))` }}
                 />
               </picture>
             </Anim>

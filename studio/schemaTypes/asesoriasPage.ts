@@ -12,12 +12,10 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  * Secciones propias de esta página:
  *  - Portada con logo e imagen (splitHeroBanner): título, el logo de
  *    «Rescatando Emprendedores», una frase y la foto a la derecha.
- *  - Clientes + casos de éxito (casesClientsBanner): el carrusel de giros de
- *    siempre y, al lado, un mazo de casos; cada caso trae su imagen y al
- *    pasar de caso el carrusel abre su giro y la muestra.
  *  - Logros (achievementsBanner): tarjetas con foto que reemplazan a las
  *    reseñas en esta página (pedido del 2026-10-07).
- * El resto son las de Marketing Digital (¿Qué es...?, Cierre...).
+ * El resto son las de Marketing Digital, tal cual (¿Qué es...?, Clientes y
+ * casos de éxito con el video, Cierre con las dos imágenes...).
  *
  * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
  * respaldo con los mismos textos (src/lib/asesorias-respaldo.ts). Con una sola
@@ -47,7 +45,7 @@ export const asesoriasPage = defineType({
         defineArrayMember({ type: "aboutBanner" }),
         defineArrayMember({ type: "navigationBanner" }),
         defineArrayMember({ type: "methodBanner" }),
-        defineArrayMember({ type: "casesClientsBanner" }),
+        defineArrayMember({ type: "clientsBanner" }),
         defineArrayMember({ type: "achievementsBanner" }),
         defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),

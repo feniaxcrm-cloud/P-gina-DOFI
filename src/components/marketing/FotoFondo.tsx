@@ -16,9 +16,9 @@ export function FotoFondo({
   const pos = (h: ImagenSanity["hotspot"]) => (h ? `${Math.round(h.x * 100)}% ${Math.round(h.y * 100)}%` : "50% 50%");
   const {
     props: { srcSet, style, ...resto },
-  } = getImageProps({ src: imagen.url, alt: imagen.alt, fill: true, sizes: "100vw", priority: prioridad });
+  } = getImageProps({ src: imagen.url, alt: imagen.alt, fill: true, sizes: "100vw", priority: prioridad, unoptimized: imagen.url.startsWith("/") });
   const srcMovil = imagenMovil
-    ? getImageProps({ src: imagenMovil.url, alt: imagen.alt, fill: true, sizes: "100vw" }).props.srcSet
+    ? getImageProps({ src: imagenMovil.url, alt: imagen.alt, fill: true, sizes: "100vw", unoptimized: imagenMovil.url.startsWith("/") }).props.srcSet
     : undefined;
   return (
     <picture>
