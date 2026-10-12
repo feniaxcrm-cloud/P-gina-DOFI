@@ -1,0 +1,35 @@
+{
+  "_createdAt": "2026-09-28T21:23:59Z",
+  "_id": "asesoriasPage",
+  "_rev": "7OkmNeJfeu3frDLfgnkWNL",
+  "_type": "asesoriasPage",
+  "_updatedAt": "2026-09-28T21:23:59Z",
+  "sections": [
+    {
+      "_key": "asesorias-equipo",
+      "_type": "teamBanner",
+      "activo": false
+    },
+    {
+      "_key": "asesorias-intro",
+      "_type": "aboutBanner",
+      "activo": false
+    },
+    {
+      "_key": "asesorias-editorial",
+      "_type": "navigationBanner",
+      "activo": false
+    },
+    {
+      "_key": "asesorias-metodo",
+      "_type": "methodBanner",
+      "activo": false
+    },
+    {
+      "_key": "asesorias-cierre",
+      "_type": "ctaBanner",
+      "activo": false
+    }
+  ],
+  "titulo": "Asesorías"
+}
