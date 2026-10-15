@@ -20,7 +20,8 @@
     "sembrar:asesorias": "tsx --env-file=.env.local scripts/sembrar-asesorias.mts",
     "ajustar:paginas": "tsx --env-file=.env.local scripts/ajustar-paginas.mts",
     "ajustar:home-hibrido": "tsx --env-file=.env.local scripts/ajustar-2026-10-08.mts",
-    "ajustar:2026-10-15": "tsx --env-file=.env.local scripts/ajustar-2026-10-15.mts"
+    "ajustar:2026-10-15": "tsx --env-file=.env.local scripts/ajustar-2026-10-15.mts",
+    "ajustar:2026-10-16": "tsx --env-file=.env.local scripts/ajustar-2026-10-16.mts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.2",

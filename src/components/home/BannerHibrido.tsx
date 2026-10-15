@@ -20,7 +20,9 @@ import { EscenaBanner } from "./EscenaBanner";
  *
  * TELEFONO: apilado. Primero la escena (el mensaje), debajo la foto y, al
  * final, el boton en su propia fila (no encima de la foto: taparia lo que
- * dice). Cada bloque conserva su proporcion.
+ * dice). Cada bloque conserva su proporcion. Si la escena trae `movil`
+ * (tema.ts), la foto se encuadra en su protagonista para que quede centrada
+ * (encuadreMovil).
  *
  * El FONDO es el color de la pieza original (tema.ts): la escena es
  * transparente y la foto se funde con el en su borde, asi no hay costuras.
@@ -44,6 +46,7 @@ function Foto({
   sizes,
   className = "",
   estilo,
+  posicion,
 }: {
   foto: FotoBanner;
   alt: string;
@@ -52,8 +55,12 @@ function Foto({
   sizes: string;
   className?: string;
   estilo?: React.CSSProperties;
+  /** object-position ya resuelto (encuadre del teléfono). */
+  posicion?: string;
 }) {
-  const pos = foto.hotspot ? `${Math.round(foto.hotspot.x * 100)}% ${Math.round(foto.hotspot.y * 100)}%` : ajuste === "completa" ? "50% 100%" : "50% 50%";
+  const pos =
+    posicion ??
+    (foto.hotspot ? `${Math.round(foto.hotspot.x * 100)}% ${Math.round(foto.hotspot.y * 100)}%` : ajuste === "completa" ? "50% 100%" : "50% 50%");
   // La mascara apaga el borde que mira a la escena.
   const dir = difuminado === "izquierda" ? "to right" : difuminado === "derecha" ? "to left" : "to bottom";
   const mascara = `linear-gradient(${dir}, transparent 0%, #000 12%, #000 100%)`;
@@ -71,6 +78,25 @@ function Foto({
       />
     </div>
   );
+}
+
+/**
+ * El encuadre de la foto en el teléfono. Con `movil` (tema.ts) la foto se
+ * recorta a un ancho más angosto centrado en su protagonista: el foco de
+ * fábrica o, si la foto se subió en el Studio, su punto focal. Devuelve la
+ * proporción de la caja y el object-position que deja ese centro en el medio
+ * (sin pasarse de los bordes). Sin `movil`, la foto entera, como siempre.
+ */
+function encuadreMovil(foto: FotoBanner, escena: ClaveEscena) {
+  const g = GEOMETRIA[escena];
+  const entera = { aspecto: `${g.foto.ancho} / ${ESCENARIO.alto}`, posicion: undefined as string | undefined };
+  if (!g.movil) return entera;
+  const visible = (g.movil.ancho / ESCENARIO.alto) * foto.alto; // en pixeles de la foto
+  if (visible >= foto.ancho) return entera;
+  const centro = foto.hotspot?.x ?? (foto.url === g.fotoRespaldo.url ? g.movil.foco : 0.5);
+  const x = Math.min(1, Math.max(0, (centro * foto.ancho - visible / 2) / (foto.ancho - visible)));
+  const y = foto.hotspot ? `${Math.round(foto.hotspot.y * 100)}%` : "50%";
+  return { aspecto: `${g.movil.ancho} / ${ESCENARIO.alto}`, posicion: `${(x * 100).toFixed(1)}% ${y}` };
 }
 
 export function BannerHibrido({
@@ -99,6 +125,7 @@ export function BannerHibrido({
   const bordeEscena = g.difuminado === "izquierda" ? "derecha" : "izquierda";
   const alto = E.alto;
   const textos = lineas.length > 0 ? lineas : g.lineasPorDefecto;
+  const movil = encuadreMovil(foto, escena);
 
   return (
     <section
@@ -134,8 +161,16 @@ export function BannerHibrido({
       {/* Telefono */}
       <div className="md:hidden">
         <EscenaBanner escena={escena} lineas={textos} ancho={g.escena.ancho} alto={alto} borde="abajo" className="w-full" />
-        <div className="relative w-full" style={{ aspectRatio: `${g.foto.ancho} / ${E.alto}` }}>
-          <Foto foto={foto} alt={alt} ajuste={ajusteFoto} difuminado="arriba" sizes="100vw" className="inset-0" />
+        <div className="relative w-full" style={{ aspectRatio: movil.aspecto }}>
+          <Foto
+            foto={foto}
+            alt={alt}
+            ajuste={movil.posicion ? "cubrir" : ajusteFoto}
+            difuminado="arriba"
+            sizes="100vw"
+            className="inset-0"
+            posicion={movil.posicion}
+          />
         </div>
         <div className="flex justify-center px-5 pb-9 pt-3">{ctaMovil}</div>
       </div>

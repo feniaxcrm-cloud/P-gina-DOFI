@@ -432,6 +432,19 @@ body {
   animation: cta-destello-ya 0.9s cubic-bezier(0.45, 0, 0.55, 1) 1;
 }
 
+/* Los iconos de herramientas del hero de ChatBots/CRM: flotan muy despacio
+   (subir 10 px y girar 3 grados en 9-14 s). Cada uno trae su giro de reposo en
+   --giro. Con movimiento reducido se quedan quietos (motion-reduce). */
+@keyframes herramienta-flotar {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--giro, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(calc(var(--giro, 0deg) + 3deg));
+  }
+}
+
 /* Un fundido de entrada (las escenas Remotion de los banners del Home). */
 @keyframes aparecer {
   from {

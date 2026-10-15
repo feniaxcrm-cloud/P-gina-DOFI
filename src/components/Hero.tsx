@@ -29,6 +29,13 @@ import type { HeroContent, Capacidad } from "@/lib/sanity";
  * funde con el fondo en duotono morado a la derecha (textura, nunca compite
  * con el texto). Sin foto, el fondo de marca solo.
  *
+ * TELÉFONO (pedido del 2026-10-16): la foto no va de fondo detrás del texto
+ * -- en un teléfono vertical el recorte dejaba a la persona cortada en el
+ * borde derecho. Va ARRIBA, a todo el ancho, completa (16:9, la proporción de
+ * la pieza) y centrada en el punto focal del Studio; se funde con el fondo
+ * hacia abajo y el texto sigue debajo. En escritorio y tablet, igual que
+ * siempre: de fondo a la derecha.
+ *
  * SIN ANIMACIÓN SOBRE LA FOTO (pedido del 2026-10-15): se quitaron las
  * tarjetas animadas «Atraer · Convertir · Escalar» (Remotion) que iban encima
  * de la foto. La foto queda quieta, con el mismo tamaño, posición y
@@ -69,7 +76,7 @@ export function Hero({
         <div className="absolute inset-0 bg-[radial-gradient(120%_120%_at_12%_0%,#2E1B68_0%,#1A0F3D_46%,#120A26_100%)]" />
 
         {content.imagen && (
-          <div className="absolute inset-y-0 right-0 w-full md:w-[62%] [mask-image:linear-gradient(90deg,transparent_0%,#000_45%)]">
+          <div className="absolute inset-y-0 right-0 hidden w-[62%] [mask-image:linear-gradient(90deg,transparent_0%,#000_45%)] md:block">
             <Image
               src={content.imagen}
               alt=""
@@ -98,6 +105,25 @@ export function Hero({
       {/* En escritorio el contenedor mide exacto el alto util: la banda de abajo
           toma lo suyo y la fila de arriba (texto + animacion) el resto. */}
       <div className="relative mx-auto flex w-full max-w-page flex-col px-5 sm:px-6 md:px-10 lg:h-[var(--alto-util)] lg:min-h-[500px] lg:px-12 xl:px-14">
+        {/* ---------- Foto en el teléfono: arriba, completa y centrada ---------- */}
+        {content.imagen && (
+          <div
+            aria-hidden="true"
+            className="relative -mx-5 -mt-[clamp(1.25rem,4svh,3rem)] mb-6 aspect-[16/9] overflow-hidden [mask-image:linear-gradient(180deg,#000_55%,transparent_100%)] sm:-mx-6 md:hidden"
+          >
+            <Image
+              src={content.imagen}
+              alt=""
+              fill
+              sizes="100vw"
+              priority
+              className="object-cover opacity-60 mix-blend-luminosity"
+              style={{ objectPosition }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(160deg,rgba(75,42,147,0.55)_0%,rgba(18,10,38,0.35)_60%,rgba(244,123,32,0.18)_100%)] mix-blend-color" />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 items-center gap-10 lg:min-h-0 lg:flex-1 lg:grid-cols-12 lg:gap-8">
           {/* ---------- Texto ---------- */}
           <div className="relative z-10 min-w-0 lg:col-span-7">

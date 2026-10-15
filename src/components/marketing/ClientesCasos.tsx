@@ -1,6 +1,6 @@
 import { CarruselGiros } from "./CarruselGiros";
 import { MarcoClientes } from "./MarcoClientes";
-import { VideoClientes } from "./VideoClientes";
+import { VideoTikTok } from "./VideoTikTok";
 import type { SeccionClientes } from "@/lib/marketing-digital";
 
 /**
@@ -8,8 +8,8 @@ import type { SeccionClientes } from "@/lib/marketing-digital";
  *
  *   Título
  *   ┌──────────────────────────┬──────────────┐
- *   │ Carrusel de giros        │    Video     │
- *   │ Fila de logos del giro   │              │
+ *   │ Carrusel de giros        │   iPhone     │
+ *   │ Fila de logos del giro   │  (TikTok)    │
  *   └──────────────────────────┴──────────────┘
  *
  * TODO EN UNA PANTALLA (pedido del 2026-10-07): el marco (MarcoClientes) mide
@@ -27,24 +27,26 @@ import type { SeccionClientes } from "@/lib/marketing-digital";
  * GIROS: solo los que existen en el Studio, con sus empresas y logos
  * (CarruselGiros). No hay giros de respaldo ni contenido de relleno.
  *
- * VIDEO: archivo, ajuste y portada desde el Studio (VideoClientes).
+ * VIDEO: como una publicación de TikTok en un iPhone (pedido del 2026-10-16,
+ * VideoTikTok): archivo, ajuste, portada, usuario, descripción y contadores
+ * desde el Studio. La usan igual Marketing Digital y Asesorías.
  *
  * SIN BOTÓN: el "Ver casos de éxito" que cerraba la sección se quitó por
  * pedido explícito (2026-10-01), en esta página y en la de FENIAX.
  */
 export function ClientesCasos({ seccion, id, nivel }: { seccion: SeccionClientes; id: string; nivel: "h1" | "h2" }) {
-  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, animar } = seccion;
+  const { imagen, subtitulo, titulo, descripcion, giros, rotacionAutomatica, video, tiktok, animar } = seccion;
 
   return (
     <MarcoClientes id={id} nivel={nivel} subtitulo={subtitulo} titulo={titulo} descripcion={descripcion} animar={animar}>
-      {/* 3fr / 2fr, igual que Tráfico/Ads y ChatBots/CRM: el video vertical no
+      {/* 3fr / 2fr, igual que Tráfico/Ads y ChatBots/CRM: el teléfono no
           necesita mas ancho que el que le da su alto. */}
       <div className="grid grid-cols-1 gap-12 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-10">
         <div className="min-w-0 lg:h-full lg:min-h-0">
           <CarruselGiros giros={giros} rotacion={rotacionAutomatica} animar={animar} />
         </div>
         <div className="min-w-0 lg:h-full lg:min-h-0">
-          <VideoClientes video={video} portada={imagen} titulo={titulo} />
+          <VideoTikTok video={video} portada={imagen} perfil={tiktok} titulo={titulo} />
         </div>
       </div>
     </MarcoClientes>

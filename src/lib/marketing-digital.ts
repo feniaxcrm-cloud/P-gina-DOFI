@@ -93,6 +93,28 @@ export const AJUSTES_VIDEO = ["rellenar", "completo"] as const;
 export type AjusteVideo = (typeof AJUSTES_VIDEO)[number];
 export type VideoSeccion = { url: string; ajuste: AjusteVideo; sonido: boolean };
 
+/** El video de Clientes se muestra como una publicación de TikTok en un
+ *  iPhone (pedido del 2026-10-16). Todo se edita en el Studio, en la sección;
+ *  los contadores son una SIMULACIÓN visual (arrancan en estos valores y suben
+ *  mientras el video corre), no métricas reales. */
+export type PerfilTikTok = {
+  usuario: string;
+  descripcion: string;
+  meGusta: number;
+  comentarios: number;
+  compartidos: number;
+};
+
+/** Lo que se ve mientras el Studio no tenga nada cargado: el TikTok de DOFI
+ *  (src/config/company.ts → perfilesRedes) y contadores de arranque. */
+export const TIKTOK_POR_DEFECTO: PerfilTikTok = {
+  usuario: "@dofiagenciacreativa",
+  descripcion: "",
+  meGusta: 8240,
+  comentarios: 312,
+  compartidos: 145,
+};
+
 export type Resena = {
   id: string;
   nombre: string;
@@ -119,7 +141,15 @@ type Base = {
   animar: boolean;
 };
 
-export type SeccionEquipo = Base & { tipo: "teamBanner"; alineacion: Alineacion; overlay: Overlay };
+export type SeccionEquipo = Base & {
+  tipo: "teamBanner";
+  alineacion: Alineacion;
+  overlay: Overlay;
+  /** Solo Marketing Digital (pedido del 2026-10-16): el PNG con transparencia
+   *  de la derecha del hero, sobre el fondo de siempre. Sin el, la portada se
+   *  pinta como antes (`imagen` de fondo). */
+  imagenDerecha?: ImagenSanity | null;
+};
 export type SeccionQueEs = Base & { tipo: "aboutBanner" };
 export type SeccionNavegacion = Base & { tipo: "navigationBanner" };
 export type SeccionMetodo = Base & { tipo: "methodBanner"; pasos: PasoMetodo[]; mostrarPasos: boolean };
@@ -131,6 +161,8 @@ export type SeccionClientes = Base & {
   /** Columna derecha. La portada es `imagen` (campo comun de la seccion).
    *  Sin video, la columna igual existe, con su estado vacio. */
   video: VideoSeccion | null;
+  /** Usuario, descripción y contadores de la publicación estilo TikTok. */
+  tiktok: PerfilTikTok;
 };
 export type SeccionResenas = Base & {
   tipo: "reviewsBanner";
@@ -229,6 +261,7 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
     giros: [],
     rotacionAutomatica: true,
     video: null,
+    tiktok: TIKTOK_POR_DEFECTO,
   },
   {
     ...base("respaldo-resenas", { titulo: "Reseñas en Google" }),
@@ -255,6 +288,10 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
 /** Imagen con su alt, que vive DENTRO del campo imagen en el Studio.
  *  Exportada: la reutilizan trafico.ts, feniax.ts y asesorias.ts (mismo fragmento,
  *  mismas paginas de banners). */
+/** Los campos de la publicación estilo TikTok (clientsBanner). Exportada: la
+ *  reutiliza asesorias.ts. */
+export const TIKTOK_GROQ = `usuarioTikTok, descripcionVideo, meGusta, comentarios, compartidos`;
+
 export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
 
 /** Logo de una empresa de giro, con sus dimensiones reales (object-contain
@@ -269,6 +306,7 @@ const QUERY_MARKETING = `{
       "imagen": imagen{ ${IMG} },
       "imagenMovil": imagenMovil{ ${IMG} },
       _type in ["teamBanner", "ctaBanner"] => { alineacion, overlay },
+      _type == "teamBanner" => { "imagenDerecha": imagenDerecha{ ${IMG} } },
       _type == "methodBanner" => { mostrarPasos, pasos[]{ titulo, descripcion } },
       _type == "clientsBanner" => {
         "giros": categorias[]{
@@ -281,7 +319,8 @@ const QUERY_MARKETING = `{
           }
         },
         rotacionAutomatica,
-        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
+        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo,
+        ${TIKTOK_GROQ}
       },
       _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
@@ -340,6 +379,7 @@ export type SeccionRaw = {
   cta?: CtaRaw;
   imagen?: ImgRaw;
   imagenMovil?: ImgRaw;
+  imagenDerecha?: ImgRaw;
   alineacion?: Txt;
   overlay?: Txt;
   mostrarPasos?: boolean | null;
@@ -349,6 +389,11 @@ export type SeccionRaw = {
   videoUrl?: Txt;
   ajusteVideo?: Txt;
   sonidoVideo?: boolean | null;
+  usuarioTikTok?: Txt;
+  descripcionVideo?: Txt;
+  meGusta?: number | null;
+  comentarios?: number | null;
+  compartidos?: number | null;
   enlaceGoogle?: Txt;
   cantidadMostrada?: number | null;
 };
@@ -456,16 +501,44 @@ export function normalizarVideo(raw: SeccionRaw): VideoSeccion | null {
   return { url, ajuste: unoDe(raw.ajusteVideo, AJUSTES_VIDEO, "rellenar"), sonido: bool(raw.sonidoVideo, false) };
 }
 
+/** Un contador valido es un entero >= 0; si no, el de arranque por defecto. */
+function contador(v: number | null | undefined, porDefecto: number): number {
+  return typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.round(v) : porDefecto;
+}
+
+/** El perfil de la publicación estilo TikTok: lo cargado en el Studio, y lo
+ *  que falte, el de por defecto. El usuario siempre empieza con "@". */
+export function normalizarTikTok(raw: SeccionRaw): PerfilTikTok {
+  const d = TIKTOK_POR_DEFECTO;
+  const usuario = t(raw.usuarioTikTok).replace(/^@+/, "");
+  return {
+    usuario: usuario ? `@${usuario}` : d.usuario,
+    descripcion: t(raw.descripcionVideo),
+    meGusta: contador(raw.meGusta, d.meGusta),
+    comentarios: contador(raw.comentarios, d.comentarios),
+    compartidos: contador(raw.compartidos, d.compartidos),
+  };
+}
+
 export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
   if (!raw || raw.activo === false) return null;
 
   switch (raw._type) {
     case "teamBanner":
+      return {
+        ...camposBase(raw, true),
+        tipo: "teamBanner",
+        alineacion: unoDe(raw.alineacion, ALINEACIONES, "izquierda"),
+        overlay: unoDe(raw.overlay, OVERLAYS, "medio"),
+        // Es decorativa: el titulo ya dice lo que muestra (alt vacio salvo que
+        // se escriba uno en el Studio).
+        imagenDerecha: imagen(raw.imagenDerecha, 1600, ""),
+      };
     case "ctaBanner":
       return {
         ...camposBase(raw, true),
-        tipo: raw._type,
-        alineacion: unoDe(raw.alineacion, ALINEACIONES, raw._type === "teamBanner" ? "izquierda" : "centro"),
+        tipo: "ctaBanner",
+        alineacion: unoDe(raw.alineacion, ALINEACIONES, "centro"),
         overlay: unoDe(raw.overlay, OVERLAYS, "medio"),
       };
     case "aboutBanner":
@@ -491,6 +564,7 @@ export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMa
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
         video: normalizarVideo(raw),
+        tiktok: normalizarTikTok(raw),
       };
     }
     case "reviewsBanner": {

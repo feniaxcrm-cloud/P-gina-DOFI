@@ -5,6 +5,8 @@ import { COPY_ASESORIAS, IMAGENES_ASESORIAS } from "@/lib/asesorias-respaldo";
 import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import {
   IMG,
+  TIKTOK_GROQ,
+  TIKTOK_POR_DEFECTO,
   bool,
   camposBase,
   imagen,
@@ -168,6 +170,7 @@ function respaldo(girosMarketing: GiroNegocio[], marketing: ClientesMarketing | 
       giros: girosMarketing,
       rotacionAutomatica: marketing?.rotacionAutomatica ?? true,
       video: marketing?.video ?? null,
+      tiktok: TIKTOK_POR_DEFECTO,
     },
     {
       ...base("asesorias-logros", { subtitulo: c.logros.subtitulo, titulo: c.logros.titulo }),
@@ -215,7 +218,8 @@ const QUERY_ASESORIAS = `{
       _type == "clientsBanner" => {
         "giros": categorias[]{ ${GIRO_GROQ} },
         rotacionAutomatica,
-        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
+        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo,
+        ${TIKTOK_GROQ}
       },
       _type == "achievementsBanner" => {
         "logros": logros[]{ _key, titulo, texto, etiqueta, nombre, firma, "foto": foto{ ${IMG} } },

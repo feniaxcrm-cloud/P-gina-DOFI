@@ -3,6 +3,7 @@ import { Anim } from "@/components/marketing/Anim";
 import { VideoBucle } from "@/components/marketing/VideoBucle";
 import { LOGOS_FENIAX } from "@/config/feniax";
 import type { SeccionEquipo } from "@/lib/marketing-digital";
+import { IconosHerramientas } from "./IconosHerramientas";
 import { OndasFeniax } from "./OndasFeniax";
 import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
 
@@ -21,6 +22,10 @@ import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
  * resplandor naranja arriba a la derecha, el morado abajo a la izquierda, la
  * cinta de líneas cruzando y la nube de puntos. Si se sube una foto en el
  * Studio, la foto pasa al fondo con un velo de marca encima.
+ *
+ * Iconos de herramientas (pedido del 2026-10-16): GoHighLevel, Kommo,
+ * Bitrix24, n8n y Railway flotan en el fondo, tenues, sin tapar el contenido
+ * (IconosHerramientas).
  *
  * El logotipo va completo y en su versión negativa (letras blancas, "IA" en
  * degradado), que es la que el brandbook usa sobre fondo oscuro.
@@ -52,6 +57,7 @@ export function FeniaxPortada({
         <OndasFeniax idGradiente="ondas-portada" className="inset-x-0 bottom-[6%] h-[42%] md:bottom-[2%]" amplitud={80} opacidad={0.55} duracion={46} />
         <Puntos className="-right-24 -top-24 h-[420px] w-[520px] opacity-70" />
         <Puntos className="-bottom-28 -left-28 h-[360px] w-[420px] opacity-40" color="rgba(201,179,211,0.5)" />
+        <IconosHerramientas />
       </div>
 
       <div className="relative mx-auto grid w-full max-w-page grid-cols-1 items-center gap-14 px-5 sm:px-6 md:px-10 lg:grid-cols-12 lg:gap-8 lg:px-12">

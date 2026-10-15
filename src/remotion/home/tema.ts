@@ -46,6 +46,12 @@ export type GeometriaEscena = {
   fotoRespaldo: { url: string; ancho: number; alto: number };
   /** Lo que dice la pieza (para lectores de pantalla y como respaldo del texto). */
   lineasPorDefecto: string[];
+  /** TELÉFONO (opcional): encuadre más angosto de la foto para que su
+   *  protagonista quede centrado. `ancho` es el ancho visible en unidades del
+   *  escenario (el alto es siempre 757) y `foco` el centro horizontal de la
+   *  persona en la foto de fábrica (0-1). Una foto subida en el Studio usa su
+   *  punto focal. Sin esto, la foto se ve entera. */
+  movil?: { ancho: number; foco: number };
 };
 
 export const GEOMETRIA: Record<ClaveEscena, GeometriaEscena> = {
@@ -96,6 +102,10 @@ export const GEOMETRIA: Record<ClaveEscena, GeometriaEscena> = {
     difuminado: "derecha",
     fotoRespaldo: { url: "/home/banner-asesorias-foto.webp", ancho: 920, alto: 757 },
     lineasPorDefecto: ["RESCATANDO", "EMPRENDEDORES"],
+    // En el teléfono la foto completa dejaba a Daniel y el «Asesorías uno a
+    // uno» corridos a la derecha (a la izquierda solo hay sellos de la
+    // mascota): se encuadra en ellos (pedido del 2026-10-16).
+    movil: { ancho: 640, foco: 0.636 },
   },
 };
 

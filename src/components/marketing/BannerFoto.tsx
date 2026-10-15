@@ -1,4 +1,4 @@
-import { getImageProps } from "next/image";
+import Image, { getImageProps } from "next/image";
 import { MapPin } from "@phosphor-icons/react/dist/ssr";
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "./Anim";
@@ -29,6 +29,16 @@ import type {
  * ancho maximo en `ch` con text-balance: el salto de linea cae natural en
  * dos lineas en escritorio, en vez de una palabra suelta al final. En un
  * telefono de 390px baja a 30px: con 34px la pregunta se partia en 4 lineas.
+ *
+ * IMAGEN DE LA DERECHA (solo la portada de Marketing Digital, pedido del
+ * 2026-10-16): un PNG con transparencia que se sube en el Studio y se apoya
+ * sobre el fondo morado de siempre -- el fondo no se toca. Se ve ENTERO
+ * (object-contain), nunca recortado ni corrido:
+ *  - Escritorio (lg): a la derecha, desde debajo del header hasta el borde de
+ *    abajo, apoyado en la esquina inferior derecha. El texto sigue a la
+ *    izquierda, por encima.
+ *  - Teléfono y tablet: arriba del texto, a todo el ancho y centrado, con su
+ *    propia proporción (hasta el 42% del alto de la pantalla).
  *
  * ENTRADA ESCALONADA
  * -----------------------------------------------------------------
@@ -120,6 +130,10 @@ export function BannerFoto({
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, alineacion, overlay, animar } =
     seccion;
   const esEquipo = seccion.tipo === "teamBanner";
+  const derecha = seccion.tipo === "teamBanner" ? (seccion.imagenDerecha ?? null) : null;
+  // Con imagen de la derecha, el fondo es el morado de la sección: ni foto de
+  // fondo ni velo.
+  const fondo = derecha ? null : imagen;
   const Titulo = nivel;
   const a = ALINEA[alineacion];
   // Una pantalla desde tablet (.pantalla, globals.css). En telefono el banner
@@ -136,19 +150,19 @@ export function BannerFoto({
       className={`pantalla relative isolate overflow-hidden bg-abyss text-foam ${alto}`}
     >
       <div className="absolute inset-0 -z-10">
-        {imagen ? (
+        {derecha ? null : fondo ? (
           animar ? (
             <Parallax className="absolute inset-0 overflow-hidden">
-              <FotoCubierta imagen={imagen} imagenMovil={imagenMovil} prioridad={prioridad} />
+              <FotoCubierta imagen={fondo} imagenMovil={imagenMovil} prioridad={prioridad} />
             </Parallax>
           ) : (
-            <FotoCubierta imagen={imagen} imagenMovil={imagenMovil} prioridad={prioridad} />
+            <FotoCubierta imagen={fondo} imagenMovil={imagenMovil} prioridad={prioridad} />
           )
         ) : (
           <AtmosferaMar variante={esEquipo ? "equipo" : "cierre"} />
         )}
 
-        {imagen && overlay !== "ninguno" && (
+        {fondo && overlay !== "ninguno" && (
           <>
             <div aria-hidden="true" className={`absolute inset-0 ${OVERLAY[overlay][alineacion]}`} />
             <div
@@ -158,6 +172,25 @@ export function BannerFoto({
           </>
         )}
       </div>
+
+      {derecha && (
+        <div
+          className="relative mx-auto mb-6 aspect-[var(--aspecto)] max-h-[42svh] w-full max-w-page px-5 sm:px-6 md:px-10 lg:absolute lg:bottom-0 lg:right-0 lg:top-[var(--alto-nav)] lg:mb-0 lg:aspect-auto lg:max-h-none lg:w-[56%] lg:max-w-none lg:px-0"
+          style={{ "--aspecto": `${derecha.ancho} / ${derecha.alto}` } as React.CSSProperties}
+        >
+          <div className="relative h-full w-full">
+            <Image
+              src={derecha.url}
+              alt={derecha.alt}
+              fill
+              priority={prioridad}
+              unoptimized={derecha.url.startsWith("/")}
+              sizes="(min-width: 1024px) 56vw, 100vw"
+              className="object-contain object-bottom lg:object-[100%_100%]"
+            />
+          </div>
+        </div>
+      )}
 
       <div
         className={`relative mx-auto flex w-full max-w-page flex-1 items-end px-5 sm:px-6 md:flex-none md:items-center md:px-10 lg:px-12 ${a.caja}`}
