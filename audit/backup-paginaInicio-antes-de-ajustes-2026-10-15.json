@@ -1,0 +1,22 @@
+{
+  "_createdAt": "2026-08-31T21:30:55Z",
+  "_id": "paginaInicio",
+  "_rev": "jFGCd09lO5Q5FStScn0AtY",
+  "_system": {
+    "base": {
+      "id": "paginaInicio",
+      "rev": "7RAvjHZFNddW6ezWMJSJJt"
+    }
+  },
+  "_type": "paginaInicio",
+  "_updatedAt": "2026-09-28T20:16:59Z",
+  "hero": {
+    "ctaPrincipalEnlace": "https://api.whatsapp.com/send?phone=593978626069&text=Hola%2C%20quiero%20mejorar%20mis%20ventas.%20%C2%BFMe%20pueden%20ayudar%3F",
+    "ctaPrincipalTexto": "Quiero Mejorar Mis Ventas",
+    "ctaSecundarioEnlace": "https://www.tiktok.com/@dofiagenciacreativa?_r=1&_t=ZS-99LtysAs9oY",
+    "ctaSecundarioTexto": "Mira Nuestro Trabajo",
+    "mensaje": "Pasa de 0 a $10K con nuestro Sistema de Ventas Inteligentes",
+    "titulo": "Ventas Inteligentes"
+  },
+  "titulo": "Página de inicio"
+}
