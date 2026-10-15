@@ -1,0 +1,158 @@
+{
+  "_createdAt": "2026-09-28T21:23:59Z",
+  "_id": "asesoriasPage",
+  "_rev": "Zmsimr1XCuFlnTrpZQ8iIm",
+  "_type": "asesoriasPage",
+  "_updatedAt": "2026-10-12T20:22:07Z",
+  "sections": [
+    {
+      "_key": "a46dbaf9015b",
+      "_type": "splitHeroBanner",
+      "activo": true,
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=asesorias",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Tu negocio merece otra oportunidad. Te ayudamos a verlo con otros ojos: detectamos lo que está frenando tus ventas y trazamos un camino claro para crecer.",
+      "imagen": {
+        "_type": "image",
+        "alt": "Dani junto a emprendedores de distintos rubros: construcción, salud, gastronomía, comercio y servicios",
+        "asset": {
+          "_ref": "image-6d10227e11bf876945920b11d14354bae507e0a5-972x667-webp",
+          "_type": "reference"
+        }
+      },
+      "logo": {
+        "_type": "image",
+        "alt": "Rescatando Emprendedores",
+        "asset": {
+          "_ref": "image-6a0fe6d3b8acdd53acf39b2a914ea97bab60c849-2000x667-webp",
+          "_type": "reference"
+        }
+      },
+      "titulo": "Asesorías 1 a 1"
+    },
+    {
+      "_key": "06e47d5e8156",
+      "_type": "aboutBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Nace de la experiencia de Dani acompañando a más de 500 empresas. Todo lo que aprendió lo lleva a una reunión 1 a 1 contigo: revisamos tu negocio a fondo, qué vendes y cómo lo vendes, para encontrar las oportunidades y los puntos que hoy te frenan.\n\nSales con una ruta estratégica clara para seguir avanzando. No es una charla motivacional ni psicológica: es una asesoría enfocada en mejorar tu negocio y tus ventas.",
+      "destacado": "Una ruta para vender más.",
+      "titulo": "¿Qué es Rescatando Emprendedores?"
+    },
+    {
+      "_key": "e849e7cd2d47",
+      "_type": "clientsBanner",
+      "activo": true,
+      "animar": true,
+      "rotacionAutomatica": true,
+      "titulo": "Clientes y casos de éxito"
+    },
+    {
+      "_key": "92897e54cd58",
+      "_type": "achievementsBanner",
+      "activo": true,
+      "animar": true,
+      "logros": [
+        {
+          "_key": "6ff153936987",
+          "_type": "logro",
+          "etiqueta": "Construcción",
+          "firma": "Ejemplo — reemplázalo",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedor de construcción (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-da3a99e281a6143eb85d3ccf6bfdf7eef3bd544b-378x472-webp",
+              "_type": "reference"
+            }
+          },
+          "nombre": "Ejemplo",
+          "texto": "y hoy sabe qué vender, a quién y cómo.",
+          "titulo": "Ordenó su negocio"
+        },
+        {
+          "_key": "e10a44468012",
+          "_type": "logro",
+          "etiqueta": "Salud",
+          "firma": "Ejemplo — reemplázalo",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedora de salud (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-30c5f4ebe14498877724a77dd1e3c649e25a1f41-403x505-webp",
+              "_type": "reference"
+            }
+          },
+          "nombre": "Ejemplo",
+          "texto": "y enfocó sus ventas donde sí le compran.",
+          "titulo": "Encontró a su cliente ideal"
+        },
+        {
+          "_key": "78d4fa335bf0",
+          "_type": "logro",
+          "etiqueta": "Gastronomía",
+          "firma": "Ejemplo — reemplázalo",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedores de gastronomía (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-9719ed5d6e14203a2e32557d808f7ce448c8000f-373x468-webp",
+              "_type": "reference"
+            }
+          },
+          "nombre": "Ejemplo",
+          "texto": "con un precio y un mensaje que venden.",
+          "titulo": "Lanzó su nueva oferta"
+        },
+        {
+          "_key": "f901a09c85a9",
+          "_type": "logro",
+          "etiqueta": "Comercio",
+          "firma": "Ejemplo — reemplázalo",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedoras de comercio (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-d7214331af58227df831b066ad03a1179e50b393-450x562-webp",
+              "_type": "reference"
+            }
+          },
+          "nombre": "Ejemplo",
+          "texto": "con una ruta clara para los próximos meses.",
+          "titulo": "Volvió a creer en su marca"
+        }
+      ],
+      "pasoAutomatico": true,
+      "segundosPorLogro": 6,
+      "subtitulo": "Logros de nuestros emprendedores",
+      "titulo": "Historias que nos enorgullecen"
+    },
+    {
+      "_key": "f4ef28070b43",
+      "_type": "ctaBanner",
+      "activo": true,
+      "alineacion": "centro",
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=asesorias",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Agenda tu asesoría 1 a 1 y sal con una ruta clara para vender más.",
+      "imagen": {
+        "_type": "image",
+        "asset": {
+          "_ref": "image-1ab1f18e2c11513b39a786b7ee05f60869948834-2077x757-png",
+          "_type": "reference"
+        }
+      },
+      "overlay": "medio",
+      "titulo": "¿Le damos a tu negocio otra oportunidad?"
+    }
+  ],
+  "titulo": "Asesorías"
+}
