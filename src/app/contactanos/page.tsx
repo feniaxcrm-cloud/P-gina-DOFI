@@ -4,6 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { AtmosferaMar } from "@/components/marketing/AtmosferaMar";
 import { FormularioContacto } from "@/components/contacto/FormularioContacto";
+import { ID_FORMULARIO } from "@/lib/cta";
 
 export const metadata: Metadata = {
   title: "Contáctanos | DOFI Agencia Creativa",
@@ -20,8 +21,9 @@ const PASOS = [
 
 /**
  * El formulario al que llevan los botones de los banners finales de todas las
- * paginas (y "Contáctanos" del menu). Cuatro campos y, al enviar, WhatsApp con
- * el mensaje armado: ver FormularioContacto y src/lib/cta.ts.
+ * paginas, "Contáctanos" del menu y el boton flotante de WhatsApp (que trae a
+ * #formulario). Cinco campos y, al enviar, WhatsApp con el mensaje armado: ver
+ * FormularioContacto y src/lib/cta.ts.
  *
  * MAS PREMIUM Y SENCILLO (pedido del 2026-10-07): el fondo de marca de
  * siempre, el texto a la izquierda con los tres pasos en corto y, a la
@@ -78,7 +80,12 @@ export default function ContactanosPage() {
                 aria-hidden="true"
                 className="absolute -inset-6 -z-10 rounded-[40px] bg-[radial-gradient(60%_60%_at_80%_10%,rgba(244,123,32,0.32)_0%,transparent_70%),radial-gradient(70%_70%_at_10%_100%,rgba(109,75,201,0.45)_0%,transparent_70%)] blur-2xl"
               />
-              <div className="rounded-[28px] border border-white/60 bg-canvas p-5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.75)] sm:p-8 md:p-[clamp(1.75rem,4.4svh,2.5rem)]">
+              {/* Destino del boton flotante de WhatsApp (/contactanos#formulario):
+                  el margen deja la tarjeta entera debajo del header fijo. */}
+              <div
+                id={ID_FORMULARIO}
+                className="scroll-mt-[calc(var(--alto-nav)+1rem)] rounded-[28px] border border-white/60 bg-canvas p-5 shadow-[0_40px_90px_-40px_rgba(0,0,0,0.75)] sm:p-8 md:p-[clamp(1.75rem,4.4svh,2.5rem)]"
+              >
                 <FormularioContacto />
               </div>
             </div>

@@ -177,3 +177,19 @@ export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: str
   { key: "instagram", label: "Instagram de DOFI", href: company.social.instagram ?? null },
   { key: "tiktok", label: "TikTok de DOFI", href: company.social.tiktok ?? null },
 ];
+
+/** Los perfiles de la página «Mira nuestro trabajo» (/redes), en este orden.
+ *  Son los que entregó el propietario el 2026-10-15; se guardan sin los
+ *  parámetros de seguimiento del enlace compartido (utm_source, xtok…), que
+ *  no cambian el perfil al que llevan. Independientes de `social` (header y
+ *  pie): esos siguen esperando su variable de entorno. */
+export const perfilesRedes: {
+  red: "instagram" | "tiktok";
+  nombre: string;
+  usuario: string;
+  href: string;
+}[] = [
+  { red: "instagram", nombre: "DOFI", usuario: "@dofiagenciacreativa", href: "https://www.instagram.com/dofiagenciacreativa" },
+  { red: "instagram", nombre: "Daniel Vallejo", usuario: "@danivallejo.dofi", href: "https://www.instagram.com/danivallejo.dofi" },
+  { red: "tiktok", nombre: "DOFI", usuario: "@dofiagenciacreativa", href: "https://www.tiktok.com/@dofiagenciacreativa" },
+];

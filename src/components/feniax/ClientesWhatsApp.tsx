@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChatCircleDots } from "@phosphor-icons/react";
 import { CarruselGiros } from "@/components/marketing/CarruselGiros";
 import { PLANTILLAS } from "@/lib/chat-demo";
 import type { GiroConChat } from "@/lib/feniax";
@@ -21,6 +20,10 @@ import { DemoWhatsApp } from "./DemoWhatsApp";
  * cuando una conversación termina, se abre el giro siguiente. En cuanto el
  * visitante elige un giro, se queda en ese (su demo se repite). El carrusel
  * no rota por su cuenta: el ritmo lo marca la conversación, no un reloj.
+ *
+ * SIN TEXTO AL LADO (pedido del 2026-10-15): se quitó la etiqueta «Demo en
+ * WhatsApp · giro» de arriba del teléfono; el giro abierto se ve en el
+ * carrusel.
  *
  * EN ESCRITORIO EL TELÉFONO SE MIDE POR EL ALTO: la sección mide una pantalla
  * (MarcoClientes) y el teléfono toma el alto de su columna; su ancho sale de
@@ -48,15 +51,6 @@ export function ClientesWhatsApp({
   const clave = giro?.key ?? "generica";
   const onTermina = rotacion && !elegido && n > 1 ? () => setActivo((a) => (a + 1) % n) : undefined;
 
-  const etiqueta = (
-    <p className="flex shrink-0 items-center justify-center gap-2 font-sans text-sm font-semibold text-ink-subtle">
-      <ChatCircleDots size={18} weight="duotone" aria-hidden="true" className="text-accent" />
-      <span>
-        Demo en WhatsApp{giro ? <> · <span className="text-ink">{giro.nombre}</span></> : null}
-      </span>
-    </p>
-  );
-
   return (
     // 3fr / 2fr: el teléfono no necesita más ancho que el que le da su alto.
     // Por debajo de lg la demo va DENTRO del carrusel, entre los giros y sus
@@ -77,7 +71,6 @@ export function ClientesWhatsApp({
           }}
           intermedio={
             <div className="mb-2 mt-10 lg:hidden">
-              <div className="mb-4">{etiqueta}</div>
               <DemoWhatsApp
                 chat={chat}
                 tema={tema}
@@ -90,8 +83,7 @@ export function ClientesWhatsApp({
         />
       </div>
 
-      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:gap-3">
-        {etiqueta}
+      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col">
         <DemoWhatsApp chat={chat} tema={tema} clave={clave} onTermina={onTermina} ajustarAlto className="min-h-0 flex-1" />
       </div>
     </div>

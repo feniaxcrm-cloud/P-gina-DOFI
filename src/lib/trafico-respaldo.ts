@@ -91,10 +91,12 @@ export const COPY_TRAFICO = {
     descripcion: "Te descubren en Instagram, te buscan en Google, visitan tu web y te escriben por WhatsApp.",
     destacado: "Estar en los lugares correctos, con estrategia.",
   },
-  /** Clientes: el panel de metricas de Meta (pedido del equipo, no del documento). */
+  /** Clientes: el panel de metricas de Meta (pedido del equipo, no del
+   *  documento). Sin descripción (pedido del 2026-10-15): el panel va solo, sin
+   *  texto al lado. Si se escribe una en el Studio, vuelve a mostrarse. */
   clientes: {
     titulo: "Clientes y casos de éxito",
-    descripcion: "Elige un giro y mira cómo medimos una campaña de Meta Ads.",
+    descripcion: "",
   },
   resenas: { titulo: "Reseñas en Google" },
   /** 06 · Cierre / CTA */

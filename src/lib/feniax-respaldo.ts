@@ -58,9 +58,11 @@ export const COPY_FENIAX = {
       { titulo: "Control y optimización", descripcion: "Reportes en tiempo real de tu equipo y de tus ventas." },
     ],
   },
+  // Sin descripción (pedido del 2026-10-15): el teléfono va solo, sin texto
+  // al lado. Si se escribe una en el Studio, vuelve a mostrarse.
   clientes: {
     titulo: "Clientes y casos de éxito",
-    descripcion: "Elige un giro de negocio y mira cómo la IA de FENIAX atiende a sus clientes por WhatsApp.",
+    descripcion: "",
   },
   resenas: { titulo: "Reseñas en Google" },
   cierre: {

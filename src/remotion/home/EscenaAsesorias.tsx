@@ -1,4 +1,3 @@
-import { useId } from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Flota, onda, pulso } from "./piezas";
 import { DURACION } from "./tema";
@@ -13,7 +12,11 @@ import { DURACION } from "./tema";
  *  - las luces diagonales de neon que atraviesan el banner;
  *  - la mascota de DOFI, repetida como sello en el fondo (unas casi
  *    invisibles, otras brillantes) y una grande, con su resplandor naranja,
- *    en la esquina de abajo.
+ *    en la esquina de abajo. Desde el 2026-10-15 cada sello es el ÍCONO
+ *    OFICIAL de la mascota (el archivo que entregó el propietario:
+ *    public/home/mascota-dofi.webp, con fondo transparente), no un dibujo
+ *    aproximado: mismo círculo morado-naranja, mismo peinado, lentes y
+ *    sonrisa. Posiciones, tamaños y transparencias de los sellos no cambian.
  *
  * Mismo morado profundo, mismo violeta de neon y mismo naranja que la pieza.
  * Bucle de DURACION cuadros.
@@ -23,51 +26,32 @@ const sujetar = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const
 
 const LOGO = { url: "/asesorias/rescatando-emprendedores.webp", ancho: 2000, alto: 667 };
 
-/** La mascota (cabeza con lentes oscuros y sonrisa) dentro de un sello redondo. */
-function Mascota({ r, opacidad, brillo = 0.5 }: { r: number; opacidad: number; brillo?: number }) {
-  const id = useId().replace(/:/g, "");
+/** El ícono de la mascota: el círculo mide 2r (el archivo es el círculo
+ *  justo, con el peinado apenas fuera de él arriba). Los sellos brillantes
+ *  llevan un resplandor naranja suave, como en la pieza original. */
+const MASCOTA = { url: "/home/mascota-dofi.webp", ancho: 640, alto: 634 };
+
+function Mascota({ r, opacidad, brillo = 0 }: { r: number; opacidad: number; brillo?: number }) {
+  const ancho = r * 2;
   return (
-    <svg width={r * 2} height={r * 2} viewBox="0 0 200 200" aria-hidden="true" style={{ opacity: opacidad, display: "block", overflow: "visible" }}>
-      <defs>
-        <radialGradient id={`${id}-fondo`} cx="50%" cy="38%" r="70%">
-          <stop offset="0" stopColor="#5A22B8" />
-          <stop offset="1" stopColor="#2A0C6B" />
-        </radialGradient>
-        <linearGradient id={`${id}-aro`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#FF9A4A" />
-          <stop offset="1" stopColor="#E8446E" />
-        </linearGradient>
-        <linearGradient id={`${id}-piel`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FFC79B" />
-          <stop offset="1" stopColor="#F28F5E" />
-        </linearGradient>
-      </defs>
-      <circle cx="100" cy="100" r="94" fill={`url(#${id}-fondo)`} stroke={`url(#${id}-aro)`} strokeWidth={9} />
-      <circle cx="100" cy="100" r="94" fill="none" stroke="#FF9A4A" strokeOpacity={brillo} strokeWidth={16} style={{ filter: "blur(8px)" }} />
-      {/* orejas y cara */}
-      <circle cx="46" cy="112" r="13" fill="#F28F5E" />
-      <circle cx="154" cy="112" r="13" fill="#F28F5E" />
-      <ellipse cx="100" cy="112" rx="56" ry="60" fill={`url(#${id}-piel)`} />
-      {/* pelo */}
-      <path
-        d="M44 98 C38 56 68 30 102 34 C140 28 166 58 156 98 C150 78 140 68 126 64 C128 76 116 82 108 70 C104 82 90 78 90 66 C72 72 58 80 52 106 Z"
-        fill="#241462"
-      />
-      <path d="M84 40 L96 6 L112 38 Z" fill="#241462" />
-      <path d="M112 38 L132 10 L136 42 Z" fill="#241462" />
-      <path d="M60 52 L52 22 L82 42 Z" fill="#241462" />
-      {/* lentes */}
-      <rect x="50" y="94" width="44" height="30" rx="12" fill="#0E0A26" />
-      <rect x="106" y="94" width="44" height="30" rx="12" fill="#0E0A26" />
-      <rect x="92" y="102" width="16" height="6" rx="3" fill="#0E0A26" />
-      <rect x="57" y="99" width="16" height="6" rx="3" fill="#fff" opacity="0.35" />
-      <rect x="113" y="99" width="16" height="6" rx="3" fill="#fff" opacity="0.35" />
-      {/* sonrisa */}
-      <path d="M62 138 Q100 176 138 138 Z" fill="#fff" stroke="#4A1D2A" strokeWidth={4.5} strokeLinejoin="round" />
-      <path d="M66 148 H134" stroke="#4A1D2A" strokeWidth={2.4} opacity={0.5} />
-      <circle cx="58" cy="132" r="8" fill="#FF6E8C" opacity="0.4" />
-      <circle cx="142" cy="132" r="8" fill="#FF6E8C" opacity="0.4" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={MASCOTA.url}
+      alt=""
+      aria-hidden="true"
+      width={MASCOTA.ancho}
+      height={MASCOTA.alto}
+      style={{
+        width: ancho,
+        height: (ancho * MASCOTA.alto) / MASCOTA.ancho,
+        // Sin tope de ancho: cerca del borde, el "max-width: 100%" de las
+        // imagenes (Tailwind) la achicaba solo a lo ancho y la deformaba.
+        maxWidth: "none",
+        display: "block",
+        opacity: opacidad,
+        filter: brillo > 0 ? `drop-shadow(0 0 ${Math.round(r * 0.22)}px rgba(255,140,60,${brillo}))` : undefined,
+      }}
+    />
   );
 }
 
@@ -131,7 +115,7 @@ export function EscenaAsesorias({ lineas }: { lineas: string[] }) {
       {/* Mascotas: sellos de fondo. */}
       {SELLOS.map((s, i) => (
         <Flota key={i} frame={frame} x={s.x} y={s.y} fase={s.f} amp={s.r > 100 ? 10 : 7} vaiven={s.r > 100 ? 1.5 : 4} escala={1 + 0.05 * pulso(frame, 30 + i * 20, 24)}>
-          <Mascota r={s.r} opacidad={s.o} brillo={s.o > 0.6 ? 0.7 : 0.25} />
+          <Mascota r={s.r} opacidad={s.o} brillo={s.o > 0.6 ? 0.55 : 0} />
         </Flota>
       ))}
 

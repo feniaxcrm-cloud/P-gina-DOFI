@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { BotonCta } from "./BotonCta";
 import { CapabilityBand } from "./CapabilityBand";
-import { EscenaHero } from "./hero/EscenaHero";
 import type { HeroContent, Capacidad } from "@/lib/sanity";
 
 /**
@@ -11,19 +10,18 @@ import type { HeroContent, Capacidad } from "@/lib/sanity";
  * premium; si necesita algo, Remotion").
  *
  *   ┌───────────────────────────────────────────────┬─────────────────────┐
- *   │ ● DOFI AGENCIA CREATIVA                       │  01 · Atraer        │
- *   │ Un Mar de                                     │      ↘              │
- *   │ Ideas  (la última palabra con la marea de      │  02 · Convertir     │
- *   │         color y un brillo que la recorre)     │      ↙              │
- *   │ Convertimos atención en Ventas Inteligentes   │  03 · Escalar       │
- *   │ [Quiero Mejorar mis Ventas →] [Mira…]         │  (Remotion, bucle)  │
+ *   │ ● DOFI AGENCIA CREATIVA                       │                     │
+ *   │ Un Mar de                                     │   la foto del       │
+ *   │ Ideas  (la última palabra con la marea de      │   Studio, quieta    │
+ *   │         color y un brillo que la recorre)     │                     │
+ *   │ Convertimos atención en Ventas Inteligentes   │                     │
+ *   │ [Quiero Mejorar mis Ventas →] [Mira…]         │                     │
  *   ├───────────┬───────────┬───────────┬───────────┴─────────────────────┤
  *   │ capacidad │ capacidad │ capacidad │ capacidad   (vidrio, una fila)  │
  *   └───────────┴───────────┴───────────┴─────────────────────────────────┘
  *
  * UNA PANTALLA: el hero entero (con las cuatro tarjetas) mide el alto de la
- * ventana; la animación se mide por el alto que queda (.pantalla y
- * --alto-util, globals.css).
+ * ventana (.pantalla y --alto-util, globals.css).
  *
  * FONDO: el mar de DOFI de noche -- el morado profundo de la marca con dos
  * resplandores (violeta y naranja) que se mueven muy despacio y el oleaje de
@@ -31,10 +29,11 @@ import type { HeroContent, Capacidad } from "@/lib/sanity";
  * funde con el fondo en duotono morado a la derecha (textura, nunca compite
  * con el texto). Sin foto, el fondo de marca solo.
  *
- * LA ANIMACIÓN (columna derecha): "Ventas Inteligentes" en 12 segundos —
- * atraer con contenido en redes, convertir por WhatsApp con IA y CRM, escalar
- * las ventas. Sin cifras inventadas. Carga diferida: el título se pinta
- * primero (ver EscenaHero).
+ * SIN ANIMACIÓN SOBRE LA FOTO (pedido del 2026-10-15): se quitaron las
+ * tarjetas animadas «Atraer · Convertir · Escalar» (Remotion) que iban encima
+ * de la foto. La foto queda quieta, con el mismo tamaño, posición y
+ * tratamiento de antes; el resto del hero (resplandores, oleaje, entrada del
+ * texto) no cambia.
  *
  * MOVIMIENTO DEL TEXTO: las mismas clases hero-anim-* (entrada solo con
  * transform y una flotación mínima): el H1 nunca nace invisible (regla de
@@ -141,13 +140,6 @@ export function Hero({
                 />
               </Link>
             </div>
-          </div>
-
-          {/* ---------- Animación ---------- */}
-          <div className="relative min-w-0 lg:col-span-5 lg:h-full lg:min-h-0">
-            {/* En escritorio se mide por el alto de la fila (el ancho sale de su
-                proporcion). */}
-            <EscenaHero className="mx-auto w-full max-w-[440px] lg:h-full lg:max-h-[620px] lg:w-auto lg:max-w-full" />
           </div>
         </div>
 

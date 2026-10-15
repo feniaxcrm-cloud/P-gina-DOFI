@@ -10,9 +10,10 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
  * El formulario de contacto (/contactanos): al que llevan los botones de los
  * banners finales de todas las paginas.
  *
- * CUATRO CAMPOS, ni uno mas: nombres y apellidos, servicio (varios a la vez),
- * detalle de lo que necesita (opcional: es el unico que se puede dejar vacio)
- * y nombre del negocio.
+ * CINCO CAMPOS: nombres y apellidos, nombre del negocio, ciudad o país (se
+ * sumo el 2026-10-15), servicio (varios a la vez) y detalle de lo que necesita
+ * (opcional: es el unico que se puede dejar vacio). El nombre va solo en su
+ * fila y debajo el negocio junto a su ubicacion.
  *
  * MAS PREMIUM Y SENCILLO (pedido del 2026-10-07): una tarjeta clara sobre el
  * fondo de marca, campos suaves que se encienden en morado al escribir, los
@@ -28,7 +29,7 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
  * (?servicio=pauta). Se lee al montar, asi la pagina sigue siendo estatica.
  */
 
-type Errores = { nombre?: string; servicios?: string; negocio?: string };
+type Errores = { nombre?: string; servicios?: string; negocio?: string; ubicacion?: string };
 
 const CAMPO =
   "w-full rounded-[14px] border border-ink/12 bg-[#F7F5FB] px-4 py-3 font-sans text-base text-ink placeholder:text-ink-subtle/80 transition-[border-color,background-color,box-shadow] duration-200 hover:border-ink/25 focus:border-brand focus:bg-white focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_14%,transparent)] focus:outline-none aria-[invalid=true]:border-accent";
@@ -69,17 +70,19 @@ export function FormularioContacto() {
     const datos = new FormData(e.currentTarget);
     const nombre = String(datos.get("nombre") ?? "").trim();
     const negocio = String(datos.get("negocio") ?? "").trim();
+    const ubicacion = String(datos.get("ubicacion") ?? "").trim();
     const detalle = String(datos.get("detalle") ?? "").trim();
 
     const siguiente: Errores = {};
     if (nombre.length < 2) siguiente.nombre = "Escribe tu nombre y apellido.";
     if (servicios.length === 0) siguiente.servicios = "Elige al menos un servicio.";
     if (negocio.length < 2) siguiente.negocio = "Escribe el nombre de tu negocio.";
+    if (ubicacion.length < 2) siguiente.ubicacion = "Escribe la ciudad o el país de tu negocio.";
     setErrores(siguiente);
     if (Object.keys(siguiente).length > 0) return;
 
     const nombresServicios = SERVICIOS.filter((s) => servicios.includes(s.clave)).map((s) => s.nombre);
-    const url = createWhatsAppUrl({ message: mensajeFormulario({ nombre, negocio, servicios: nombresServicios, detalle }) });
+    const url = createWhatsAppUrl({ message: mensajeFormulario({ nombre, negocio, ubicacion, servicios: nombresServicios, detalle }) });
     setEnlace(url);
     // Dentro del gesto del clic: los navegadores no bloquean la ventana.
     window.open(url, "_blank", "noopener,noreferrer");
@@ -111,24 +114,24 @@ export function FormularioContacto() {
 
   return (
     <form onSubmit={alEnviar} noValidate className="flex flex-col gap-[clamp(1rem,2.8svh,1.5rem)]">
-      <div className="grid grid-cols-1 gap-[clamp(1rem,2.8svh,1.5rem)] sm:grid-cols-2 sm:gap-4">
-        <div className="flex flex-col gap-2">
-          <label htmlFor={`${id}-nombre`} className={ETIQUETA}>
-            Nombres y Apellidos
-          </label>
-          <input
-            id={`${id}-nombre`}
-            name="nombre"
-            type="text"
-            autoComplete="name"
-            placeholder="Tu nombre completo"
-            aria-invalid={Boolean(errores.nombre)}
-            aria-describedby={errores.nombre ? `${id}-err-nombre` : undefined}
-            className={CAMPO}
-          />
-          <AvisoError id={`${id}-err-nombre`} texto={errores.nombre} />
-        </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor={`${id}-nombre`} className={ETIQUETA}>
+          Nombres y Apellidos
+        </label>
+        <input
+          id={`${id}-nombre`}
+          name="nombre"
+          type="text"
+          autoComplete="name"
+          placeholder="Tu nombre completo"
+          aria-invalid={Boolean(errores.nombre)}
+          aria-describedby={errores.nombre ? `${id}-err-nombre` : undefined}
+          className={CAMPO}
+        />
+        <AvisoError id={`${id}-err-nombre`} texto={errores.nombre} />
+      </div>
 
+      <div className="grid grid-cols-1 gap-[clamp(1rem,2.8svh,1.5rem)] sm:grid-cols-2 sm:gap-4">
         <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-negocio`} className={ETIQUETA}>
             Nombre del Negocio
@@ -144,6 +147,23 @@ export function FormularioContacto() {
             className={CAMPO}
           />
           <AvisoError id={`${id}-err-negocio`} texto={errores.negocio} />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor={`${id}-ubicacion`} className={ETIQUETA}>
+            Ciudad o país
+          </label>
+          <input
+            id={`${id}-ubicacion`}
+            name="ubicacion"
+            type="text"
+            autoComplete="address-level2"
+            placeholder="Dónde está tu negocio"
+            aria-invalid={Boolean(errores.ubicacion)}
+            aria-describedby={errores.ubicacion ? `${id}-err-ubicacion` : undefined}
+            className={CAMPO}
+          />
+          <AvisoError id={`${id}-err-ubicacion`} texto={errores.ubicacion} />
         </div>
       </div>
 

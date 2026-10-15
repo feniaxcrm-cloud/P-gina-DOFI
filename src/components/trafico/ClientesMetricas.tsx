@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChartLineUp } from "@phosphor-icons/react";
 import { CarruselGiros } from "@/components/marketing/CarruselGiros";
 import { metricasParaGiro } from "@/lib/metricas-demo";
 import type { GiroConMetricas } from "@/lib/trafico";
@@ -25,6 +24,10 @@ import { DemoMetricas } from "./DemoMetricas";
  * El carrusel solo cambia con clic, toque, teclado o deslizando
  * (seleccionPorCursor={false}): cada cambio reinicia el panel de al lado, y
  * llevar el mouse hacia el panel no puede ir abriendo giros en el camino.
+ *
+ * SIN TEXTO AL LADO (pedido del 2026-10-15): se quitaron la etiqueta «Panel
+ * de Meta Ads · giro» de arriba y la nota de abajo; el panel lleva su propia
+ * etiqueta EJEMPLO y el giro abierto se ve en el carrusel.
  *
  * EN ESCRITORIO EL PANEL SE MIDE POR EL ALTO: la sección mide una pantalla
  * (MarcoClientes) y el panel toma el alto completo de su columna; su ancho
@@ -50,21 +53,6 @@ export function ClientesMetricas({
   const clave = giro?.key ?? "generico";
   const onTermina = rotacion && !elegido && n > 1 ? () => setActivo((a) => (a + 1) % n) : undefined;
 
-  const etiqueta = (
-    <p className="flex shrink-0 items-center justify-center gap-2 font-sans text-sm font-semibold text-ink-subtle">
-      <ChartLineUp size={18} weight="duotone" aria-hidden="true" className="text-accent" />
-      <span>
-        Panel de Meta Ads
-        {giro ? (
-          <>
-            {" "}
-            · <span className="text-ink">{giro.nombre}</span>
-          </>
-        ) : null}
-      </span>
-    </p>
-  );
-
   return (
     // 3fr / 2fr: el panel no necesita mas ancho que el que le da su alto, y el
     // carrusel aprovecha el resto. Por debajo de lg el panel va DENTRO del
@@ -85,7 +73,6 @@ export function ClientesMetricas({
           }}
           intermedio={
             <div className="mb-2 mt-10 lg:hidden">
-              <div className="mb-4">{etiqueta}</div>
               <DemoMetricas
                 datos={datos}
                 semilla={clave}
@@ -99,8 +86,7 @@ export function ClientesMetricas({
         />
       </div>
 
-      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col lg:gap-3">
-        {etiqueta}
+      <div className="hidden min-w-0 lg:flex lg:h-full lg:min-h-0 lg:flex-col">
         <DemoMetricas
           datos={datos}
           semilla={clave}

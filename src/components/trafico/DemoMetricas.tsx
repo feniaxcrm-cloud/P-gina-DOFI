@@ -20,8 +20,10 @@ import { PANEL } from "@/remotion/trafico/tema";
  * Sin controles: corre solo y se detiene con el cursor encima (ver
  * ReproductorMetricas).
  *
- * LA NOTA SE VE: debajo del panel, siempre. Dice que son cifras de ejemplo
- * (o lo que el equipo escriba en el Studio si carga cifras reales).
+ * LA NOTA («cifras de ejemplo…», o lo que el equipo escriba en el Studio) ya
+ * no va debajo del panel (pedido del 2026-10-15: el panel sin texto al lado):
+ * queda para lectores de pantalla, y el panel conserva su etiqueta EJEMPLO
+ * siempre visible.
  */
 
 const ReproductorMetricas = dynamic(() => import("./ReproductorMetricas"), { ssr: false });
@@ -107,8 +109,6 @@ export function DemoMetricas({
           )}
         </div>
       </div>
-
-      <p className="mt-3 shrink-0 text-balance text-center font-sans text-[13px] leading-snug text-ink-subtle">{datos.nota}</p>
 
       <figcaption className="sr-only">
         <p>

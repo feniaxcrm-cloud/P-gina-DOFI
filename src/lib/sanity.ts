@@ -776,11 +776,13 @@ export const HERO_FALLBACK: HeroContent = {
   // de un ancla a #servicios a /clientes -- es la ruta real de portafolio/
   // casos que ya existe en el proyecto (se inspecciono src/app/ antes de
   // escribir esta ruta, no hay /casos ni /portfolio; no se inventa una
-  // pagina nueva solo para este boton).
+  // pagina nueva solo para este boton). Desde el 2026-10-15 el secundario
+  // lleva a /redes: la pagina de enlaces a las redes de DOFI que se creo
+  // para este boton (pedido explicito del propietario).
   ctaPrincipalTexto: "Quiero Mejorar mis Ventas",
   ctaPrincipalEnlace: "/contactanos",
   ctaSecundarioTexto: "Mira Nuestro Trabajo",
-  ctaSecundarioEnlace: "/clientes",
+  ctaSecundarioEnlace: "/redes",
 };
 
 /** Contenido reemplazado en "Corrección del Hero + actualización de

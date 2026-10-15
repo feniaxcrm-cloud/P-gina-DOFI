@@ -7,7 +7,8 @@
  *     con el servicio de esa pagina ya marcado (enlaceFormulario).
  *  3. Al enviar el formulario se abre WhatsApp con un mensaje armado con lo que
  *     la persona escribio (mensajeFormulario).
- *  4. El boton flotante de WhatsApp lleva un mensaje fijo (MENSAJE_FLOTANTE).
+ *  4. El boton flotante de WhatsApp lleva al formulario (desde el 2026-10-15
+ *     ya no abre un chat): RUTA_FORMULARIO + #ID_FORMULARIO.
  *
  * Datos planos, sin dependencias de React ni de Next: los usan componentes de
  * servidor y de cliente, los respaldos de cada pagina y los scripts de
@@ -30,6 +31,10 @@ export type ClaveServicio = (typeof SERVICIOS)[number]["clave"];
 
 export const RUTA_FORMULARIO = "/contactanos";
 
+/** El id de la tarjeta del formulario en /contactanos: el destino del boton
+ *  flotante (/contactanos#formulario). */
+export const ID_FORMULARIO = "formulario";
+
 /** Enlace al formulario; con `servicio`, ese servicio llega ya marcado. */
 export function enlaceFormulario(servicio?: ClaveServicio): string {
   return servicio ? `${RUTA_FORMULARIO}?servicio=${servicio}` : RUTA_FORMULARIO;
@@ -50,26 +55,27 @@ export function listaEnEspanol(items: string[]): string {
 
 /**
  * El mensaje de WhatsApp del formulario, con la redaccion pedida:
- *   Hola como estan mi nombre es <nombre> pertenezco a la empresa <negocio> y
- *   le escribo por el servicio de <servicios>
+ *   Hola como estan mi nombre es <nombre> pertenezco a la empresa <negocio>
+ *   de <ubicacion> y le escribo por el servicio de <servicios>
+ * (la ubicacion, «Ciudad o país», se sumo el 2026-10-15).
  * Si la persona escribio el detalle de lo que necesita, va en una linea aparte
  * al final: el formulario lo pide y, sin esto, se perderia.
  */
 export function mensajeFormulario({
   nombre,
   negocio,
+  ubicacion,
   servicios,
   detalle,
 }: {
   nombre: string;
   negocio: string;
+  ubicacion: string;
   servicios: string[];
   detalle?: string;
 }): string {
-  const base = `Hola como estan mi nombre es ${nombre.trim()} pertenezco a la empresa ${negocio.trim()} y le escribo por el servicio de ${listaEnEspanol(servicios)}`;
+  const base = `Hola como estan mi nombre es ${nombre.trim()} pertenezco a la empresa ${negocio.trim()} de ${ubicacion.trim()} y le escribo por el servicio de ${listaEnEspanol(servicios)}`;
   const extra = detalle?.trim();
   return extra ? `${base}\n\nDetalle: ${extra}` : base;
 }
 
-/** El boton flotante de WhatsApp (todas las paginas). */
-export const MENSAJE_FLOTANTE = "Hola DOFI me gustaría contratar sus servicios.";
