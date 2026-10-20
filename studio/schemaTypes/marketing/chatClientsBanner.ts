@@ -5,11 +5,11 @@ import { miembroGiro } from "./giroNegocio";
 /**
  * Sección "Clientes + demo de WhatsApp" (página FENIAX / ChatBots-CRM).
  *
- * Es la sección de Clientes de Marketing Digital con una diferencia: en vez
- * de un video, la columna derecha es un teléfono con una conversación de
- * WhatsApp que se escribe sola, y cambia con el giro abierto (Gastronomía ->
- * alguien reservando mesa con la IA de un restaurante; Automotriz -> alguien
- * pidiendo una prueba de manejo...).
+ * Desde el 2026-10-20 se ve igual que la de Marketing Digital: carrusel de
+ * giros y, a la derecha, los LOGOS del giro abierto en círculos (forma y
+ * tamaño en «Presentación de los logos»). El teléfono con la demo de WhatsApp
+ * ya no se muestra (la portada lleva ahora el celular con el video); las
+ * conversaciones por giro siguen guardadas acá por si se vuelven a usar.
  *
  * GIROS: mismo formulario que en Marketing Digital (giroNegocio.ts) + una
  * "Demo de WhatsApp" opcional por giro. Sin demo propia, el giro usa la
@@ -23,9 +23,16 @@ export const chatClientsBanner = defineType({
   title: "Clientes + demo de WhatsApp",
   type: "object",
   description:
-    "Carrusel de giros con sus empresas y, al lado, un teléfono con una demo de WhatsApp de la IA atendiendo a un cliente de ese giro.",
+    "Carrusel de giros con sus empresas y, al lado, los logos del giro abierto en círculos.",
   fieldsets: [
-    { name: "giros", title: "Giros de negocio y sus demos", options: { collapsible: true, collapsed: false } },
+    { name: "giros", title: "Giros de negocio", options: { collapsible: true, collapsed: false } },
+    {
+      name: "logos",
+      title: "Logos (columna derecha)",
+      description:
+        "La columna derecha muestra los logos del giro abierto (pedido del 2026-10-20). Acá se elige su forma y su tamaño; los logos se cargan en cada giro («Empresas y logos»).",
+      options: { collapsible: true, collapsed: false },
+    },
   ],
   fields: camposBase({
     conImagen: false,
@@ -67,11 +74,18 @@ export const chatClientsBanner = defineType({
         fieldset: "giros",
         initialValue: true,
         description:
-          "Cuando termina una conversación, se abre el giro siguiente. Si el visitante elige un giro, se queda en ese.",
+          "El carrusel avanza solo mientras nadie lo toca. Se detiene cuando el visitante elige un giro.",
       }),
       defineField({
+        name: "ajusteLogos",
+        title: "Presentación de los logos",
+        type: "ajusteLogos",
+        fieldset: "logos",
+      }),
+
+      defineField({
         name: "temaChat",
-        title: "Apariencia de WhatsApp",
+        title: "Apariencia de WhatsApp (hoy no se muestra)",
         type: "string",
         fieldset: "giros",
         options: {
@@ -89,8 +103,8 @@ export const chatClientsBanner = defineType({
   preview: {
     select: { titulo: "titulo", activo: "activo" },
     prepare: ({ titulo, activo }) => ({
-      title: titulo || "Clientes + demo de WhatsApp",
-      subtitle: `Clientes + WhatsApp${activo === false ? " · Oculta" : ""}`,
+      title: titulo || "Clientes y casos de éxito",
+      subtitle: `Clientes${activo === false ? " · Oculta" : ""}`,
     }),
   },
 });

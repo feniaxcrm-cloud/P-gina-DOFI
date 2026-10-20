@@ -7,7 +7,7 @@ import {
   siWhatsapp,
   siYoutube,
 } from "simple-icons";
-import { Globe, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
+import { ChartLineUp, LinkedinLogo } from "@phosphor-icons/react/dist/ssr";
 import type { IconoPlataforma as Clave } from "@/lib/trafico";
 
 /**
@@ -16,7 +16,8 @@ import type { IconoPlataforma as Clave } from "@/lib/trafico";
  * Las marcas salen de simple-icons (el mismo paquete que ya usa Tools.tsx),
  * con su color oficial: es uso nominativo, para decir en que plataforma
  * trabajamos. LinkedIn no esta en simple-icons y se dibuja con el icono de
- * Phosphor; "web" (el trafico propio) usa el morado de DOFI. WhatsApp usa el
+ * Phosphor; "web" (el trafico propio) usa el morado de DOFI con la grafica
+ * ascendente de la analitica web (antes un globo; 2026-10-20). WhatsApp usa el
  * verde del boton flotante (--color-whatsapp): el #25D366 de la app deja el
  * icono blanco por debajo de 3:1.
  */
@@ -56,7 +57,7 @@ export function IconoPlataforma({ icono, tamano = 56, className = "" }: { icono:
       ) : icono === "linkedin" ? (
         <LinkedinLogo size={interior} weight="fill" />
       ) : (
-        <Globe size={interior} weight="duotone" />
+        <ChartLineUp size={interior} weight="bold" />
       )}
     </span>
   );

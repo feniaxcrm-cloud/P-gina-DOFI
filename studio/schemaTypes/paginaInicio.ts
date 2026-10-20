@@ -99,7 +99,7 @@ export const paginaInicio = defineType({
       type: "array",
       group: "capacidades",
       description:
-        "La banda de 4 tarjetas superpuesta debajo del Hero. Arrastrá para reordenar.",
+        "La banda de tarjetas debajo del Hero (hoy 5, con Academia). Arrastrá para reordenar. Mientras esta lista esté vacía, la web muestra las 5 de fábrica.",
       of: [{ type: "capacidad" }],
     }),
   ],

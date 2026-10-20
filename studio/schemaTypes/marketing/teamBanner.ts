@@ -1,10 +1,14 @@
 import { defineField, defineType } from "sanity";
 import { camposBase, campoAlineacion, campoOverlay } from "./camposBase";
+import { camposVideoTikTok } from "./camposVideoTikTok";
 
 /** El documento de Marketing Digital: el único cuya portada lleva la imagen
  *  de la derecha en PNG (pedido del 2026-10-16). */
 const MARKETING = "marketingDigitalPage";
 const esMarketing = ({ document }: { document?: { _type?: string } }) => document?._type === MARKETING;
+/** ChatBots/CRM: su portada lleva el celular con el video estilo TikTok
+ *  (pedido del 2026-10-20). */
+const esCrm = ({ document }: { document?: { _type?: string } }) => document?._type === "chatbotsCrmPage";
 
 /** Sección "Equipo DOFI": foto de fondo con texto encima. Abre la página.
  *
@@ -13,11 +17,24 @@ const esMarketing = ({ document }: { document?: { _type?: string } }) => documen
  *  transparencia que se apoya sobre ese fondo («Imagen de la derecha»). Por
  *  eso ahí se ocultan la foto de fondo y su versión móvil. En las demás
  *  páginas que usan este tipo (portadas de Tráfico/Ads y ChatBots/CRM) todo
- *  sigue igual. */
+ *  sigue igual.
+ *
+ *  EN CHATBOTS/CRM la derecha de la portada es un celular con un video estilo
+ *  TikTok (contadores simulados): sus campos solo aparecen ahí. */
 export const teamBanner = defineType({
   name: "teamBanner",
   title: "Equipo DOFI",
   type: "object",
+  fieldsets: [
+    {
+      name: "celular",
+      title: "Celular con video estilo TikTok (derecha de la portada)",
+      description:
+        "El video se muestra dentro de un iPhone como una publicación de TikTok. Los contadores son una simulación: arrancan en los números de acá y suben mientras el video se reproduce.",
+      options: { collapsible: true, collapsed: false },
+      hidden: (contexto) => !esCrm(contexto),
+    },
+  ],
   fields: [
     ...camposBase({
       textos: {
@@ -32,6 +49,7 @@ export const teamBanner = defineType({
     }).map((campo) =>
       campo.name === "imagen" || campo.name === "imagenMovil" ? { ...campo, hidden: esMarketing } : campo
     ),
+    ...camposVideoTikTok({ fieldset: "celular", hidden: (contexto) => !esCrm(contexto) }),
     defineField({
       name: "imagenDerecha",
       title: "Imagen de la derecha (PNG con transparencia)",

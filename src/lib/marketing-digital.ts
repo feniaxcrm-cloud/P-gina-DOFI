@@ -93,10 +93,10 @@ export const AJUSTES_VIDEO = ["rellenar", "completo"] as const;
 export type AjusteVideo = (typeof AJUSTES_VIDEO)[number];
 export type VideoSeccion = { url: string; ajuste: AjusteVideo; sonido: boolean };
 
-/** El video de Clientes se muestra como una publicación de TikTok en un
- *  iPhone (pedido del 2026-10-16). Todo se edita en el Studio, en la sección;
- *  los contadores son una SIMULACIÓN visual (arrancan en estos valores y suben
- *  mientras el video corre), no métricas reales. */
+/** El celular con un video estilo TikTok (pedido del 2026-10-16; desde el
+ *  2026-10-20 vive en la portada de ChatBots/CRM). Todo se edita en el
+ *  Studio; los contadores son una SIMULACIÓN visual (arrancan en estos valores
+ *  y suben mientras el video corre), no métricas reales. */
 export type PerfilTikTok = {
   usuario: string;
   descripcion: string;
@@ -114,6 +114,12 @@ export const TIKTOK_POR_DEFECTO: PerfilTikTok = {
   comentarios: 312,
   compartidos: 145,
 };
+
+/** Cómo se presentan los logos del giro abierto en la columna derecha de
+ *  «Clientes y casos de éxito» (pedido del 2026-10-20). Solo presentación:
+ *  el logo se ve entero dentro de la forma. Tamaños en px (diámetro). */
+export type AjusteLogos = { forma: "circular" | "redondeado"; tamano: number; tamanoMovil: number };
+export const AJUSTE_LOGOS_POR_DEFECTO: AjusteLogos = { forma: "circular", tamano: 112, tamanoMovil: 84 };
 
 export type Resena = {
   id: string;
@@ -149,6 +155,11 @@ export type SeccionEquipo = Base & {
    *  de la derecha del hero, sobre el fondo de siempre. Sin el, la portada se
    *  pinta como antes (`imagen` de fondo). */
   imagenDerecha?: ImagenSanity | null;
+  /** Solo ChatBots/CRM (pedido del 2026-10-20): el celular con el video
+   *  estilo TikTok de la derecha de la portada. */
+  video?: VideoSeccion | null;
+  portadaVideo?: ImagenSanity | null;
+  tiktok?: PerfilTikTok;
 };
 export type SeccionQueEs = Base & { tipo: "aboutBanner" };
 export type SeccionNavegacion = Base & { tipo: "navigationBanner" };
@@ -158,11 +169,8 @@ export type SeccionClientes = Base & {
   /** Vacio mientras no se creen giros en el Studio: nunca se rellena. */
   giros: GiroNegocio[];
   rotacionAutomatica: boolean;
-  /** Columna derecha. La portada es `imagen` (campo comun de la seccion).
-   *  Sin video, la columna igual existe, con su estado vacio. */
-  video: VideoSeccion | null;
-  /** Usuario, descripción y contadores de la publicación estilo TikTok. */
-  tiktok: PerfilTikTok;
+  /** La columna derecha: los logos del giro abierto (2026-10-20). */
+  ajusteLogos: AjusteLogos;
 };
 export type SeccionResenas = Base & {
   tipo: "reviewsBanner";
@@ -260,8 +268,7 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
     // existen solo si se crean en el Studio. Nada de contenido de relleno.
     giros: [],
     rotacionAutomatica: true,
-    video: null,
-    tiktok: TIKTOK_POR_DEFECTO,
+    ajusteLogos: AJUSTE_LOGOS_POR_DEFECTO,
   },
   {
     ...base("respaldo-resenas", { titulo: "Reseñas en Google" }),
@@ -288,9 +295,13 @@ export const SECCIONES_RESPALDO: SeccionMarketing[] = [
 /** Imagen con su alt, que vive DENTRO del campo imagen en el Studio.
  *  Exportada: la reutilizan trafico.ts, feniax.ts y asesorias.ts (mismo fragmento,
  *  mismas paginas de banners). */
-/** Los campos de la publicación estilo TikTok (clientsBanner). Exportada: la
- *  reutiliza asesorias.ts. */
-export const TIKTOK_GROQ = `usuarioTikTok, descripcionVideo, meGusta, comentarios, compartidos`;
+/** Los campos del celular con video estilo TikTok (portada de ChatBots/CRM).
+ *  Exportada: la usa feniax.ts. */
+export const TIKTOK_GROQ = `"videoUrl": video.asset->url, ajusteVideo, sonidoVideo, usuarioTikTok, descripcionVideo, meGusta, comentarios, compartidos`;
+
+/** La presentación de los logos de Clientes. Exportada: la usan trafico.ts,
+ *  feniax.ts y asesorias.ts. */
+export const AJUSTE_LOGOS_GROQ = `ajusteLogos{ forma, tamano, tamanoMovil }`;
 
 export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width, "alto": asset->metadata.dimensions.height, "hotspot": hotspot{ x, y }, "alt": alt`;
 
@@ -319,8 +330,7 @@ const QUERY_MARKETING = `{
           }
         },
         rotacionAutomatica,
-        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo,
-        ${TIKTOK_GROQ}
+        ${AJUSTE_LOGOS_GROQ}
       },
       _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
@@ -380,6 +390,8 @@ export type SeccionRaw = {
   imagen?: ImgRaw;
   imagenMovil?: ImgRaw;
   imagenDerecha?: ImgRaw;
+  portadaVideo?: ImgRaw;
+  ajusteLogos?: { forma?: Txt; tamano?: number | null; tamanoMovil?: number | null } | null;
   alineacion?: Txt;
   overlay?: Txt;
   mostrarPasos?: boolean | null;
@@ -520,6 +532,21 @@ export function normalizarTikTok(raw: SeccionRaw): PerfilTikTok {
   };
 }
 
+/** Un tamaño valido es un numero dentro del rango del Studio; si no, el de
+ *  por defecto. */
+function enRango(v: number | null | undefined, min: number, max: number, porDefecto: number): number {
+  return typeof v === "number" && Number.isFinite(v) ? Math.min(max, Math.max(min, Math.round(v))) : porDefecto;
+}
+
+export function normalizarAjusteLogos(raw: SeccionRaw["ajusteLogos"]): AjusteLogos {
+  const d = AJUSTE_LOGOS_POR_DEFECTO;
+  return {
+    forma: t(raw?.forma) === "redondeado" ? "redondeado" : "circular",
+    tamano: enRango(raw?.tamano, 72, 180, d.tamano),
+    tamanoMovil: enRango(raw?.tamanoMovil, 56, 140, d.tamanoMovil),
+  };
+}
+
 export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMarketing | null {
   if (!raw || raw.activo === false) return null;
 
@@ -533,6 +560,10 @@ export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMa
         // Es decorativa: el titulo ya dice lo que muestra (alt vacio salvo que
         // se escriba uno en el Studio).
         imagenDerecha: imagen(raw.imagenDerecha, 1600, ""),
+        // Solo llegan en la portada de ChatBots/CRM (ver feniax.ts).
+        video: normalizarVideo(raw),
+        portadaVideo: imagen(raw.portadaVideo, 900, ""),
+        tiktok: normalizarTikTok(raw),
       };
     case "ctaBanner":
       return {
@@ -556,15 +587,14 @@ export function normalizarSeccion(raw: SeccionRaw, resenas: Resena[]): SeccionMa
     case "clientsBanner": {
       const giros = normalizarGiros(raw.giros);
       return {
-        // En Clientes, `imagen` es la portada del video: alt vacio (decorativa).
+        // En Clientes la columna derecha son los logos del giro abierto.
         // Sin boton: "Ver casos de éxito" se quito de Clientes (2026-10-01).
         ...camposBase(raw, false),
         cta: null,
         tipo: "clientsBanner",
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
-        video: normalizarVideo(raw),
-        tiktok: normalizarTikTok(raw),
+        ajusteLogos: normalizarAjusteLogos(raw.ajusteLogos),
       };
     }
     case "reviewsBanner": {

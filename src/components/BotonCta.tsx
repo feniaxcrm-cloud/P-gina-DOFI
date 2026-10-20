@@ -47,14 +47,20 @@ export const PALETAS_CTA: Record<ColorBoton, { bg: string; bgHover: string; fg: 
 
 /** Clases y variables del boton, para quien necesite el MISMO boton pero como
  *  <button> (el envio del formulario de /contactanos) y no como enlace. */
-export function clasesBoton(tamano: "normal" | "grande" = "normal"): string {
+/** "medio" (pedido del 2026-10-20, cierre de Asesorías): un paso menos que
+ *  "grande" -- ocupa menos sin perder presencia. */
+export type TamanoBoton = "normal" | "medio" | "grande";
+
+export function clasesBoton(tamano: TamanoBoton = "normal"): string {
   return (
     "banner-cta-boton group/cta inline-flex items-center justify-center rounded-full text-center font-display font-bold leading-tight " +
     "transition-[background-color,box-shadow,scale] duration-300 ease-out " +
     "motion-safe:hover:scale-[1.04] active:scale-[0.99] " +
     (tamano === "grande"
       ? "min-h-[60px] gap-3 px-9 py-3.5 text-[17px] md:min-h-[76px] md:px-12 md:text-[21px]"
-      : "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]")
+      : tamano === "medio"
+        ? "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[68px] md:gap-3 md:px-10 md:text-[19px]"
+        : "min-h-[56px] gap-2.5 px-8 py-3 text-[16px] md:min-h-[64px] md:gap-3 md:px-10 md:text-[18px]")
   );
 }
 
@@ -81,7 +87,7 @@ export function BotonCta({
   /** Si no se indica, se deduce del enlace: una ruta del sitio empieza con
    *  "/"; todo lo demas (https://, mailto:, tel:) sale del sitio. */
   esExterno?: boolean;
-  tamano?: "normal" | "grande";
+  tamano?: TamanoBoton;
 }) {
   const externo = esExterno ?? !enlace.startsWith("/");
   const clases = clasesBoton(tamano);

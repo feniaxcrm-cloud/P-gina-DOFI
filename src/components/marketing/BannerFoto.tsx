@@ -1,6 +1,6 @@
 import Image, { getImageProps } from "next/image";
 import { MapPin } from "@phosphor-icons/react/dist/ssr";
-import { BotonCta } from "@/components/BotonCta";
+import { BotonCta, type TamanoBoton } from "@/components/BotonCta";
 import { Anim } from "./Anim";
 import { Parallax } from "./Parallax";
 import { AtmosferaMar } from "./AtmosferaMar";
@@ -120,12 +120,16 @@ export function BannerFoto({
   id,
   nivel,
   prioridad = false,
+  tamanoBoton,
 }: {
   seccion: SeccionEquipo | SeccionCierre;
   id: string;
   nivel: "h1" | "h2";
   /** Precarga la foto: solo para la seccion que se ve sin hacer scroll. */
   prioridad?: boolean;
+  /** El tamaño del boton, si la pagina pide otro (Asesorías: "medio"). Sin
+   *  esto, "normal" en la portada y "grande" en el cierre. */
+  tamanoBoton?: TamanoBoton;
 }) {
   const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, alineacion, overlay, animar } =
     seccion;
@@ -234,7 +238,7 @@ export function BannerFoto({
           {cta && (
             <Anim animar={animar} y={14} delay={0.32} duration={0.6}>
               <div className="mt-[clamp(1.75rem,4.5svh,2.25rem)]">
-                <BotonCta texto={cta.texto} enlace={cta.enlace} tamano={esEquipo ? "normal" : "grande"} />
+                <BotonCta texto={cta.texto} enlace={cta.enlace} tamano={tamanoBoton ?? (esEquipo ? "normal" : "grande")} />
               </div>
             </Anim>
           )}

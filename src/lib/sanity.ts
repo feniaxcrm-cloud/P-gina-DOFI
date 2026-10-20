@@ -443,7 +443,7 @@ export type HeroContent = {
  *  sprint original; contenido reemplazado en "Corrección del Hero +
  *  actualización de tarjetas" §15-16). Sanity solo guarda el string,
  *  CapabilityBand.tsx lo mapea a Phosphor. */
-export type IconoCapacidad = "social" | "ads" | "growth" | "rescue";
+export type IconoCapacidad = "social" | "ads" | "growth" | "rescue" | "academia";
 
 export type Capacidad = {
   titulo: string;
@@ -813,6 +813,15 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
     icono: "rescue",
     enlace: null,
   },
+  // Pedido del 2026-10-20. Sin enlace: el sitio todavía no tiene una página
+  // de Academia (no se inventa un destino). Cuando exista, se le pone su ruta
+  // en el Studio y la tarjeta pasa a ser un enlace, como las demás.
+  {
+    titulo: "Academia",
+    descripcion: "Aprende todo sobre Inteligencia Artificial",
+    icono: "academia",
+    enlace: null,
+  },
 ];
 
 /** Respaldo de los 4 banners: sin imagen, para que la home conserve su
@@ -910,6 +919,7 @@ const ICONOS_VALIDOS = new Set<IconoCapacidad>([
   "ads",
   "growth",
   "rescue",
+  "academia",
 ]);
 
 /** `hero` (texto/CTA, de paginaInicio) y `heroDoc` (imagen, del documento

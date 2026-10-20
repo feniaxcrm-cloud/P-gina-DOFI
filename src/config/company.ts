@@ -179,7 +179,8 @@ export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: str
 ];
 
 /** Los perfiles de la página «Mira nuestro trabajo» (/redes), en este orden.
- *  Son los que entregó el propietario el 2026-10-15; se guardan sin los
+ *  Son los que entregó el propietario el 2026-10-15 (y el TikTok de Daniel, el
+ *  2026-10-20); se guardan sin los
  *  parámetros de seguimiento del enlace compartido (utm_source, xtok…), que
  *  no cambian el perfil al que llevan. Independientes de `social` (header y
  *  pie): esos siguen esperando su variable de entorno. */
@@ -190,6 +191,8 @@ export const perfilesRedes: {
   href: string;
 }[] = [
   { red: "instagram", nombre: "DOFI", usuario: "@dofiagenciacreativa", href: "https://www.instagram.com/dofiagenciacreativa" },
-  { red: "instagram", nombre: "Daniel Vallejo", usuario: "@danivallejo.dofi", href: "https://www.instagram.com/danivallejo.dofi" },
+  { red: "instagram", nombre: "Daniel Vallejo - El Socio", usuario: "@danivallejo.dofi", href: "https://www.instagram.com/danivallejo.dofi" },
   { red: "tiktok", nombre: "DOFI", usuario: "@dofiagenciacreativa", href: "https://www.tiktok.com/@dofiagenciacreativa" },
+  // Agregado el 2026-10-20 (pedido del propietario).
+  { red: "tiktok", nombre: "Daniel Vallejo - El Socio", usuario: "@danielvallejo_69", href: "https://www.tiktok.com/@danielvallejo_69" },
 ];

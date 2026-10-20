@@ -25,9 +25,10 @@ import { MarcoIphone } from "@/components/MarcoIphone";
 import type { ImagenSanity, PerfilTikTok, VideoSeccion } from "@/lib/marketing-digital";
 
 /**
- * El video de «Clientes y casos de éxito» como una publicación de TikTok en un
- * iPhone (pedido del 2026-10-16). Lo usan Marketing Digital y Asesorías, cada
- * una con su video, usuario, descripción y contadores desde el Studio.
+ * Un video como una publicación de TikTok en un iPhone (pedido del
+ * 2026-10-16). Desde el 2026-10-20 vive en la portada de ChatBots/CRM (antes
+ * estaba en «Clientes y casos de éxito» de Marketing Digital y Asesorías);
+ * video, usuario, descripción y contadores se editan en el Studio.
  *
  * PANTALLA (390 x 844, la de un iPhone): barra de estado arriba, el video en
  * 9:16 exacto (390 x 693) y la barra de navegación de TikTok abajo. Encima del
@@ -100,17 +101,37 @@ function Accion({
   );
 }
 
+/** Cómo se mide el teléfono:
+ *  - "columna": en escritorio llena el ALTO de su columna (que debe tenerlo
+ *    definido) y su ancho sale de la proporción; en teléfono, hasta 300 px.
+ *  - "portada" (ChatBots/CRM, 2026-10-20): por ANCHO, a la medida de la
+ *    pantalla -- en escritorio, hasta el 86% del alto útil sin pasar de 330
+ *    px de ancho; en teléfono y tablet, hasta 280 px. Así acompaña al título
+ *    sin competir con él. */
+const TAMANOS = {
+  columna: {
+    caja: "lg:min-h-0 lg:flex-1 lg:[container-type:size]",
+    telefono: "mx-auto w-full max-w-[300px] lg:w-[min(100cqw,calc((100cqh-18px)*390/844+18px))] lg:max-w-none",
+  },
+  portada: {
+    caja: "",
+    telefono: "mx-auto w-full max-w-[280px] lg:max-w-[min(330px,calc((var(--alto-util)*0.86-18px)*390/844+18px))]",
+  },
+} as const;
+
 export function VideoTikTok({
   video,
   portada,
   perfil,
   titulo,
+  tamano = "columna",
 }: {
   video: VideoSeccion | null;
   portada: ImagenSanity | null;
   perfil: PerfilTikTok;
   /** El título de la sección: nombre accesible del video. */
   titulo: string;
+  tamano?: keyof typeof TAMANOS;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const raf = useRef<number | null>(null);
@@ -247,8 +268,8 @@ export function VideoTikTok({
       {/* Escritorio: la caja mide su columna (container-type: size) y el
           teléfono toma el mayor tamaño que entra: su alto es el de la pantalla
           (ancho x 844/390) más los 18 px del bisel. Teléfono: hasta 300 px. */}
-      <div className="lg:min-h-0 lg:flex-1 lg:[container-type:size]">
-        <div className="mx-auto w-full max-w-[300px] lg:w-[min(100cqw,calc((100cqh-18px)*390/844+18px))] lg:max-w-none">
+      <div className={TAMANOS[tamano].caja}>
+        <div className={TAMANOS[tamano].telefono}>
           <MarcoIphone pantalla={PANTALLA} fondo="#000">
             <div className="absolute inset-0 text-white [container-type:inline-size]">
               {/* Barra de estado */}

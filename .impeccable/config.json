@@ -314,6 +314,12 @@
         "value": "#3e8cff",
         "createdAt": "2026-10-08T20:36:11.052Z",
         "reason": "Claude: color medido de las piezas originales de los banners del Home (pedido del 2026-10-08: mantener la paleta exacta) o color de marca de una red social dibujada en las escenas Remotion"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "19px",
+        "createdAt": "2026-10-20T17:09:45.346Z",
+        "reason": "Claude: tamaño 'medio' del boton CTA (BotonCta), un paso entre normal (18px) y grande (21px); pedido del 2026-10-20 para el cierre de Asesorias"
       }
     ]
   }

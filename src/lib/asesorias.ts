@@ -4,16 +4,16 @@ import { GIRO_GROQ } from "@/lib/giros";
 import { COPY_ASESORIAS, IMAGENES_ASESORIAS } from "@/lib/asesorias-respaldo";
 import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import {
+  AJUSTE_LOGOS_GROQ,
+  AJUSTE_LOGOS_POR_DEFECTO,
   IMG,
-  TIKTOK_GROQ,
-  TIKTOK_POR_DEFECTO,
+  normalizarAjusteLogos,
   bool,
   camposBase,
   imagen,
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
-  normalizarVideo,
   t,
   type BaseSeccion,
   type GiroNegocio,
@@ -94,8 +94,22 @@ export type SeccionLogros = BaseSeccion & {
   segundosPorLogro: number;
 };
 
+/** Un celular de «Videos en celulares»: su video (o null mientras no se
+ *  suba), el título que va sobre el video y la portada. */
+export type VideoCelular = { url: string | null; titulo: string; portada: ImagenSanity | null };
+
+/** «Videos en celulares» (pedido del 2026-10-20): tres celulares, el del
+ *  centro es el principal. Cada uno con su propio video desde el Studio. */
+export type SeccionCelulares = BaseSeccion & {
+  tipo: "celularesBanner";
+  izquierdo: VideoCelular;
+  central: VideoCelular;
+  derecho: VideoCelular;
+};
+
 export type SeccionAsesorias =
   | SeccionPortadaAsesorias
+  | SeccionCelulares
   | SeccionQueEs
   | SeccionNavegacion
   | SeccionMetodo
@@ -142,7 +156,7 @@ function imagenLocal(i: { archivo: string; ancho: number; alto: number; alt: str
 }
 
 /** Lo de Clientes que Asesorías toma de Marketing Digital cuando no lo trae. */
-type ClientesMarketing = Pick<SeccionClientes, "subtitulo" | "titulo" | "descripcion" | "imagen" | "video" | "rotacionAutomatica">;
+type ClientesMarketing = Pick<SeccionClientes, "subtitulo" | "titulo" | "descripcion" | "rotacionAutomatica" | "ajusteLogos">;
 
 function respaldo(girosMarketing: GiroNegocio[], marketing: ClientesMarketing | null): SeccionAsesorias[] {
   const c = COPY_ASESORIAS;
@@ -164,13 +178,11 @@ function respaldo(girosMarketing: GiroNegocio[], marketing: ClientesMarketing | 
         subtitulo: marketing?.subtitulo ?? "",
         titulo: marketing?.titulo || c.clientes.titulo,
         descripcion: marketing?.descripcion ?? "",
-        imagen: marketing?.imagen ?? null,
       }),
       tipo: "clientsBanner",
       giros: girosMarketing,
       rotacionAutomatica: marketing?.rotacionAutomatica ?? true,
-      video: marketing?.video ?? null,
-      tiktok: TIKTOK_POR_DEFECTO,
+      ajusteLogos: marketing?.ajusteLogos ?? AJUSTE_LOGOS_POR_DEFECTO,
     },
     {
       ...base("asesorias-logros", { subtitulo: c.logros.subtitulo, titulo: c.logros.titulo }),
@@ -205,6 +217,9 @@ function respaldo(girosMarketing: GiroNegocio[], marketing: ClientesMarketing | 
 // Consulta
 // ============================================================
 
+/** Un celular de «Videos en celulares»: el archivo, su título y su portada. */
+const CELULAR = `"url": video.asset->url, titulo, "portada": portada{ ${IMG} }`;
+
 const QUERY_ASESORIAS = `{
   "pagina": *[_type == "asesoriasPage"][0]{
     sections[]{
@@ -218,8 +233,12 @@ const QUERY_ASESORIAS = `{
       _type == "clientsBanner" => {
         "giros": categorias[]{ ${GIRO_GROQ} },
         rotacionAutomatica,
-        "videoUrl": video.asset->url, ajusteVideo, sonidoVideo,
-        ${TIKTOK_GROQ}
+        ${AJUSTE_LOGOS_GROQ}
+      },
+      _type == "celularesBanner" => {
+        "izquierdo": celularIzquierdo{ ${CELULAR} },
+        "central": celularCentral{ ${CELULAR} },
+        "derecho": celularDerecho{ ${CELULAR} }
       },
       _type == "achievementsBanner" => {
         "logros": logros[]{ _key, titulo, texto, etiqueta, nombre, firma, "foto": foto{ ${IMG} } },
@@ -232,8 +251,7 @@ const QUERY_ASESORIAS = `{
   "girosMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0].categorias[]{ ${GIRO_GROQ} },
   "clientesMarketing": *[_type == "marketingDigitalPage"][0].sections[_type == "clientsBanner"][0]{
     subtitulo, titulo, descripcion, rotacionAutomatica,
-    "imagen": imagen{ ${IMG} },
-    "videoUrl": video.asset->url, ajusteVideo, sonidoVideo
+    ${AJUSTE_LOGOS_GROQ}
   },
   "resenas": *[_type == "resena" && activa != false] | order(orden asc, _createdAt desc){
     "id": _id, nombre, empresa, estrellas, comentario, fecha,
@@ -254,8 +272,13 @@ type LogroRaw = {
   foto?: ImgRaw;
 } | null;
 
+type CelularRaw = { url?: Txt; titulo?: Txt; portada?: ImgRaw } | null;
+
 type SeccionAsesoriasRaw = SeccionRaw & {
   logo?: ImgRaw;
+  izquierdo?: CelularRaw;
+  central?: CelularRaw;
+  derecho?: CelularRaw;
   logros?: LogroRaw[] | null;
   pasoAutomatico?: boolean | null;
   segundosPorLogro?: number | null;
@@ -273,6 +296,13 @@ type RespuestaAsesorias = {
 // ============================================================
 
 /** Un logro sin titulo no es una tarjeta a medias: no se muestra. */
+/** Un celular sin video igual se muestra (con su aviso): la sección conserva
+ *  sus tres teléfonos mientras se cargan los videos. */
+function celular(raw: CelularRaw | undefined): VideoCelular {
+  const titulo = t(raw?.titulo);
+  return { url: t(raw?.url) || null, titulo, portada: imagen(raw?.portada, 800, titulo) };
+}
+
 function normalizarLogros(raw: LogroRaw[] | null | undefined): Logro[] {
   return (raw ?? [])
     .filter((l): l is NonNullable<LogroRaw> => Boolean(l && t(l.titulo)))
@@ -305,17 +335,22 @@ function normalizarSeccionAsesorias(
       return { ...camposBase(raw, false), tipo: "splitHeroBanner", logo: imagen(raw.logo, 1400) };
 
     case "clientsBanner": {
-      // La normalización es la de Marketing Digital; lo que falta (giros, video,
-      // portada del video) se completa con lo que tiene Marketing Digital.
+      // La normalización es la de Marketing Digital; sin giros propios se
+      // usan los de Marketing Digital.
       const s = normalizarSeccion(raw, resenas);
       if (!s || s.tipo !== "clientsBanner") return null;
-      return {
-        ...s,
-        giros: s.giros.length > 0 ? s.giros : girosMarketing,
-        video: s.video ?? marketing?.video ?? null,
-        imagen: s.imagen ?? marketing?.imagen ?? null,
-      };
+      return { ...s, giros: s.giros.length > 0 ? s.giros : girosMarketing };
     }
+
+    case "celularesBanner":
+      return {
+        ...camposBase(raw, false),
+        cta: null,
+        tipo: "celularesBanner",
+        izquierdo: celular(raw.izquierdo),
+        central: celular(raw.central),
+        derecho: celular(raw.derecho),
+      };
 
     case "achievementsBanner":
       return {
@@ -353,9 +388,8 @@ export async function getPaginaAsesorias(): Promise<{ secciones: SeccionAsesoria
         subtitulo: t(raw.subtitulo),
         titulo: t(raw.titulo),
         descripcion: t(raw.descripcion),
-        imagen: imagen(raw.imagen, 1400, ""),
-        video: normalizarVideo(raw),
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
+        ajusteLogos: normalizarAjusteLogos(raw.ajusteLogos),
       }
     : null;
 

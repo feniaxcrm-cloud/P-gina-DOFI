@@ -1,16 +1,15 @@
 import { defineType, defineField } from "sanity";
 import { camposBase } from "./camposBase";
-import { campoImagen } from "../objects/campoImagen";
 import { miembroGiro } from "./giroNegocio";
 
 /**
  * Sección "Clientes y casos de éxito".
  *
  *   Giros de negocio  -> cada giro con sus empresas (y el logo de cada una)
- *   Video             -> columna derecha, como una publicación de TikTok en un
- *                        iPhone (pedido del 2026-10-16): el video 9:16, el
- *                        usuario, la descripción y los contadores (simulados:
- *                        arrancan en el valor de acá y suben mientras se ve).
+ *   Columna derecha   -> los LOGOS del giro abierto, en círculos (pedido del
+ *                        2026-10-20: el celular con el video se mudó a la
+ *                        portada de ChatBots/CRM). Forma y tamaño se eligen en
+ *                        «Presentación de los logos».
  *
  * SIN MARQUESINA DEBAJO (pedido del 2026-10-07: la sección entra entera en
  * una pantalla): los logos se ven en la fila del giro abierto, que se
@@ -31,7 +30,7 @@ export const clientsBanner = defineType({
   title: "Clientes y casos de éxito",
   type: "object",
   description:
-    "Carrusel de giros de negocio con sus empresas y, al lado, un video. Los logos de cada giro se ven al abrirlo.",
+    "Carrusel de giros de negocio con sus empresas y, al lado, los logos del giro abierto en círculos.",
   fieldsets: [
     {
       name: "giros",
@@ -39,10 +38,10 @@ export const clientsBanner = defineType({
       options: { collapsible: true, collapsed: false },
     },
     {
-      name: "video",
-      title: "Video estilo TikTok (columna derecha)",
+      name: "logos",
+      title: "Logos (columna derecha)",
       description:
-        "El video se muestra dentro de un iPhone, como una publicación de TikTok: el video, el usuario, la descripción y los contadores de Me gusta, Comentarios y Compartir. Los contadores son una simulación: arrancan en los números de acá y suben mientras el video se reproduce (no son métricas reales de TikTok).",
+        "La columna derecha muestra los logos del giro abierto. Acá se elige su forma y su tamaño; los logos se cargan en cada giro («Empresas y logos»).",
       options: { collapsible: true, collapsed: false },
     },
   ],
@@ -80,93 +79,18 @@ export const clientsBanner = defineType({
           "El carrusel avanza solo mientras nadie lo toca. Se detiene cuando el visitante elige un giro y después de dos vueltas.",
       }),
       defineField({
-        name: "video",
-        title: "Video",
-        type: "file",
-        fieldset: "video",
-        options: { accept: "video/mp4,video/webm" },
-        description:
-          "Video VERTICAL 9:16 (como los de TikTok o Reels), MP4 (H.264) liviano, idealmente de menos de 15 MB. Arranca solo y en silencio cuando se ve, una vez; tocarlo lo pausa y al terminar aparece «Ver de nuevo». Para cambiarlo, sube otro archivo aquí.",
-      }),
-      defineField({
-        name: "ajusteVideo",
-        title: "Ajuste del video en su columna",
-        type: "string",
-        fieldset: "video",
-        description: "Cómo entra el video en la pantalla del teléfono (9:16). En ningún caso se deforma.",
-        options: {
-          list: [
-            { title: "Rellenar la pantalla (puede recortar los bordes)", value: "rellenar" },
-            { title: "Mostrar el video completo (sin recortes)", value: "completo" },
-          ],
-          layout: "radio",
-        },
-        initialValue: "rellenar",
-      }),
-      campoImagen({
-        name: "imagen",
-        title: "Portada del video (opcional)",
-        fieldset: "video",
-        description:
-          "Se ve mientras el video carga y a quienes prefieren menos movimiento. Idealmente, un cuadro del mismo video.",
-      }),
-      defineField({
-        name: "sonidoVideo",
-        title: "Mostrar botón de sonido",
-        type: "boolean",
-        fieldset: "video",
-        initialValue: false,
-        description: "Actívalo solo si el audio importa (por ejemplo, un testimonio).",
-      }),
-      defineField({
-        name: "usuarioTikTok",
-        title: "Usuario",
-        type: "string",
-        fieldset: "video",
-        initialValue: "@dofiagenciacreativa",
-        description: "El usuario que firma la publicación. Ej: @dofiagenciacreativa.",
-      }),
-      defineField({
-        name: "descripcionVideo",
-        title: "Descripción del video",
-        type: "string",
-        fieldset: "video",
-        validation: (Rule) => Rule.max(150),
-        description: "Opcional. Una frase corta debajo del usuario (se ven hasta dos líneas).",
-      }),
-      defineField({
-        name: "meGusta",
-        title: "Me gusta (al empezar)",
-        type: "number",
-        fieldset: "video",
-        initialValue: 8240,
-        validation: (Rule) => Rule.min(0).integer(),
-        description: "El número con el que arranca el contador. Mientras el video corre, sube solo.",
-      }),
-      defineField({
-        name: "comentarios",
-        title: "Comentarios (al empezar)",
-        type: "number",
-        fieldset: "video",
-        initialValue: 312,
-        validation: (Rule) => Rule.min(0).integer(),
-      }),
-      defineField({
-        name: "compartidos",
-        title: "Compartidos (al empezar)",
-        type: "number",
-        fieldset: "video",
-        initialValue: 145,
-        validation: (Rule) => Rule.min(0).integer(),
+        name: "ajusteLogos",
+        title: "Presentación de los logos",
+        type: "ajusteLogos",
+        fieldset: "logos",
       }),
     ],
   }),
   preview: {
-    select: { titulo: "titulo", activo: "activo", media: "imagen" },
-    prepare: ({ titulo, activo, media }) => ({
+    select: { titulo: "titulo", activo: "activo" },
+    prepare: ({ titulo, activo }) => ({
       title: titulo || "Clientes y casos de éxito",
       subtitle: `Clientes${activo === false ? " · Oculta" : ""}`,
-      media,
     }),
   },
 });

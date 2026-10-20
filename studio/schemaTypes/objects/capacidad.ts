@@ -44,6 +44,7 @@ export const capacidad = defineType({
           { title: "Megáfono — pauta / campañas pagadas", value: "ads" },
           { title: "Gráfico ascendente — resultados / ventas", value: "growth" },
           { title: "Salvavidas — acompañamiento a emprendedores", value: "rescue" },
+          { title: "Birrete — academia / formación", value: "academia" },
         ],
         layout: "radio",
       },

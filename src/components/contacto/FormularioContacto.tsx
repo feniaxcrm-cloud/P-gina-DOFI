@@ -10,10 +10,11 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
  * El formulario de contacto (/contactanos): al que llevan los botones de los
  * banners finales de todas las paginas.
  *
- * CINCO CAMPOS: nombres y apellidos, nombre del negocio, ciudad o país (se
- * sumo el 2026-10-15), servicio (varios a la vez) y detalle de lo que necesita
- * (opcional: es el unico que se puede dejar vacio). El nombre va solo en su
- * fila y debajo el negocio junto a su ubicacion.
+ * CINCO CAMPOS, TODOS OBLIGATORIOS: nombres y apellidos, nombre del negocio,
+ * ciudad o país (se sumo el 2026-10-15), servicio (varios a la vez) y
+ * «Cuéntame, ¿Qué está pasando con tu negocio?» (antes «Detalle de lo que
+ * necesita», opcional; obligatorio desde el 2026-10-20). El nombre va solo en
+ * su fila y debajo el negocio junto a su ubicacion.
  *
  * MAS PREMIUM Y SENCILLO (pedido del 2026-10-07): una tarjeta clara sobre el
  * fondo de marca, campos suaves que se encienden en morado al escribir, los
@@ -29,7 +30,7 @@ import { createWhatsAppUrl } from "@/lib/whatsapp";
  * (?servicio=pauta). Se lee al montar, asi la pagina sigue siendo estatica.
  */
 
-type Errores = { nombre?: string; servicios?: string; negocio?: string; ubicacion?: string };
+type Errores = { nombre?: string; servicios?: string; negocio?: string; ubicacion?: string; detalle?: string };
 
 const CAMPO =
   "w-full rounded-[14px] border border-ink/12 bg-[#F7F5FB] px-4 py-3 font-sans text-base text-ink placeholder:text-ink-subtle/80 transition-[border-color,background-color,box-shadow] duration-200 hover:border-ink/25 focus:border-brand focus:bg-white focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_14%,transparent)] focus:outline-none aria-[invalid=true]:border-accent";
@@ -78,6 +79,7 @@ export function FormularioContacto() {
     if (servicios.length === 0) siguiente.servicios = "Elige al menos un servicio.";
     if (negocio.length < 2) siguiente.negocio = "Escribe el nombre de tu negocio.";
     if (ubicacion.length < 2) siguiente.ubicacion = "Escribe la ciudad o el país de tu negocio.";
+    if (detalle.length < 3) siguiente.detalle = "Cuéntanos qué está pasando con tu negocio.";
     setErrores(siguiente);
     if (Object.keys(siguiente).length > 0) return;
 
@@ -208,15 +210,21 @@ export function FormularioContacto() {
 
       <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-detalle`} className={ETIQUETA}>
-          Detalle de lo que necesita <span className="font-sans font-normal text-ink-subtle">(opcional)</span>
+          Cuéntame, ¿Qué está pasando con tu negocio?
         </label>
         <textarea
           id={`${id}-detalle`}
           name="detalle"
           rows={3}
-          placeholder="Cuéntanos en pocas palabras qué quieres lograr"
-          className={`${CAMPO} min-h-[96px] resize-none`}
+          required
+          aria-required="true"
+          placeholder="Por ejemplo: tengo mensajes pero pocas ventas"
+          aria-invalid={Boolean(errores.detalle)}
+          aria-describedby={errores.detalle ? `${id}-err-detalle` : undefined}
+          onInput={() => errores.detalle && setErrores((e) => ({ ...e, detalle: undefined }))}
+          className={`${CAMPO} min-h-[96px] resize-y`}
         />
+        <AvisoError id={`${id}-err-detalle`} texto={errores.detalle} />
       </div>
 
       <div className="flex flex-col gap-3 pt-1">

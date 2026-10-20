@@ -14,8 +14,10 @@ import { defineType, defineField, defineArrayMember } from "sanity";
  *    «Rescatando Emprendedores», una frase y la foto a la derecha.
  *  - Logros (achievementsBanner): tarjetas con foto que reemplazan a las
  *    reseñas en esta página (pedido del 2026-10-07).
+ *  - Videos en celulares (celularesBanner): tres celulares con su propio
+ *    video cada uno (pedido del 2026-10-20).
  * El resto son las de Marketing Digital, tal cual (¿Qué es...?, Clientes y
- * casos de éxito con el video, Cierre con las dos imágenes...).
+ * casos de éxito con los logos del giro, Cierre con las dos imágenes...).
  *
  * Mientras no haya NINGUNA sección activa, la web muestra un contenido de
  * respaldo con los mismos textos (src/lib/asesorias-respaldo.ts). Con una sola
@@ -47,6 +49,7 @@ export const asesoriasPage = defineType({
         defineArrayMember({ type: "methodBanner" }),
         defineArrayMember({ type: "clientsBanner" }),
         defineArrayMember({ type: "achievementsBanner" }),
+        defineArrayMember({ type: "celularesBanner" }),
         defineArrayMember({ type: "reviewsBanner" }),
         defineArrayMember({ type: "ctaBanner" }),
       ],

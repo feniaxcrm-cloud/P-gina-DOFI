@@ -5,9 +5,14 @@ import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import { GIRO_GROQ, iconoDe } from "@/lib/giros";
 import { company } from "@/config/company";
 import {
+  AJUSTE_LOGOS_GROQ,
+  AJUSTE_LOGOS_POR_DEFECTO,
   IMG,
+  TIKTOK_GROQ,
   bool,
   camposBase,
+  normalizarAjusteLogos,
+  type AjusteLogos,
   normalizarGiros,
   normalizarResenas,
   normalizarSeccion,
@@ -57,6 +62,10 @@ export type GiroConChat = GiroNegocio & { chat: ChatDemo };
 
 export type SeccionClientesChat = BaseSeccion & {
   tipo: "chatClientsBanner";
+  /** La columna derecha: los logos del giro abierto (desde el 2026-10-20,
+   *  en lugar de la demo de WhatsApp; las conversaciones siguen en los
+   *  datos, sin mostrarse). */
+  ajusteLogos: AjusteLogos;
   giros: GiroConChat[];
   /** Al terminar una conversacion, pasar sola al siguiente giro. */
   rotacionAutomatica: boolean;
@@ -113,6 +122,7 @@ function respaldo(girosMarketing: GiroConChat[], resenas: SeccionResenas["resena
       giros: girosMarketing,
       rotacionAutomatica: true,
       temaChat: "claro",
+      ajusteLogos: AJUSTE_LOGOS_POR_DEFECTO,
     },
     {
       ...base("feniax-resenas", c.resenas),
@@ -145,10 +155,12 @@ const QUERY_FENIAX = `{
       "imagen": imagen{ ${IMG} },
       "imagenMovil": imagenMovil{ ${IMG} },
       _type in ["teamBanner", "ctaBanner"] => { alineacion, overlay },
+      _type == "teamBanner" => { ${TIKTOK_GROQ}, "portadaVideo": portadaVideo{ ${IMG} } },
       _type == "methodBanner" => { mostrarPasos, pasos[]{ titulo, descripcion } },
       _type == "chatClientsBanner" => {
         "giros": categorias[]{ ${GIRO_GROQ}, "chat": chat{ ${CHAT} } },
-        rotacionAutomatica, temaChat
+        rotacionAutomatica, temaChat,
+        ${AJUSTE_LOGOS_GROQ}
       },
       _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
@@ -238,6 +250,7 @@ function normalizarSeccionFeniax(
       giros,
       rotacionAutomatica: bool(raw.rotacionAutomatica, true),
       temaChat: t(raw.temaChat) === "oscuro" ? "oscuro" : "claro",
+      ajusteLogos: normalizarAjusteLogos(raw.ajusteLogos),
     };
   }
 

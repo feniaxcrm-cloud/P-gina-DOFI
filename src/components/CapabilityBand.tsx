@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { ShareNetwork, Megaphone, ChartLineUp, Lifebuoy } from "@phosphor-icons/react";
+import { ShareNetwork, Megaphone, ChartLineUp, Lifebuoy, GraduationCap } from "@phosphor-icons/react";
 import { useCallback, useRef, useState, type PointerEvent } from "react";
 import type { Capacidad } from "@/lib/sanity";
 
@@ -23,12 +23,14 @@ import type { Capacidad } from "@/lib/sanity";
  *   ads     (Pauta en TikTok y Meta)  -> Megaphone
  *   growth  (+3M Vendidos en Redes)   -> ChartLineUp
  *   rescue  (Rescatando Emprendedores)-> Lifebuoy
+ *   academia (Academia, 2026-10-20)   -> GraduationCap
  */
 const ICONOS = {
   social: ShareNetwork,
   ads: Megaphone,
   growth: ChartLineUp,
   rescue: Lifebuoy,
+  academia: GraduationCap,
 } as const;
 
 /**
@@ -149,11 +151,19 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
   );
 }
 
+/** La grilla segun cuantas tarjetas haya: con 5 (desde que se sumo Academia,
+ *  2026-10-20) van las 5 en una fila recien en pantallas anchas (xl); en
+ *  laptops chicas, 3 + 2, para que el texto no quede apretado. */
+const COLUMNAS: Record<number, string> = {
+  4: "sm:grid-cols-2 lg:grid-cols-4",
+  5: "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5",
+};
+
 export function CapabilityBand({ capacidades }: { capacidades: Capacidad[] }) {
   const reduce = useReducedMotion();
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className={`grid grid-cols-1 gap-4 ${COLUMNAS[capacidades.length] ?? COLUMNAS[4]}`}>
       {capacidades.map((c, i) => (
         <motion.div
           key={c.titulo}

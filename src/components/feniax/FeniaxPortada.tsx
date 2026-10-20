@@ -1,8 +1,8 @@
 import { BotonCta } from "@/components/BotonCta";
 import { Anim } from "@/components/marketing/Anim";
-import { VideoBucle } from "@/components/marketing/VideoBucle";
+import { VideoTikTok } from "@/components/marketing/VideoTikTok";
 import { LOGOS_FENIAX } from "@/config/feniax";
-import type { SeccionEquipo } from "@/lib/marketing-digital";
+import { TIKTOK_POR_DEFECTO, type SeccionEquipo } from "@/lib/marketing-digital";
 import { IconosHerramientas } from "./IconosHerramientas";
 import { OndasFeniax } from "./OndasFeniax";
 import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
@@ -11,12 +11,12 @@ import { Etiqueta, FotoFondo, Puntos, partirFinal } from "./piezas";
  * 1 · Portada de FENIAX (tipo teamBanner, el mismo que abre Marketing
  * Digital: subtítulo, título, descripción, destacado, botón e imagen).
  *
- * Composición: texto a la izquierda y, a la derecha, el producto funcionando:
- * un panel de FENIAX CRM en movimiento -- los clientes avanzan de Nuevo a En
- * curso y Cerrado, la IA está activa, cada venta cerrada se avisa y la gráfica
- * de crecimiento sube (motion graphic de HyperFrames, 10 s en bucle: ver
- * video/crm-hero-feniax). Reemplaza al teléfono con la demo de WhatsApp, que
- * ahora vive solo en Clientes (pedido del 2026-10-01).
+ * Composición: texto a la izquierda y, a la derecha, el CELULAR CON EL VIDEO
+ * ESTILO TIKTOK (pedido del 2026-10-20: el mismo componente que estaba en
+ * «Clientes y casos de éxito», con sus contadores simulados). Reemplaza a la
+ * animación del panel de FENIAX CRM que iba acá. El video, el usuario, la
+ * descripción y los contadores se cargan en el Studio, en esta portada; sin
+ * video, el celular muestra su aviso.
  *
  * Fondo: el de la portada del brandbook -- berenjena profundo con el
  * resplandor naranja arriba a la derecha, el morado abajo a la izquierda, la
@@ -39,7 +39,7 @@ export function FeniaxPortada({
   id: string;
   nivel: "h1" | "h2";
 }) {
-  const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar } = seccion;
+  const { imagen, imagenMovil, subtitulo, titulo, descripcion, destacado, cta, animar, video, portadaVideo, tiktok } = seccion;
   const Titulo = nivel;
   const [inicio, final] = partirFinal(titulo, 1);
 
@@ -116,13 +116,12 @@ export function FeniaxPortada({
 
         <div className="relative min-w-0 lg:col-span-6">
           <Anim animar={animar} y={24} delay={0.18} duration={0.8}>
-            <VideoBucle
-              src="/feniax/crm-crecimiento.mp4"
-              poster="/feniax/crm-crecimiento.jpg"
-              descripcion="Animación del panel de FENIAX CRM: la IA está activa, los clientes avanzan de Nuevo a En curso y Cerrado, cada venta cerrada se avisa y la gráfica de crecimiento sube."
-              variante="flotante"
-              prioridad={nivel === "h1"}
-              className="mx-auto w-full max-w-[440px] sm:max-w-[500px] lg:ml-auto lg:mr-0 lg:max-w-[min(620px,var(--alto-util))]"
+            <VideoTikTok
+              video={video ?? null}
+              portada={portadaVideo ?? null}
+              perfil={tiktok ?? TIKTOK_POR_DEFECTO}
+              titulo={titulo}
+              tamano="portada"
             />
           </Anim>
         </div>

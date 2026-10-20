@@ -1,6 +1,6 @@
+import { ClientesLogos } from "@/components/marketing/ClientesLogos";
 import { MarcoClientes } from "@/components/marketing/MarcoClientes";
 import type { SeccionClientesChat } from "@/lib/feniax";
-import { ClientesWhatsApp } from "./ClientesWhatsApp";
 import { OndasFeniax } from "./OndasFeniax";
 import { Etiqueta, Puntos } from "./piezas";
 
@@ -9,17 +9,18 @@ import { Etiqueta, Puntos } from "./piezas";
  *
  *   Título · descripción
  *   ┌──────────────────────────┬────────────────────┐
- *   │ Carrusel de giros        │ Demo de WhatsApp   │
- *   │ Fila de logos del giro   │                    │
+ *   │ Carrusel de giros        │ Logos del giro     │
+ *   │ Fila de logos del giro   │ (en círculos)      │
  *   └──────────────────────────┴────────────────────┘
  *
  * Sin botón al final: "Ver casos de éxito" se quitó de Clientes en todas las
  * páginas (pedido del 2026-10-01).
  *
- * El mismo marco que Clientes de Marketing Digital (MarcoClientes: entra
- * entero en una pantalla), con el fondo de FENIAX; donde allá va el video,
- * acá va el teléfono con la IA atendiendo a un cliente del giro abierto (ver
- * ClientesWhatsApp.tsx y src/lib/chat-demo.ts).
+ * El mismo marco y las mismas columnas que Clientes de Marketing Digital
+ * (MarcoClientes + ClientesLogos), con el fondo de FENIAX. Desde el
+ * 2026-10-20 la derecha muestra los logos del giro abierto en lugar del
+ * teléfono con la demo de WhatsApp (la portada lleva ahora el celular con el
+ * video); las conversaciones por giro siguen en Sanity, sin mostrarse.
  */
 export function FeniaxClientes({
   seccion,
@@ -30,7 +31,7 @@ export function FeniaxClientes({
   id: string;
   nivel: "h1" | "h2";
 }) {
-  const { subtitulo, titulo, descripcion, giros, rotacionAutomatica, temaChat, animar } = seccion;
+  const { subtitulo, titulo, descripcion, giros, rotacionAutomatica, ajusteLogos, animar } = seccion;
 
   return (
     <MarcoClientes
@@ -50,7 +51,7 @@ export function FeniaxClientes({
         </>
       }
     >
-      <ClientesWhatsApp giros={giros} rotacion={rotacionAutomatica} tema={temaChat} animar={animar} />
+      <ClientesLogos giros={giros} rotacion={rotacionAutomatica} animar={animar} ajuste={ajusteLogos} />
     </MarcoClientes>
   );
 }

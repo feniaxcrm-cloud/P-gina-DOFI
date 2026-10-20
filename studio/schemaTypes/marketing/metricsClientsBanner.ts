@@ -5,11 +5,11 @@ import { miembroGiro } from "./giroNegocio";
 /**
  * Sección "Clientes + métricas de Meta Ads" (página Tráfico / Ads).
  *
- * Es la sección de Clientes de Marketing Digital con una diferencia: en vez
- * de un video, la columna derecha es un PANEL DE META ADS con los KPIs de una
- * campaña de ejemplo (CPR, CTR, CPA, alcance, visualizaciones y frecuencia)
- * que cambia con el giro abierto: Gastronomía → una campaña de reservas por
- * WhatsApp; Construcción → cotizaciones de obra; Belleza → citas...
+ * Desde el 2026-10-20 se ve igual que la de Marketing Digital: carrusel de
+ * giros y, a la derecha, los LOGOS del giro abierto en círculos (forma y
+ * tamaño en «Presentación de los logos»). El panel de Meta Ads de ejemplo
+ * que iba a la derecha ya no se muestra; sus métricas por giro siguen
+ * guardadas acá por si se vuelve a usar.
  *
  * GIROS: mismo formulario que en Marketing Digital (giroNegocio.ts, con sus
  * empresas, logos y foto) + las «Métricas de Meta Ads de este giro»,
@@ -27,9 +27,16 @@ export const metricsClientsBanner = defineType({
   title: "Clientes + métricas de Meta Ads",
   type: "object",
   description:
-    "Carrusel de giros con sus empresas y, al lado, un panel de Meta Ads de ejemplo (CPR, CTR, CPA, alcance, visualizaciones, frecuencia) que cambia con el giro.",
+    "Carrusel de giros con sus empresas y, al lado, los logos del giro abierto en círculos.",
   fieldsets: [
-    { name: "giros", title: "Giros de negocio y sus métricas", options: { collapsible: true, collapsed: false } },
+    { name: "giros", title: "Giros de negocio", options: { collapsible: true, collapsed: false } },
+    {
+      name: "logos",
+      title: "Logos (columna derecha)",
+      description:
+        "La columna derecha muestra los logos del giro abierto (pedido del 2026-10-20). Acá se elige su forma y su tamaño; los logos se cargan en cada giro («Empresas y logos»).",
+      options: { collapsible: true, collapsed: false },
+    },
   ],
   fields: camposBase({
     conImagen: false,
@@ -55,10 +62,10 @@ export const metricsClientsBanner = defineType({
             extras: [
               defineField({
                 name: "metricas",
-                title: "Métricas de Meta Ads de este giro (opcional)",
+                title: "Métricas de Meta Ads de este giro (hoy no se muestran)",
                 type: "metricasDemo",
                 description:
-                  "Vacías: se usa la campaña de ejemplo según el nombre o ícono del giro (restaurante, constructora, estética, gimnasio, consultorio, tienda, academia, turismo, autos, inmobiliaria...).",
+                  "Desde el 2026-10-20 la sección muestra los logos en lugar del panel de Meta Ads; estas métricas quedan guardadas por si se vuelve a usar.",
               }),
             ],
           }),
@@ -71,15 +78,21 @@ export const metricsClientsBanner = defineType({
         fieldset: "giros",
         initialValue: true,
         description:
-          "Cuando una campaña llega al día 30, se abre el giro siguiente. Si el visitante elige un giro, se queda en ese.",
+          "El carrusel avanza solo mientras nadie lo toca. Se detiene cuando el visitante elige un giro.",
+      }),
+      defineField({
+        name: "ajusteLogos",
+        title: "Presentación de los logos",
+        type: "ajusteLogos",
+        fieldset: "logos",
       }),
     ],
   }),
   preview: {
     select: { titulo: "titulo", activo: "activo" },
     prepare: ({ titulo, activo }) => ({
-      title: titulo || "Clientes + métricas de Meta Ads",
-      subtitle: `Clientes + métricas${activo === false ? " · Oculta" : ""}`,
+      title: titulo || "Clientes y casos de éxito",
+      subtitle: `Clientes${activo === false ? " · Oculta" : ""}`,
     }),
   },
 });

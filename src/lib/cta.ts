@@ -58,8 +58,8 @@ export function listaEnEspanol(items: string[]): string {
  *   Hola como estan mi nombre es <nombre> pertenezco a la empresa <negocio>
  *   de <ubicacion> y le escribo por el servicio de <servicios>
  * (la ubicacion, «Ciudad o país», se sumo el 2026-10-15).
- * Si la persona escribio el detalle de lo que necesita, va en una linea aparte
- * al final: el formulario lo pide y, sin esto, se perderia.
+ * La respuesta a «Cuéntame, ¿Qué está pasando con tu negocio?» (obligatoria
+ * desde el 2026-10-20) va en una linea aparte, al final.
  */
 export function mensajeFormulario({
   nombre,
@@ -72,10 +72,10 @@ export function mensajeFormulario({
   negocio: string;
   ubicacion: string;
   servicios: string[];
-  detalle?: string;
+  detalle: string;
 }): string {
   const base = `Hola como estan mi nombre es ${nombre.trim()} pertenezco a la empresa ${negocio.trim()} de ${ubicacion.trim()} y le escribo por el servicio de ${listaEnEspanol(servicios)}`;
-  const extra = detalle?.trim();
-  return extra ? `${base}\n\nDetalle: ${extra}` : base;
+  const extra = detalle.trim();
+  return extra ? `${base}\n\nLo que está pasando con mi negocio: ${extra}` : base;
 }
 

@@ -10,6 +10,7 @@ import { getPaginaAsesorias, type SeccionAsesorias, type TipoSeccionAsesorias } 
 import type { GiroNegocio } from "@/lib/marketing-digital";
 import { AsesoriasPortada } from "./AsesoriasPortada";
 import { LogrosAsesorias } from "./LogrosAsesorias";
+import { TresCelulares } from "./TresCelulares";
 
 /**
  * Página Asesorías 1 a 1 · Rescatando Emprendedores. Mismo patrón que
@@ -21,7 +22,8 @@ import { LogrosAsesorias } from "./LogrosAsesorias";
  * Reutiliza los componentes de Marketing Digital donde la sección es la misma
  * (¿Qué es...? → PiezaGrafica, cierre) y tiene los suyos donde cambia: la
  * portada con logo e imagen y Logros (las tarjetas con foto que reemplazan a
- * las reseñas, pedido del 2026-10-07). Clientes y el cierre son los de
+ * las reseñas, pedido del 2026-10-07) y «Videos en celulares» (tres
+ * celulares con video, pedido del 2026-10-20). Clientes y el cierre son los de
  * Marketing Digital, tal cual (pedido del 2026-10-08).
  */
 const ANCLA: Record<TipoSeccionAsesorias, string> = {
@@ -31,6 +33,7 @@ const ANCLA: Record<TipoSeccionAsesorias, string> = {
   methodBanner: "metodo",
   clientsBanner: "clientes",
   achievementsBanner: "logros",
+  celularesBanner: "videos",
   reviewsBanner: "resenas",
   ctaBanner: "contacto",
 };
@@ -58,12 +61,16 @@ function Seccion({
       return <MetodoDofi seccion={seccion} id={id} nivel={nivel} />;
     case "clientsBanner":
       return <ClientesCasos seccion={seccion} id={id} nivel={nivel} />;
+    case "celularesBanner":
+      return <TresCelulares seccion={seccion} id={id} nivel={nivel} />;
     case "achievementsBanner":
       return <LogrosAsesorias seccion={seccion} giros={giros} id={id} nivel={nivel} />;
     case "reviewsBanner":
       return <ResenasGoogle seccion={seccion} id={id} nivel={nivel} />;
     case "ctaBanner":
-      return <BannerFoto seccion={seccion} id={id} nivel={nivel} prioridad={nivel === "h1"} />;
+      // El boton del cierre, un paso mas chico que en las otras paginas
+      // (pedido del 2026-10-20).
+      return <BannerFoto seccion={seccion} id={id} nivel={nivel} prioridad={nivel === "h1"} tamanoBoton="medio" />;
   }
 }
 

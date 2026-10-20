@@ -60,10 +60,10 @@ export const COPY_TRAFICO = {
     pasos: ["Objetivo", "Audiencia", "Oferta", "Canal", "Creatividad", "Conversión", "Datos"],
   },
   /** 04 · ¿Dónde traficamos?
-   *  DOS tarjetas (pedido del 2026-10-08): Meta Ads, que ahora incluye
-   *  WhatsApp («Facebook + Instagram + WhatsApp»: el anuncio termina en el
-   *  chat), y TikTok Ads. Ya no hay tarjetas sueltas de WhatsApp ni de Google
-   *  Ads ni de Tráfico web. scripts/ajustar-2026-10-08.mts hace el mismo
+   *  CUATRO tarjetas: Meta Ads, que incluye WhatsApp («Facebook + Instagram +
+   *  WhatsApp»: el anuncio termina en el chat; pedido del 2026-10-08), TikTok
+   *  Ads y, de vuelta desde el 2026-10-20, Google Ads y Tráfico web. Sin
+   *  tarjeta suelta de WhatsApp. scripts/ajustar-2026-10-20.mts hace el mismo
    *  cambio en Sanity. */
   plataformas: {
     subtitulo: "¿Dónde traficamos?",
@@ -81,6 +81,20 @@ export const COPY_TRAFICO = {
         etiqueta: "Descubrimiento + atención + acción",
         icono: "tiktok",
         descripcion: "Contenido que capta atención y llega a nuevas audiencias.",
+      },
+      // Vuelven el 2026-10-20 (pedido del propietario), con sus textos de
+      // siempre (los del sembrado del 2026-10-02).
+      {
+        nombre: "Google Ads",
+        etiqueta: "Cuando ya hay intención",
+        icono: "google",
+        descripcion: "Te encuentran justo cuando buscan lo que ofreces.",
+      },
+      {
+        nombre: "Tráfico web",
+        etiqueta: "Visitas que se convierten",
+        icono: "web",
+        descripcion: "Medimos qué hace cada visita y mejoramos el camino hacia la compra.",
       },
     ],
   },

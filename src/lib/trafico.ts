@@ -6,8 +6,12 @@ import { IMAGEN_CIERRE_SOCIOS } from "@/lib/cierre-socios";
 import { COPY_TRAFICO } from "@/lib/trafico-respaldo";
 import { metricasParaGiro, normalizarMetricas, type MetricasDemo, type MetricasRaw } from "@/lib/metricas-demo";
 import {
+  AJUSTE_LOGOS_GROQ,
+  AJUSTE_LOGOS_POR_DEFECTO,
   IMG,
   bool,
+  normalizarAjusteLogos,
+  type AjusteLogos,
   camposBase,
   normalizarGiros,
   normalizarResenas,
@@ -84,8 +88,12 @@ export type GiroConMetricas = GiroNegocio & { metricas: MetricasDemo };
 export type SeccionClientesMetricas = BaseSeccion & {
   tipo: "metricsClientsBanner";
   giros: GiroConMetricas[];
-  /** Al terminar el recorrido de un giro, pasar solo al siguiente. */
+  /** El carrusel avanza solo mientras nadie lo toca. */
   rotacionAutomatica: boolean;
+  /** La columna derecha: los logos del giro abierto (desde el 2026-10-20,
+   *  en lugar del panel de Meta Ads). Las métricas de cada giro siguen en
+   *  los datos, sin mostrarse. */
+  ajusteLogos: AjusteLogos;
 };
 
 export type SeccionTrafico =
@@ -145,6 +153,7 @@ function respaldo(girosMarketing: GiroConMetricas[], resenas: SeccionResenas["re
       tipo: "metricsClientsBanner",
       giros: girosMarketing,
       rotacionAutomatica: true,
+      ajusteLogos: AJUSTE_LOGOS_POR_DEFECTO,
     },
     {
       ...base("trafico-resenas", c.resenas),
@@ -183,7 +192,8 @@ const QUERY_TRAFICO = `{
       _type == "platformsBanner" => { plataformas[]{ _key, nombre, etiqueta, descripcion, icono } },
       _type == "metricsClientsBanner" => {
         "giros": categorias[]{ ${GIRO_GROQ}, ${METRICAS} },
-        rotacionAutomatica
+        rotacionAutomatica,
+        ${AJUSTE_LOGOS_GROQ}
       },
       _type == "reviewsBanner" => { enlaceGoogle, cantidadMostrada }
     }
@@ -265,6 +275,7 @@ function normalizarSeccionTrafico(
         tipo: "metricsClientsBanner",
         giros,
         rotacionAutomatica: bool(raw.rotacionAutomatica, true),
+        ajusteLogos: normalizarAjusteLogos(raw.ajusteLogos),
       };
     }
 

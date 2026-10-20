@@ -31,6 +31,9 @@ import { redesSociales } from "./objects/redesSociales";
 import { capacidad } from "./objects/capacidad";
 import { seccionContenido } from "./objects/seccionContenido";
 import { posicionCta } from "./objects/posicionCta";
+import { ajusteLogos } from "./objects/ajusteLogos";
+import { videoCelular } from "./objects/videoCelular";
+import { celularesBanner } from "./marketing/celularesBanner";
 
 export const schemaTypes = [
   cuenta,
@@ -50,6 +53,9 @@ export const schemaTypes = [
   capacidad,
   seccionContenido,
   posicionCta,
+  ajusteLogos,
+  videoCelular,
+  celularesBanner,
   ctaSimple,
   teamBanner,
   aboutBanner,
