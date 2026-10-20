@@ -1,0 +1,165 @@
+{
+  "_createdAt": "2026-09-28T21:23:59Z",
+  "_id": "asesoriasPage",
+  "_rev": "g54B27AxNlkcQgHhJ0TfpI",
+  "_system": {
+    "base": {
+      "id": "asesoriasPage",
+      "rev": "g54B27AxNlkcQgHhJ0QBeK"
+    }
+  },
+  "_type": "asesoriasPage",
+  "_updatedAt": "2026-10-19T22:19:18Z",
+  "sections": [
+    {
+      "_key": "a46dbaf9015b",
+      "_type": "splitHeroBanner",
+      "activo": true,
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=asesorias",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Tu negocio merece otra oportunidad. Te ayudamos a verlo con otros ojos: detectamos lo que está frenando tus ventas y trazamos un camino claro para crecer.",
+      "imagen": {
+        "_type": "image",
+        "alt": "Dani junto a emprendedores de distintos rubros: construcción, salud, gastronomía, comercio y servicios",
+        "asset": {
+          "_ref": "image-6d10227e11bf876945920b11d14354bae507e0a5-972x667-webp",
+          "_type": "reference"
+        }
+      },
+      "logo": {
+        "_type": "image",
+        "alt": "Rescatando Emprendedores",
+        "asset": {
+          "_ref": "image-6a0fe6d3b8acdd53acf39b2a914ea97bab60c849-2000x667-webp",
+          "_type": "reference"
+        }
+      },
+      "titulo": "Asesorías 1 a 1"
+    },
+    {
+      "_key": "06e47d5e8156",
+      "_type": "aboutBanner",
+      "activo": true,
+      "animar": true,
+      "descripcion": "Nace de la experiencia de Dani acompañando a más de 500 empresas. Todo lo que aprendió lo lleva a una reunión 1 a 1 contigo: revisamos tu negocio a fondo, qué vendes y cómo lo vendes, para encontrar las oportunidades y los puntos que hoy te frenan.\n\nSales con una ruta estratégica clara para seguir avanzando. No es una charla motivacional ni psicológica: es una asesoría enfocada en mejorar tu negocio y tus ventas.",
+      "destacado": "Una ruta para vender más.",
+      "titulo": "¿Qué es Rescatando Emprendedores?"
+    },
+    {
+      "_key": "e849e7cd2d47",
+      "_type": "clientsBanner",
+      "activo": true,
+      "animar": true,
+      "comentarios": 312,
+      "compartidos": 145,
+      "meGusta": 8240,
+      "rotacionAutomatica": true,
+      "titulo": "Clientes y casos de éxito",
+      "usuarioTikTok": "@dofiagenciacreativa"
+    },
+    {
+      "_key": "92897e54cd58",
+      "_type": "achievementsBanner",
+      "activo": true,
+      "animar": true,
+      "logros": [
+        {
+          "_key": "6ff153936987",
+          "_type": "logro",
+          "firma": "Sobrepasó sus ventas en un 200%",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedor de construcción (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-f8d8eeeb5c3790f5867a9ab890df96df1f95e356-1320x871-jpg",
+              "_type": "reference"
+            }
+          },
+          "texto": "Paso de ser un vendedor de calle a darle un concepto y valor en su negocio.",
+          "titulo": "Churritos de Nelmer"
+        },
+        {
+          "_key": "e10a44468012",
+          "_type": "logro",
+          "firma": "Rompió records de ventas",
+          "foto": {
+            "_type": "image",
+            "alt": "Emprendedora de salud (imagen de ejemplo)",
+            "asset": {
+              "_ref": "image-77db40daae30bd27bd685ab5a3ec42c173543db9-1151x2048-jpg",
+              "_type": "reference"
+            }
+          },
+          "texto": "Descubrió como buen contenido, puede mejorar sus ventas",
+          "titulo": "Las Bandejas Paisas de Vivi"
+        },
+        {
+          "_key": "78d4fa335bf0",
+          "_type": "logro",
+          "firma": "Hoy tiene una nueva línea de negocio.",
+          "foto": {
+            "_type": "image",
+            "asset": {
+              "_ref": "image-facc1c3df940b0e5c32a34f5b5c70ee0ffe596af-2048x1151-jpg",
+              "_type": "reference"
+            }
+          },
+          "texto": "Creo un servicio que no sabía que existía.",
+          "titulo": "Legión Barber"
+        },
+        {
+          "_key": "f901a09c85a9",
+          "_type": "logro",
+          "firma": "Hoy tiene públicos específicos.",
+          "foto": {
+            "_type": "image",
+            "asset": {
+              "_ref": "image-e3515d03d7dbb63ad5b68eacc092732e1b46ac37-2698x2698-jpg",
+              "_type": "reference"
+            }
+          },
+          "texto": "Descubrió lo importante de tener una comunidad ",
+          "titulo": "Roland Coffe"
+        },
+        {
+          "_key": "915b3898792a",
+          "_type": "logro",
+          "firma": "Hoy vende sus billeteras a nivel nacional.",
+          "texto": "Entendió que un buen tráfico, trae buenos clientes.",
+          "titulo": "Wurzeln Wallets"
+        }
+      ],
+      "pasoAutomatico": true,
+      "segundosPorLogro": 6,
+      "subtitulo": "Logros de nuestros emprendedores",
+      "titulo": "Historias que nos enorgullecen"
+    },
+    {
+      "_key": "f4ef28070b43",
+      "_type": "ctaBanner",
+      "activo": true,
+      "alineacion": "centro",
+      "animar": true,
+      "cta": {
+        "_type": "ctaSimple",
+        "enlace": "/contactanos?servicio=asesorias",
+        "texto": "Quiero mejorar mis ventas"
+      },
+      "descripcion": "Agenda tu asesoría 1 a 1 y sal con una ruta clara para vender más.",
+      "imagen": {
+        "_type": "image",
+        "asset": {
+          "_ref": "image-1ab1f18e2c11513b39a786b7ee05f60869948834-2077x757-png",
+          "_type": "reference"
+        }
+      },
+      "overlay": "medio",
+      "titulo": "¿Le damos a tu negocio otra oportunidad?"
+    }
+  ],
+  "titulo": "Asesorías"
+}
