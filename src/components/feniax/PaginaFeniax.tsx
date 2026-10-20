@@ -1,7 +1,8 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { getPaginaFeniax, type SeccionFeniax, type TipoSeccionFeniax } from "@/lib/feniax";
+import { getPaginaFeniax, type SeccionClientesChat, type SeccionFeniax, type TipoSeccionFeniax } from "@/lib/feniax";
 import { FeniaxPortada } from "./FeniaxPortada";
+import type { ConversacionHero } from "./HeroConversaciones";
 import { FeniaxQueEs } from "./FeniaxQueEs";
 import { FeniaxEditorial } from "./FeniaxEditorial";
 import { FeniaxMetodo } from "./FeniaxMetodo";
@@ -28,10 +29,22 @@ const ANCLA: Record<TipoSeccionFeniax, string> = {
   ctaBanner: "contacto",
 };
 
-function Seccion({ seccion, id, nivel }: { seccion: SeccionFeniax; id: string; nivel: "h1" | "h2" }) {
+type ConversacionesHero = { conversaciones: ConversacionHero[]; rotacion: boolean };
+
+function Seccion({
+  seccion,
+  id,
+  nivel,
+  hero,
+}: {
+  seccion: SeccionFeniax;
+  id: string;
+  nivel: "h1" | "h2";
+  hero: ConversacionesHero;
+}) {
   switch (seccion.tipo) {
     case "teamBanner":
-      return <FeniaxPortada seccion={seccion} id={id} nivel={nivel} />;
+      return <FeniaxPortada seccion={seccion} id={id} nivel={nivel} conversaciones={hero.conversaciones} rotacion={hero.rotacion} />;
     case "aboutBanner":
       return <FeniaxQueEs seccion={seccion} id={id} nivel={nivel} />;
     case "navigationBanner":
@@ -51,6 +64,15 @@ export async function PaginaFeniax() {
   const { secciones } = await getPaginaFeniax();
   const vistas = new Map<string, number>();
 
+  // El celular de la portada reproduce las conversaciones por giro que se
+  // cargan en «Clientes» (solo la clave y el chat: el resto de cada giro no
+  // viaja al navegador).
+  const clientes = secciones.find((s): s is SeccionClientesChat => s.tipo === "chatClientsBanner");
+  const hero: ConversacionesHero = {
+    conversaciones: (clientes?.giros ?? []).map((g) => ({ clave: g.key, chat: g.chat })),
+    rotacion: clientes?.rotacionAutomatica ?? true,
+  };
+
   return (
     <>
       <Nav />
@@ -60,7 +82,7 @@ export async function PaginaFeniax() {
           const n = (vistas.get(base) ?? 0) + 1;
           vistas.set(base, n);
           return (
-            <Seccion key={seccion.key} seccion={seccion} id={n === 1 ? base : `${base}-${n}`} nivel={i === 0 ? "h1" : "h2"} />
+            <Seccion key={seccion.key} seccion={seccion} id={n === 1 ? base : `${base}-${n}`} nivel={i === 0 ? "h1" : "h2"} hero={hero} />
           );
         })}
       </main>
