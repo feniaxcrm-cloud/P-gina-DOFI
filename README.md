@@ -42,6 +42,14 @@ quedar en blanco o en `npm run build`; no es lo que soluciona el error.
 Ver tambien `npm run cf:preview` para probar el Worker localmente antes de
 subir.
 
+**Next.js 15 fuera de soporte (desde el 2026-10-21).** OpenNext corta el build
+cuando la version mayor de Next.js paso sus 2 años de soporte oficial. Por
+decision del propietario (2026-10-23) los scripts `build`, `cf:build`,
+`cf:preview` y `cf:deploy` llevan `--dangerouslyUseUnsupportedNextVersion`
+para seguir publicando con Next.js 15 mientras se planea la actualizacion a
+Next.js 16. Next.js 15 ya no recibe parches de seguridad: al actualizar,
+quitar esa opcion.
+
 ## Que vas a querer cambiar primero
 
 ### 1. El logo
