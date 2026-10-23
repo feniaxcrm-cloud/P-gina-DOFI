@@ -1,0 +1,44 @@
+{
+  "_createdAt": "2026-08-24T19:36:08Z",
+  "_id": "cuenta-dr-christian-jeton",
+  "_rev": "WV3FKcQLPisfMXqbQQdeF2",
+  "_system": {
+    "base": {
+      "id": "cuenta-dr-christian-jeton",
+      "rev": "avElD9jGU7VscexaimeSzq"
+    }
+  },
+  "_type": "cuenta",
+  "_updatedAt": "2026-10-23T15:36:01Z",
+  "activa": true,
+  "categoria": "Salud",
+  "ciudad": "Cuenca",
+  "logo": {
+    "_type": "image",
+    "asset": {
+      "_ref": "image-59f2efbc42e730af7160db97d95fb0611b754d73-1080x1080-jpg",
+      "_type": "reference"
+    }
+  },
+  "nombre": "Dr. Christian Jetón",
+  "orden": 17,
+  "portada": {
+    "_type": "image",
+    "asset": {
+      "_ref": "image-59f2efbc42e730af7160db97d95fb0611b754d73-1080x1080-jpg",
+      "_type": "reference"
+    }
+  },
+  "resumen": "Agenda de citas y seguimiento de pacientes centralizado en el CRM.",
+  "servicios": [
+    {
+      "_key": "servicio-crm",
+      "_ref": "servicio-crm",
+      "_type": "reference"
+    }
+  ],
+  "slug": {
+    "_type": "slug",
+    "current": "dr-christian-jeton"
+  }
+}

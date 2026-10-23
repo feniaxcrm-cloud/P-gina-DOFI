@@ -73,6 +73,10 @@ export type EmpresaGiro = {
   key: string;
   nombre: string;
   logo: { url: string; ancho: number; alto: number } | null;
+  /** La VERSIÓN CIRCULAR del logo (2026-10-23): el logo ya redondo,
+   *  generado por scripts/logos-circulares.mts o subido a mano en el Studio.
+   *  null: la web lo recorta en círculo sola. */
+  logoCircular: string | null;
 };
 
 /** Giro de negocio: un panel del carrusel de Clientes y su lista de empresas.
@@ -115,15 +119,15 @@ export const TIKTOK_POR_DEFECTO: PerfilTikTok = {
   compartidos: 145,
 };
 
-/** Cómo se presentan los logos del giro abierto en la columna derecha de
- *  «Clientes y casos de éxito» (pedido del 2026-10-20). Solo presentación:
- *  el logo se ve entero, nunca recortado ni deformado.
- *  - "original" (por defecto desde el 2026-10-22): cada logo con SU forma
- *    (cuadrado, redondo, apaisado), sin marco encima.
- *  - "circular" / "redondeado": el logo dentro de un círculo o una ficha.
- *  Tamaños en px: el alto de la fila de logos (o el diámetro del marco). */
-export type AjusteLogos = { forma: "original" | "circular" | "redondeado"; tamano: number; tamanoMovil: number };
-export const AJUSTE_LOGOS_POR_DEFECTO: AjusteLogos = { forma: "original", tamano: 120, tamanoMovil: 92 };
+/** Cómo se presentan los logos del giro abierto en «Clientes y casos de
+ *  éxito».
+ *  - "circular" (por defecto desde el 2026-10-23): el LOGO MISMO es redondo
+ *    -- su versión circular (EmpresaGiro.logoCircular), no un logo cuadrado
+ *    metido en un círculo.
+ *  - "original": cada logo con su forma (cuadrado, redondo, apaisado).
+ *  Tamaños en px: el diámetro del logo (o su alto, en "original"). */
+export type AjusteLogos = { forma: "circular" | "original"; tamano: number; tamanoMovil: number };
+export const AJUSTE_LOGOS_POR_DEFECTO: AjusteLogos = { forma: "circular", tamano: 120, tamanoMovil: 92 };
 
 export type Resena = {
   id: string;
@@ -311,7 +315,7 @@ export const IMG = `"url": asset->url, "ancho": asset->metadata.dimensions.width
 
 /** Logo de una empresa de giro, con sus dimensiones reales (object-contain
  *  necesita la proporcion para reservar el espacio sin deformar). */
-export const LOGO = `"logo": logo.asset->url, "ancho": logo.asset->metadata.dimensions.width, "alto": logo.asset->metadata.dimensions.height`;
+export const LOGO = `"logo": logo.asset->url, "ancho": logo.asset->metadata.dimensions.width, "alto": logo.asset->metadata.dimensions.height, "logoCircular": logoCircular.asset->url`;
 
 const QUERY_MARKETING = `{
   "pagina": *[_type == "marketingDigitalPage"][0]{
@@ -368,6 +372,7 @@ type EmpresaRaw = {
   logo?: Txt;
   ancho?: number | null;
   alto?: number | null;
+  logoCircular?: Txt;
 } | null;
 
 /** Exportada: la reutiliza src/lib/feniax.ts (mismos giros, misma forma). */
@@ -507,6 +512,7 @@ export function normalizarGiros(raw: GiroRaw[] | null | undefined): GiroNegocio[
             t(e.logo) && e.ancho && e.alto
               ? { url: `${t(e.logo)}?w=360&fit=max&auto=format`, ancho: e.ancho, alto: e.alto }
               : null,
+          logoCircular: t(e.logoCircular) ? `${t(e.logoCircular)}?w=320&auto=format` : null,
         })),
     }));
 }
@@ -545,7 +551,7 @@ function enRango(v: number | null | undefined, min: number, max: number, porDefe
 export function normalizarAjusteLogos(raw: SeccionRaw["ajusteLogos"]): AjusteLogos {
   const d = AJUSTE_LOGOS_POR_DEFECTO;
   return {
-    forma: t(raw?.forma) === "circular" ? "circular" : t(raw?.forma) === "redondeado" ? "redondeado" : "original",
+    forma: t(raw?.forma) === "original" ? "original" : "circular",
     tamano: enRango(raw?.tamano, 72, 180, d.tamano),
     tamanoMovil: enRango(raw?.tamanoMovil, 56, 140, d.tamanoMovil),
   };

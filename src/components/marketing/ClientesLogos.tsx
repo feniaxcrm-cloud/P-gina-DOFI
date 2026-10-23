@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { CarruselGiros } from "./CarruselGiros";
+import { LogoRedondo } from "./LogoRedondo";
 import type { AjusteLogos, EmpresaGiro, GiroNegocio } from "@/lib/marketing-digital";
 
 /**
@@ -22,12 +23,11 @@ import type { AjusteLogos, EmpresaGiro, GiroNegocio } from "@/lib/marketing-digi
  * en el Studio («Presentación de los logos»). Un solo estado para las dos
  * columnas: abrir «Turismo» en el carrusel cambia los logos de la derecha.
  *
- * FORMA (2026-10-22): por defecto cada logo se ve con SU forma original --
- * un logo cuadrado, cuadrado; uno redondo, redondo; uno apaisado, apaisado --
- * sin marco encima (antes iban todos dentro de un círculo y los cuadrados se
- * veían chicos y raros). Para que se vean del mismo "peso", cada logo ocupa la
- * misma AREA según su proporción real (un cuadrado no queda gigante al lado
- * de uno apaisado). Círculo y ficha redondeada siguen como opciones.
+ * FORMA (2026-10-23): por defecto, LOGOS REDONDOS -- cada logo en su versión
+ * circular (el logo mismo es redondo; ver LogoRedondo y
+ * scripts/logos-circulares.mts), en la columna y en la fila que se desliza.
+ * «Forma original» (cada logo como es, a la misma área según su proporción)
+ * queda como opción en el Studio.
  *
  * LOGOS: siempre enteros (object-contain), sin deformar ni recortar el
  * archivo, y con su transparencia. Son las MISMAS URLs que usa la fila del
@@ -57,7 +57,14 @@ export function ClientesLogos({
     // columna de logos a la derecha. En teléfono y tablet se apilan.
     <div className="grid grid-cols-1 gap-10 lg:h-full lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-10">
       <div className="min-w-0 lg:h-full lg:min-h-0">
-        <CarruselGiros giros={giros} rotacion={rotacion} animar={animar} activo={activo} onCambio={(i) => setActivo(i)} />
+        <CarruselGiros
+          giros={giros}
+          rotacion={rotacion}
+          animar={animar}
+          activo={activo}
+          onCambio={(i) => setActivo(i)}
+          logosRedondos={ajuste.forma === "circular"}
+        />
       </div>
       <div className="min-w-0 lg:h-full lg:min-h-0">
         <LogosGiro giro={giro} ajuste={ajuste} />
@@ -105,28 +112,9 @@ function LogoGiro({ empresa, ajuste }: { empresa: EmpresaGiro; ajuste: AjusteLog
     );
   }
 
-  const forma = ajuste.forma === "circular" ? "rounded-full" : "rounded-[24%]";
   return (
-    <li
-      title={empresa.nombre}
-      className={`flex h-[var(--logo)] w-[var(--logo)] shrink-0 items-center justify-center bg-white shadow-[0_14px_30px_-20px_rgba(26,15,61,0.45)] ring-1 ring-ink/[0.06] ${forma}`}
-    >
-      {empresa.logo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={empresa.logo.url}
-          alt={empresa.nombre}
-          width={empresa.logo.ancho}
-          height={empresa.logo.alto}
-          loading="lazy"
-          decoding="async"
-          // 66% del marco: el logo entra entero aunque sea apaisado (un
-          // rectangulo dentro de un circulo necesita ese margen).
-          className="h-[66%] w-[66%] object-contain"
-        />
-      ) : (
-        <span className="line-clamp-3 w-[70%] text-center font-display text-xs font-semibold leading-tight text-ink">{empresa.nombre}</span>
-      )}
+    <li title={empresa.nombre} className="shrink-0">
+      <LogoRedondo empresa={empresa} className="h-[var(--logo)] w-[var(--logo)]" />
     </li>
   );
 }
@@ -161,7 +149,7 @@ function LogosGiro({ giro, ajuste }: { giro: GiroNegocio | null; ajuste: AjusteL
             ) : (
               <ul
                 aria-label={`Empresas de ${giro.nombre}`}
-                className={`flex flex-wrap content-center justify-center ${original ? "gap-x-6 gap-y-4 sm:gap-x-8 sm:gap-y-5" : "gap-3 sm:gap-4"}`}
+                className={`flex flex-wrap content-center justify-center ${original ? "gap-x-6 gap-y-4 sm:gap-x-8 sm:gap-y-5" : "gap-3 sm:gap-5"}`}
               >
                 {giro.empresas.map((empresa) => (
                   <LogoGiro key={empresa.key} empresa={empresa} ajuste={ajuste} />

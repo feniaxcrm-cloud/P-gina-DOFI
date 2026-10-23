@@ -1,4 +1,5 @@
 import { defineField, defineArrayMember } from "sanity";
+import { campoLogoCircular } from "../objects/campoLogoCircular";
 import { campoImagen } from "../objects/campoImagen";
 
 /**
@@ -92,9 +93,10 @@ export function miembroGiro({
                 title: "Logo",
                 type: "image",
                 description:
-                  "PNG o SVG, idealmente con fondo transparente. Se muestra completo, sin recortes ni deformación.",
+                  "PNG o SVG, idealmente con fondo transparente. Es el archivo original: no se recorta ni se deforma.",
                 validation: (Rule) => Rule.required(),
               }),
+              campoLogoCircular(),
             ],
             preview: { select: { title: "nombre", media: "logo" } },
           }),

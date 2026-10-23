@@ -7,9 +7,9 @@ import { defineField, defineType } from "sanity";
  *
  * Es SOLO PRESENTACIÓN: el archivo del logo no se toca. El logo se ve entero
  * (nunca se recorta ni se deforma) y, si tiene el fondo transparente, se
- * mantiene. Desde el 2026-10-22 la forma por defecto es la ORIGINAL de cada
- * logo (un logo cuadrado se ve cuadrado, uno redondo se ve redondo); el
- * círculo y la ficha quedan como opciones.
+ * mantiene. Desde el 2026-10-23 la forma por defecto es «Logos redondos»:
+ * cada logo en su VERSIÓN CIRCULAR (el logo mismo redondo, no metido en un
+ * círculo). «Forma original» queda como opción.
  */
 export const ajusteLogos = defineType({
   name: "ajusteLogos",
@@ -23,15 +23,14 @@ export const ajusteLogos = defineType({
       type: "string",
       options: {
         list: [
-          { title: "Forma original de cada logo (recomendado)", value: "original" },
-          { title: "Dentro de un círculo", value: "circular" },
-          { title: "Dentro de una ficha redondeada", value: "redondeado" },
+          { title: "Logos redondos (recomendado)", value: "circular" },
+          { title: "Forma original de cada logo", value: "original" },
         ],
         layout: "radio",
       },
-      initialValue: "original",
+      initialValue: "circular",
       description:
-        "«Forma original»: cada logo se ve como es (cuadrado, redondo o apaisado), sin marco. Círculo y ficha ponen el logo, entero, dentro de ese marco.",
+        "«Logos redondos»: cada logo en su versión circular (el campo «Logo circular» de la empresa o de la Cuenta; si falta, la web recorta el logo en círculo). «Forma original»: cada logo como es, cuadrado o alargado.",
     }),
     defineField({
       name: "tamano",
@@ -39,7 +38,7 @@ export const ajusteLogos = defineType({
       type: "number",
       initialValue: 120,
       validation: (Rule) => Rule.min(72).max(180).integer(),
-      description: "Alto de cada logo (o diámetro del marco) en pantallas grandes. Entre 72 y 180. Recomendado: 120.",
+      description: "Diámetro de cada logo en pantallas grandes (o su alto, en «Forma original»). Entre 72 y 180. Recomendado: 120.",
     }),
     defineField({
       name: "tamanoMovil",
@@ -47,7 +46,7 @@ export const ajusteLogos = defineType({
       type: "number",
       initialValue: 92,
       validation: (Rule) => Rule.min(56).max(140).integer(),
-      description: "Alto de cada logo (o diámetro del marco) en el celular. Entre 56 y 140. Recomendado: 92.",
+      description: "Diámetro de cada logo en el celular (o su alto, en «Forma original»). Entre 56 y 140. Recomendado: 92.",
     }),
   ],
 });

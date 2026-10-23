@@ -1,4 +1,5 @@
 import { defineType, defineField } from "sanity";
+import { campoLogoCircular } from "./objects/campoLogoCircular";
 
 /**
  * Cuenta (cliente de DOFI/FENIAX). Fuente unica de verdad para el carrusel,
@@ -57,6 +58,7 @@ export const cuenta = defineType({
       description:
         "Opcional. Sin logo, la web muestra un monograma con las iniciales del nombre (el comportamiento de hoy).",
     }),
+    campoLogoCircular({ group: "principal" }),
     defineField({
       name: "portada",
       title: "Imagen principal",

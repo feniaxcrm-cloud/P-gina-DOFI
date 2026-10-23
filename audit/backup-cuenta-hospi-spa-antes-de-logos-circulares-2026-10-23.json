@@ -1,0 +1,44 @@
+{
+  "_createdAt": "2026-08-24T19:36:12Z",
+  "_id": "cuenta-hospi-spa",
+  "_rev": "Oh6YgvMTqh9o5H57twa8bI",
+  "_system": {
+    "base": {
+      "id": "cuenta-hospi-spa",
+      "rev": "avElD9jGU7VscexaimeTBG"
+    }
+  },
+  "_type": "cuenta",
+  "_updatedAt": "2026-10-23T15:35:32Z",
+  "activa": true,
+  "categoria": "Bienestar y spa",
+  "ciudad": "Cuenca",
+  "logo": {
+    "_type": "image",
+    "asset": {
+      "_ref": "image-914422c95989f80ed9fb1aa001edea73741248db-1080x1080-jpg",
+      "_type": "reference"
+    }
+  },
+  "nombre": "Hospi Spa",
+  "orden": 20,
+  "portada": {
+    "_type": "image",
+    "asset": {
+      "_ref": "image-914422c95989f80ed9fb1aa001edea73741248db-1080x1080-jpg",
+      "_type": "reference"
+    }
+  },
+  "resumen": "Agenda de citas y seguimiento de clientes de un spa centralizado en el CRM.",
+  "servicios": [
+    {
+      "_key": "servicio-crm",
+      "_ref": "servicio-crm",
+      "_type": "reference"
+    }
+  ],
+  "slug": {
+    "_type": "slug",
+    "current": "hospi-spa"
+  }
+}

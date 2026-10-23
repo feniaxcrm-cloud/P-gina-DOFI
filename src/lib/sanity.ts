@@ -818,9 +818,9 @@ export const CAPACIDADES_FALLBACK: Capacidad[] = [
   // en el Studio y la tarjeta pasa a ser un enlace, como las demás.
   {
     titulo: "Academia",
-    // Texto ampliado el 2026-10-22 (pedido del propietario, textual).
-    descripcion:
-      "Aprende sobre Inteligencia Artificial, descubre nuevas herramientas y desarrolla habilidades para transformar tu negocio y llevar tus ideas al siguiente nivel.",
+    // 2026-10-23: el texto del 2026-10-22, más breve (pedido del propietario:
+    // menos texto, conservando lo principal).
+    descripcion: "Aprende Inteligencia Artificial y nuevas herramientas para tu negocio.",
     icono: "academia",
     enlace: null,
   },

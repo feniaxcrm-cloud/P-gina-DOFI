@@ -8,9 +8,9 @@ import type { SeccionCelulares, VideoCelular } from "@/lib/asesorias";
 
 /**
  * «Videos en celulares» (Asesorías, pedido del 2026-10-20): tres celulares en
- * una fila, el del centro más grande (el principal) con un halo de marca, y
- * dos a los lados un poco más chicos y más abajo. Cada uno tiene su propio
- * video, título y portada desde el Studio.
+ * una fila, LOS TRES DEL MISMO TAMAÑO (2026-10-23; antes el del centro era más
+ * grande) y un poco más grandes que al principio, con un halo de marca detrás.
+ * Cada uno tiene su propio video, título y portada desde el Studio.
  *
  * RENDIMIENTO
  *  - Ningún video se pide hasta que la sección está a ~500 px de entrar en
@@ -28,14 +28,12 @@ const PANTALLA = { ancho: 9, alto: 16 } as const;
 
 function Celular({
   celular,
-  principal,
   cargar,
   activo,
   onReproducir,
   onDetener,
 }: {
   celular: VideoCelular;
-  principal: boolean;
   cargar: boolean;
   activo: boolean;
   onReproducir: () => void;
@@ -91,9 +89,7 @@ function Celular({
             className="group/celular absolute inset-0 flex items-center justify-center focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-accent-lift"
           >
             <span
-              className={`flex items-center justify-center rounded-full bg-accent text-ink shadow-[0_14px_30px_-12px_rgba(0,0,0,0.6)] transition-[opacity,scale] duration-300 ${
-                principal ? "h-16 w-16" : "h-14 w-14"
-              } ${reproduciendo ? "scale-90 opacity-0 group-hover/celular:opacity-90 group-focus-visible/celular:opacity-90" : "opacity-100"}`}
+              className={`flex h-16 w-16 items-center justify-center rounded-full bg-accent text-ink shadow-[0_14px_30px_-12px_rgba(0,0,0,0.6)] transition-[opacity,scale] duration-300 ${reproduciendo ? "scale-90 opacity-0 group-hover/celular:opacity-90 group-focus-visible/celular:opacity-90" : "opacity-100"}`}
             >
               {reproduciendo ? <Pause size={26} weight="fill" aria-hidden="true" /> : <Play size={26} weight="fill" aria-hidden="true" className="translate-x-[2px]" />}
             </span>
@@ -196,15 +192,12 @@ export function TresCelulares({ seccion, id, nivel }: { seccion: SeccionCelulare
               <div
                 key={i}
                 ref={principal ? centro : undefined}
-                className={`w-[68vw] max-w-[270px] shrink-0 snap-center md:max-w-none ${
-                  principal
-                    ? "md:w-[clamp(210px,24vw,calc((var(--alto-util)-190px)*9/16))]"
-                    : "md:w-[clamp(170px,19vw,calc((var(--alto-util)-250px)*9/16))] md:translate-y-8"
-                }`}
+                // Los tres iguales: en escritorio, el mayor que entra en la
+                // pantalla (alto util menos el titulo) sin pasar de 26vw.
+                className="w-[72vw] max-w-[290px] shrink-0 snap-center md:w-[clamp(200px,26vw,calc((var(--alto-util)-150px)*9/16))] md:max-w-none"
               >
                 <Celular
                   celular={celular}
-                  principal={principal}
                   cargar={cargar}
                   activo={enVista && activo === i}
                   onReproducir={() => setActivo(i)}

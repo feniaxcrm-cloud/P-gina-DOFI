@@ -22,7 +22,8 @@
     "ajustar:home-hibrido": "tsx --env-file=.env.local scripts/ajustar-2026-10-08.mts",
     "ajustar:2026-10-15": "tsx --env-file=.env.local scripts/ajustar-2026-10-15.mts",
     "ajustar:2026-10-16": "tsx --env-file=.env.local scripts/ajustar-2026-10-16.mts",
-    "ajustar:2026-10-20": "tsx --env-file=.env.local scripts/ajustar-2026-10-20.mts"
+    "ajustar:2026-10-20": "tsx --env-file=.env.local scripts/ajustar-2026-10-20.mts",
+    "logos:circulares": "tsx --env-file=.env.local scripts/logos-circulares.mts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.20.2",

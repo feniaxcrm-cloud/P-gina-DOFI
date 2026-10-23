@@ -24,6 +24,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import type { EmpresaGiro, GiroNegocio, IconoCategoria, ImagenSanity } from "@/lib/marketing-digital";
+import { LogoRedondo } from "./LogoRedondo";
 
 /**
  * Carrusel de giros de negocio (seccion Clientes de Marketing Digital).
@@ -221,17 +222,21 @@ function cantidad(n: number) {
   return `${n} ${n === 1 ? "empresa" : "empresas"}`;
 }
 
-/** Ficha de un logo: ancho fijo, asi se sabe sin medir cuantas entran. */
-const ANCHO_FICHA = 112;
+/** Ficha de un logo: ancho fijo, asi se sabe sin medir cuantas entran. Con
+ *  logos redondos (2026-10-23) la ficha es el circulo de 64 px. */
+const ANCHO_FICHA_RECTANGULAR = 112;
+const ANCHO_FICHA_REDONDA = 64;
 const SEPARACION_FICHA = 10;
+const SEPARACION_FICHA_REDONDA = 14;
 /** Velocidad de la fila cuando los logos no entran: la de la marquesina. */
 const PX_POR_SEGUNDO_FILA = 30;
 
-function FichaEmpresa({ empresa, oculta }: { empresa: EmpresaGiro; oculta?: boolean }) {
+function FichaEmpresa({ empresa, oculta, redonda }: { empresa: EmpresaGiro; oculta?: boolean; redonda: boolean }) {
+  if (redonda) return <LogoRedondo empresa={empresa} oculta={oculta} className="h-16 w-16" />;
   return (
     <div
       className="flex h-16 items-center justify-center rounded-2xl bg-white px-3 shadow-[0_10px_24px_-18px_rgba(26,15,61,0.4)]"
-      style={{ width: ANCHO_FICHA }}
+      style={{ width: ANCHO_FICHA_RECTANGULAR }}
     >
       {empresa.logo ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -265,6 +270,7 @@ function FilaEmpresas({
   ancho,
   idPanel,
   idPestana,
+  redondas,
 }: {
   giro: GiroNegocio;
   direccion: number;
@@ -272,10 +278,14 @@ function FilaEmpresas({
   ancho: number | null;
   idPanel: string;
   idPestana: string;
+  /** Logos redondos (2026-10-23) o las fichas blancas de antes. */
+  redondas: boolean;
 }) {
   const n = giro.empresas.length;
-  const caben = ancho === null || n * (ANCHO_FICHA + SEPARACION_FICHA) - SEPARACION_FICHA <= ancho;
-  const duracion = `${Math.max(14, Math.round((n * (ANCHO_FICHA + SEPARACION_FICHA)) / PX_POR_SEGUNDO_FILA))}s`;
+  const ANCHO_FICHA = redondas ? ANCHO_FICHA_REDONDA : ANCHO_FICHA_RECTANGULAR;
+  const separacion = redondas ? SEPARACION_FICHA_REDONDA : SEPARACION_FICHA;
+  const caben = ancho === null || n * (ANCHO_FICHA + separacion) - separacion <= ancho;
+  const duracion = `${Math.max(14, Math.round((n * (ANCHO_FICHA + separacion)) / PX_POR_SEGUNDO_FILA))}s`;
 
   return (
     <div id={idPanel} role="tabpanel" aria-labelledby={idPestana} className="relative mt-5 h-[104px] shrink-0 lg:mt-[clamp(0.75rem,2.2svh,1.5rem)]">
@@ -298,7 +308,7 @@ function FilaEmpresas({
               Pronto verás aquí las empresas de este giro.
             </p>
           ) : caben ? (
-            <ul className="mt-3 flex" style={{ gap: SEPARACION_FICHA }}>
+            <ul className="mt-3 flex" style={{ gap: separacion }}>
               {giro.empresas.map((empresa, i) => (
                 <motion.li
                   key={empresa.key}
@@ -307,7 +317,7 @@ function FilaEmpresas({
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   transition={{ duration: DURACION_MS / 1000, ease: CURVA_MOTION, delay: Math.min(0.045, 0.24 / n) * i }}
                 >
-                  <FichaEmpresa empresa={empresa} />
+                  <FichaEmpresa empresa={empresa} redonda={redondas} />
                 </motion.li>
               ))}
             </ul>
@@ -325,9 +335,9 @@ function FilaEmpresas({
                       className="shrink-0"
                       // La separacion va dentro del item: las dos mitades de la
                       // tira miden igual y el -50% cae justo en la costura.
-                      style={{ paddingRight: SEPARACION_FICHA }}
+                      style={{ paddingRight: separacion }}
                     >
-                      <FichaEmpresa empresa={empresa} oculta={copia} />
+                      <FichaEmpresa empresa={empresa} oculta={copia} redonda={redondas} />
                     </li>
                   );
                 })}
@@ -349,6 +359,7 @@ export function CarruselGiros({
   seleccionPorCursor = true,
   intermedio,
   fotoAbierto,
+  logosRedondos = false,
 }: {
   giros: GiroNegocio[];
   rotacion: boolean;
@@ -374,6 +385,9 @@ export function CarruselGiros({
    *  colores. null: el panel abierto se ve como siempre. Sin esta prop
    *  (Marketing Digital, Tráfico, FENIAX), nada cambia. */
   fotoAbierto?: FotoCaso | null;
+  /** La fila de empresas con LOGOS REDONDOS (2026-10-23, Clientes) en lugar
+   *  de las fichas blancas. */
+  logosRedondos?: boolean;
 }) {
   const id = useId();
   const n = giros.length;
@@ -746,6 +760,7 @@ export function CarruselGiros({
           ancho={ancho}
           idPanel={`${id}-empresas`}
           idPestana={`${id}-giro-${activo}`}
+          redondas={logosRedondos}
         />
       </motion.div>
     </MotionConfig>
