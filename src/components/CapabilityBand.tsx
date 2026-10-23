@@ -156,17 +156,45 @@ function Tarjeta({ titulo, descripcion, icono, enlace }: Capacidad) {
  *  laptops chicas, 3 + 2, para que el texto no quede apretado. */
 const COLUMNAS: Record<number, string> = {
   4: "sm:grid-cols-2 lg:grid-cols-4",
-  5: "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5",
+  5: "sm:grid-cols-2 lg:grid-cols-3 xl:[grid-template-columns:var(--columnas)]",
 };
+
+/**
+ * TARJETAS CON MAS TEXTO, MAS ANCHAS (2026-10-22: la descripcion de Academia
+ * es casi el triple de larga que las otras). En la fila de 5 (xl) cada
+ * tarjeta toma un ancho proporcional a su texto, entre 1 y 1,6 veces el de
+ * las demas: asi todas quedan de una altura pareja y la banda no crece. Se
+ * calcula con el texto real, no por nombre: funciona igual si se reordenan o
+ * se cambian los textos en el Studio.
+ */
+function anchosPorTexto(capacidades: Capacidad[]): string {
+  const largos = capacidades.map((c) => c.descripcion.length + c.titulo.length * 1.4);
+  const ordenados = [...largos].sort((a, b) => a - b);
+  const mediana = ordenados[Math.floor(ordenados.length / 2)] || 1;
+  return largos.map((l) => `minmax(0,${Math.min(1.6, Math.max(1, l / mediana)).toFixed(2)}fr)`).join(" ");
+}
+
+/** Con un numero impar de tarjetas, la ultima de la grilla de 2 (sm) y de 3
+ *  (lg) queda sola en su fila: ahi ocupa el resto de la fila en lugar de
+ *  dejar un hueco (y su texto, mas ancho, ocupa menos lineas). */
+function ultimaCompleta(i: number, n: number): string {
+  if (n !== 5 || i !== n - 1) return "";
+  return "sm:col-span-2 lg:col-span-2 xl:col-span-1";
+}
 
 export function CapabilityBand({ capacidades }: { capacidades: Capacidad[] }) {
   const reduce = useReducedMotion();
+  const n = capacidades.length;
 
   return (
-    <div className={`grid grid-cols-1 gap-4 ${COLUMNAS[capacidades.length] ?? COLUMNAS[4]}`}>
+    <div
+      className={`grid grid-cols-1 gap-4 ${COLUMNAS[n] ?? COLUMNAS[4]}`}
+      style={n === 5 ? ({ "--columnas": anchosPorTexto(capacidades) } as React.CSSProperties) : undefined}
+    >
       {capacidades.map((c, i) => (
         <motion.div
           key={c.titulo}
+          className={ultimaCompleta(i, n)}
           initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
           whileInView={{
             opacity: 1,

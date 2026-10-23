@@ -117,9 +117,13 @@ export const TIKTOK_POR_DEFECTO: PerfilTikTok = {
 
 /** Cómo se presentan los logos del giro abierto en la columna derecha de
  *  «Clientes y casos de éxito» (pedido del 2026-10-20). Solo presentación:
- *  el logo se ve entero dentro de la forma. Tamaños en px (diámetro). */
-export type AjusteLogos = { forma: "circular" | "redondeado"; tamano: number; tamanoMovil: number };
-export const AJUSTE_LOGOS_POR_DEFECTO: AjusteLogos = { forma: "circular", tamano: 112, tamanoMovil: 84 };
+ *  el logo se ve entero, nunca recortado ni deformado.
+ *  - "original" (por defecto desde el 2026-10-22): cada logo con SU forma
+ *    (cuadrado, redondo, apaisado), sin marco encima.
+ *  - "circular" / "redondeado": el logo dentro de un círculo o una ficha.
+ *  Tamaños en px: el alto de la fila de logos (o el diámetro del marco). */
+export type AjusteLogos = { forma: "original" | "circular" | "redondeado"; tamano: number; tamanoMovil: number };
+export const AJUSTE_LOGOS_POR_DEFECTO: AjusteLogos = { forma: "original", tamano: 120, tamanoMovil: 92 };
 
 export type Resena = {
   id: string;
@@ -541,7 +545,7 @@ function enRango(v: number | null | undefined, min: number, max: number, porDefe
 export function normalizarAjusteLogos(raw: SeccionRaw["ajusteLogos"]): AjusteLogos {
   const d = AJUSTE_LOGOS_POR_DEFECTO;
   return {
-    forma: t(raw?.forma) === "redondeado" ? "redondeado" : "circular",
+    forma: t(raw?.forma) === "circular" ? "circular" : t(raw?.forma) === "redondeado" ? "redondeado" : "original",
     tamano: enRango(raw?.tamano, 72, 180, d.tamano),
     tamanoMovil: enRango(raw?.tamanoMovil, 56, 140, d.tamanoMovil),
   };

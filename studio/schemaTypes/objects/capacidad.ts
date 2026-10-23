@@ -31,7 +31,8 @@ export const capacidad = defineType({
       type: "text",
       rows: 2,
       description: "Breve. Una frase, no un párrafo — la tarjeta es compacta.",
-      validation: (Rule) => Rule.required().max(140),
+      // 170: la de Academia (texto del propietario, 2026-10-22) tiene 158.
+      validation: (Rule) => Rule.required().max(170),
     }),
     defineField({
       name: "icono",
