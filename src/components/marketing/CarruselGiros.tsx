@@ -308,7 +308,10 @@ function FilaEmpresas({
               Pronto verás aquí las empresas de este giro.
             </p>
           ) : caben ? (
-            <ul className="mt-3 flex" style={{ gap: separacion }}>
+            // overflow-x-clip: antes de medir (el HTML del servidor, hasta que
+            // carga el JavaScript) la fila sale quieta aunque no entre; asi no
+            // se mete debajo de la columna de logos de al lado.
+            <ul className="mt-3 flex overflow-x-clip" style={{ gap: separacion }}>
               {giro.empresas.map((empresa, i) => (
                 <motion.li
                   key={empresa.key}

@@ -57,26 +57,29 @@ export function ResenasGoogle({ seccion, id, nivel }: { seccion: SeccionResenas;
         duracion={7.5}
         className="-right-6 -top-6 h-32 w-32 rotate-6 sm:-right-8 sm:h-44 sm:w-44 lg:h-56 lg:w-56"
       />
+      {/* Timon, delfin y brujula: en pantallas de hasta 820 px de alto el
+          titulo y las tarjetas llegan a esas esquinas y quedaban detras de
+          «GOOGLE» y de los nombres de las reseñas. Ahi no van. */}
       <OrnamentoIcono
         motivo="timon"
         capa="secundario"
         ambiente="girar"
         duracion={95}
-        className="-left-10 top-10 hidden h-24 w-24 -rotate-6 sm:block sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+        className="-left-10 top-10 hidden h-24 w-24 -rotate-6 sm:block sm:h-32 sm:w-32 lg:h-40 lg:w-40 [@media(max-height:820px)]:hidden"
       />
       <OrnamentoDelfin
         capa="secundario"
         ambiente="flotar"
         duracion={9}
         retraso={0.8}
-        className="-left-8 bottom-8 hidden h-24 w-24 -scale-x-100 sm:block sm:h-32 sm:w-32 lg:h-40 lg:w-40"
+        className="-left-8 bottom-8 hidden h-24 w-24 -scale-x-100 sm:block sm:h-32 sm:w-32 lg:h-40 lg:w-40 [@media(max-height:820px)]:hidden"
       />
       <OrnamentoIcono
         motivo="brujula"
         capa="secundario"
         ambiente="pulsar"
         duracion={5}
-        className="-right-4 bottom-14 hidden h-16 w-16 sm:block lg:h-20 lg:w-20"
+        className="-right-4 bottom-14 hidden h-16 w-16 sm:block lg:h-20 lg:w-20 [@media(max-height:820px)]:hidden"
       />
       <OrnamentoMarca ambiente="flotar" duracion={8.5} retraso={1.6} className="right-[10%] top-[8%] hidden h-10 w-10 md:block lg:h-14 lg:w-14" />
       <OrnamentoNodo className="left-[42%] top-[16%] h-3 w-3 sm:h-4 sm:w-4" retraso={1} />

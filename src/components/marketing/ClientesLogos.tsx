@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { CarruselGiros } from "./CarruselGiros";
 import { LogoRedondo } from "./LogoRedondo";
@@ -34,8 +34,14 @@ import type { AjusteLogos, EmpresaGiro, GiroNegocio } from "@/lib/marketing-digi
  * carrusel: el navegador los baja una sola vez.
  *
  * CAMBIO DE GIRO: un fundido corto de toda la grilla (sin escalonar logo por
- * logo); con movimiento reducido, cambio directo. Si los logos no entran en el
- * alto de la columna (escritorio), la columna se desplaza por dentro.
+ * logo); con movimiento reducido, cambio directo.
+ *
+ * QUE ENTREN TODOS (2026-10-27): el tamaño del Studio es el MÁXIMO. En
+ * escritorio la columna tiene el alto de la pantalla: si el giro tiene muchas
+ * empresas (Construcción, 18), los logos se achican hasta entrar todos, sin
+ * cortarse ni desplazarse por dentro. En el teléfono, al menos tres por fila
+ * (dos en «Forma original»).
+ * Solo si ni con el mínimo entran, la columna se desplaza por dentro.
  */
 export function ClientesLogos({
   giros,
@@ -119,16 +125,72 @@ function LogoGiro({ empresa, ajuste }: { empresa: EmpresaGiro; ajuste: AjusteLog
   );
 }
 
+/** Diámetro más grande con el que n logos entran en una caja de ancho x alto
+ *  (probando cuántos van por fila). `factor`: ancho del logo en unidades de
+ *  --logo (los de forma original pueden ser más anchos que altos). */
+function diametroQueEntra(n: number, ancho: number, alto: number, gapX: number, gapY: number, factor: number) {
+  let mejor = 0;
+  for (let c = 1; c <= n; c++) {
+    const filas = Math.ceil(n / c);
+    const d = Math.min((ancho - (c - 1) * gapX) / (c * factor), (alto - (filas - 1) * gapY) / filas);
+    if (d > mejor) mejor = d;
+  }
+  return Math.floor(mejor);
+}
+
+/** Por debajo de esto un logo ya no se lee: mejor desplazar la columna. */
+const LOGO_MINIMO = 64;
+
 function LogosGiro({ giro, ajuste }: { giro: GiroNegocio | null; ajuste: AjusteLogos }) {
   const reducido = useReducedMotion() ?? false;
-  const tamanos = { "--logo-d": `${ajuste.tamano}px`, "--logo-m": `${ajuste.tamanoMovil}px` } as React.CSSProperties;
   const original = ajuste.forma === "original";
+  const caja = useRef<HTMLDivElement>(null);
+  const cuantos = giro?.empresas.length ?? 0;
+  /** Tope medido para que entren todos (null: todavía sin medir). */
+  const [tope, setTope] = useState<number | null>(null);
+
+  // Antes de pintar: al cambiar de giro, el primer cuadro ya sale con el
+  // tamaño nuevo (con useEffect se veia un instante con el del giro anterior).
+  useLayoutEffect(() => {
+    const el = caja.current;
+    const interior = el?.firstElementChild as HTMLElement | null | undefined;
+    if (!el || !interior || cuantos === 0) return;
+    const medir = () => {
+      const cs = getComputedStyle(interior);
+      const ancho = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const alto = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      // Los mismos espacios que la lista (gap-3 / sm:gap-5, y los de forma original).
+      const sm = window.matchMedia("(min-width: 640px)").matches;
+      const gapX = original ? (sm ? 32 : 24) : sm ? 20 : 12;
+      const gapY = original ? (sm ? 20 : 16) : sm ? 20 : 12;
+      const factor = original ? 1.35 : 1;
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        // Escritorio: la caja tiene alto fijo (el de la columna).
+        setTope(Math.max(LOGO_MINIMO, diametroQueEntra(cuantos, ancho, alto, gapX, gapY, factor)));
+      } else {
+        // Teléfono y tablet: la caja crece hacia abajo; al menos 3 por fila.
+        const porFila = Math.min(cuantos, original ? 2 : 3);
+        setTope(Math.floor((ancho - (porFila - 1) * gapX) / (porFila * factor)));
+      }
+    };
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [cuantos, original]);
+
+  const tamanos = {
+    "--logo-d": `${tope ? Math.min(ajuste.tamano, tope) : ajuste.tamano}px`,
+    "--logo-m": `${tope ? Math.min(ajuste.tamanoMovil, tope) : ajuste.tamanoMovil}px`,
+  } as React.CSSProperties;
 
   return (
-    // La caja mide la columna; si los logos no entran, se desplaza por dentro
-    // (el contenido centrado vive en un hijo con min-h-full, asi el centrado
-    // nunca deja logos fuera del alcance del scroll).
+    // La caja mide la columna y los logos se achican para entrar (ver arriba);
+    // si ni con el minimo entran, se desplaza por dentro (el contenido
+    // centrado vive en un hijo con min-h-full, asi el centrado nunca deja
+    // logos fuera del alcance del scroll).
     <div
+      ref={caja}
       // El borde de abajo se desvanece (lo que mide el margen interior): avisa
       // que hay mas logos al desplazar y, al final, no tapa ninguno.
       // --logo: el tamaño del telefono y, desde lg, el de escritorio.

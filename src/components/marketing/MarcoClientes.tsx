@@ -114,7 +114,9 @@ function OrnamentosClientes() {
         capa="secundario"
         ambiente="girar"
         duracion={100}
-        className="-left-6 bottom-6 hidden h-24 w-24 md:block lg:h-32 lg:w-32"
+        // Solo tablet: en escritorio esa esquina es la fila de logos del
+        // carrusel y la brujula tapaba el nombre del giro.
+        className="-left-6 bottom-6 hidden h-24 w-24 md:block lg:hidden"
       />
       <OrnamentoIcono
         motivo="timon"

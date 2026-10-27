@@ -246,7 +246,7 @@ export function LogrosAsesorias({
               className="absolute -left-10 -top-10 h-44 w-44 rounded-full bg-accent/15 blur-3xl"
             />
             <span aria-hidden="true" className="absolute inset-0 left-6 top-6 rounded-[28px] border-2 border-accent/70" />
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[26px] bg-[linear-gradient(160deg,#3A2280_0%,#1A0F3D_100%)] shadow-[0_40px_70px_-36px_rgba(26,15,61,0.65)] lg:h-[min(calc(var(--alto-util)-2.25rem),40rem)] lg:w-auto">
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[26px] bg-[linear-gradient(160deg,#3A2280_0%,#1A0F3D_100%)] shadow-[0_40px_70px_-36px_rgba(26,15,61,0.65)] lg:h-[min(calc(var(--alto-util)-2.25rem),40rem,47vw)] lg:w-auto">
               <FotoLogro logro={conFoto} alt={conFoto?.foto?.alt ?? ""} />
               <span
                 aria-hidden="true"

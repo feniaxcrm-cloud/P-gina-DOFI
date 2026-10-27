@@ -646,6 +646,27 @@ body {
   }
 }
 
+/* Iconos de esquina (timon, velero, ancla...): nunca mas grandes que lo que
+   deja libre la pantalla. Su tamaño sale de clases fijas por breakpoint; en
+   pantallas bajas (laptops de 600-768 px de alto, telefonos acostados) o
+   angostas para su breakpoint, el contenido llega a la esquina y el icono
+   quedaba detras de titulos y enlaces. El tope achica el icono hacia su
+   esquina (esta anclado con top/left/right/bottom). Las olas, rutas y nodos
+   no entran: no son cuadrados. 2026-10-27. */
+:is(
+    [data-ornamento="timon"],
+    [data-ornamento="velero"],
+    [data-ornamento="brujula"],
+    [data-ornamento="ancla"],
+    [data-ornamento="barco"],
+    [data-ornamento="coordenadas"],
+    [data-ornamento="estrella"],
+    [data-ornamento="delfin"]
+  ) {
+  max-width: clamp(6rem, min(30svh, 16vw), 18rem);
+  max-height: clamp(6rem, min(30svh, 16vw), 18rem);
+}
+
 /* Duracion/retraso por instancia via variables CSS (mismo recurso que ya usa
    .wall-track con animationDuration inline): asi varios ornamentos con el
    mismo keyframe no laten sincronizados, que se veria mecanico. */

@@ -118,6 +118,7 @@ export function IconosHerramientas() {
       {ICONOS.map((i) => (
         <span
           key={i.nombre}
+          data-herramienta={i.nombre}
           className={`absolute items-center justify-center rounded-[24%] border border-white/12 bg-white/[0.05] opacity-[0.3] shadow-[0_18px_40px_-24px_rgba(0,0,0,0.8)] animate-[herramienta-flotar_var(--duracion)_ease-in-out_var(--retraso)_infinite] motion-reduce:animate-none lg:opacity-[0.26] ${i.clases}`}
           style={
             {

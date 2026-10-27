@@ -34,11 +34,14 @@ import type {
  * 2026-10-16): un PNG con transparencia que se sube en el Studio y se apoya
  * sobre el fondo morado de siempre -- el fondo no se toca. Se ve ENTERO
  * (object-contain), nunca recortado ni corrido:
- *  - Escritorio (lg): a la derecha, desde debajo del header hasta el borde de
- *    abajo, apoyado en la esquina inferior derecha. El texto sigue a la
- *    izquierda, por encima.
- *  - Teléfono y tablet: arriba del texto, a todo el ancho y centrado, con su
- *    propia proporción (hasta el 42% del alto de la pantalla).
+ *  - Escritorio (lg, pantalla horizontal): a la derecha, desde debajo del
+ *    header hasta el borde de abajo, apoyado en la esquina inferior derecha.
+ *    El texto sigue a la izquierda, por encima. En pantallas bajas (laptops
+ *    de 600-700 px de alto) se angosta con el alto, para no pegarse al texto.
+ *  - Teléfono, tablet y tablet grande en vertical (1024x1366): arriba del
+ *    texto, a todo el ancho y centrado, con su propia proporción (hasta el
+ *    42% del alto de la pantalla). En vertical, a la derecha quedaba chica y
+ *    con media pantalla vacía arriba.
  *
  * ENTRADA ESCALONADA
  * -----------------------------------------------------------------
@@ -179,7 +182,7 @@ export function BannerFoto({
 
       {derecha && (
         <div
-          className="relative mx-auto mb-6 aspect-[var(--aspecto)] max-h-[42svh] w-full max-w-page px-5 sm:px-6 md:px-10 lg:absolute lg:bottom-0 lg:right-0 lg:top-[var(--alto-nav)] lg:mb-0 lg:aspect-auto lg:max-h-none lg:w-[56%] lg:max-w-none lg:px-0"
+          className="relative mx-auto mb-6 aspect-[var(--aspecto)] max-h-[42svh] w-full max-w-page px-5 sm:px-6 md:px-10 lg:landscape:absolute lg:landscape:bottom-0 lg:landscape:right-0 lg:landscape:top-[var(--alto-nav)] lg:landscape:mb-0 lg:landscape:aspect-auto lg:landscape:max-h-none lg:landscape:w-[min(56%,calc((100svh-var(--alto-nav))*1.25))] lg:landscape:max-w-none lg:landscape:px-0"
           style={{ "--aspecto": `${derecha.ancho} / ${derecha.alto}` } as React.CSSProperties}
         >
           <div className="relative h-full w-full">
@@ -189,8 +192,8 @@ export function BannerFoto({
               fill
               priority={prioridad}
               unoptimized={derecha.url.startsWith("/")}
-              sizes="(min-width: 1024px) 56vw, 100vw"
-              className="object-contain object-bottom lg:object-[100%_100%]"
+              sizes="(min-width: 1024px) and (orientation: landscape) 56vw, 100vw"
+              className="object-contain object-bottom lg:landscape:object-[100%_100%]"
             />
           </div>
         </div>

@@ -63,7 +63,9 @@ export function MetodoDofi({
         ambiente="flotar"
         duracion={6}
         retraso={1.4}
-        className="-right-4 bottom-6 hidden h-24 w-24 rotate-6 sm:block sm:h-32 sm:w-32 lg:right-[4%] lg:h-40 lg:w-40"
+        // En pantallas bajas el ultimo paso («Ventas Inteligentes
+        // Garantizadas») llega a esa esquina: ahi el barco no va.
+        className="-right-4 bottom-6 hidden h-24 w-24 rotate-6 sm:block sm:h-32 sm:w-32 lg:right-[4%] lg:h-40 lg:w-40 [@media(max-height:820px)]:hidden"
       />
       <OrnamentoIcono
         motivo="brujula"

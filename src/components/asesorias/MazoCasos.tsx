@@ -134,7 +134,9 @@ function Tarjeta({
         {caso.cliente ? (
           <p className={`flex min-w-0 items-center gap-3 font-sans text-sm font-semibold ${tema.texto}`}>
             <span aria-hidden="true" className="h-[2px] w-6 shrink-0 rounded-full bg-accent" />
-            <span className="truncate">{caso.cliente}</span>
+            {/* Se parte en dos lineas si no entra: es el resultado del caso
+                («...en un 200%») y cortado con puntos suspensivos se perdia. */}
+            <span className="min-w-0 text-pretty">{caso.cliente}</span>
           </p>
         ) : (
           <span />
@@ -328,9 +330,11 @@ export function MazoCasos({
 
       {/* La pila. Todas las tarjetas comparten la misma celda: la altura es la
           del caso mas largo (capa invisible), asi pasar de caso nunca mueve
-          la pagina. El margen deja lugar a las que asoman detras. */}
-      <div className="relative grid pb-7 pr-4" style={{ perspective: 1200 }}>
-        <div aria-hidden="true" className="invisible grid [grid-area:1/1]">
+          la pagina. El margen deja lugar a las que asoman detras. La columna
+          minmax(0,1fr): la tarjeta toma el ancho disponible y nunca el de su
+          texto en una sola linea (en el telefono se salia de la pantalla). */}
+      <div className="relative grid grid-cols-[minmax(0,1fr)] pb-7 pr-4" style={{ perspective: 1200 }}>
+        <div aria-hidden="true" className="invisible grid grid-cols-[minmax(0,1fr)] [grid-area:1/1]">
           {casos.map((c, i) => (
             <div key={c.key} className="[grid-area:1/1]">
               <Tarjeta caso={c} numero={i + 1} tema={TEMAS[i % TEMAS.length]} iconoGiro={iconoDeGiro(c)} />
@@ -396,11 +400,11 @@ export function MazoCasos({
         </AnimatePresence>
       </div>
 
-      <div className="mt-3 flex items-center gap-5">
+      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-3">
         <button
           type="button"
           onClick={() => pasar(1, 1)}
-          className="group inline-flex items-center gap-2.5 rounded-full bg-brand px-6 py-3.5 font-display text-[15px] font-bold text-white shadow-[0_14px_30px_-16px_rgba(75,42,147,0.8)] transition-colors duration-300 hover:bg-brand-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+          className="group inline-flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full bg-brand px-6 py-3.5 font-display text-[15px] font-bold text-white shadow-[0_14px_30px_-16px_rgba(75,42,147,0.8)] transition-colors duration-300 hover:bg-brand-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
         >
           {textoBoton}
           <ArrowRight

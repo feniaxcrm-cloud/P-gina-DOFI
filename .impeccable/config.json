@@ -320,6 +320,18 @@
         "value": "19px",
         "createdAt": "2026-10-20T17:09:45.346Z",
         "reason": "Claude: tamaño 'medio' del boton CTA (BotonCta), un paso entre normal (18px) y grande (21px); pedido del 2026-10-20 para el cierre de Asesorias"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "60px",
+        "createdAt": "2026-10-27T21:36:48.043Z",
+        "reason": "Numero decorativo grande de las tarjetas del mazo (preexistente, aria-hidden)"
+      },
+      {
+        "rule": "design-system-font-size",
+        "value": "13px",
+        "createdAt": "2026-10-27T21:36:48.144Z",
+        "reason": "Pista chica junto al contador del mazo (preexistente)"
       }
     ]
   }
