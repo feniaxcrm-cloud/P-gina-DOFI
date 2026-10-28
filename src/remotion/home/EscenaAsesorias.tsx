@@ -24,7 +24,9 @@ import { DURACION } from "./tema";
 
 const sujetar = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 
-const LOGO = { url: "/asesorias/rescatando-emprendedores.webp", ancho: 2000, alto: 667 };
+// Version de 1400 px (117 KB; el original de 2000 px pesa 276 KB): en la
+// escena se dibuja a 760 de 1197 unidades, unos 700 px en una pantalla Full HD.
+const LOGO = { url: "/asesorias/rescatando-emprendedores-1400.webp", ancho: 1400, alto: 467 };
 
 /** El ícono de la mascota: el círculo mide 2r (el archivo es el círculo
  *  justo, con el peinado apenas fuera de él arriba). Los sellos brillantes

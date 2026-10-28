@@ -27,10 +27,14 @@ import Image from "next/image";
 
 // Dimensiones reales de cada archivo, para que Next reserve el espacio
 // exacto y no haya salto de layout al cargar.
+//
+// Versiones livianas (2026-10-28): los PNG originales (128-254 KB) se
+// achicaron a WebP de 3 veces el alto mas grande en que se muestran (20-66
+// KB). Mismo dibujo y transparencia; los PNG siguen en public/ como fuente.
 const ASSETS = {
-  compact: { src: "/logo-dofi-compact.png", w: 512, h: 465 },
-  compactOnLight: { src: "/logo-dofi-compact-on-light.png", w: 512, h: 464 },
-  full: { src: "/logo-dofi.png", w: 640, h: 654 },
+  compact: { src: "/logo-dofi-compact-160.webp", w: 177, h: 160 },
+  compactOnLight: { src: "/logo-dofi-compact-on-light-160.webp", w: 177, h: 160 },
+  full: { src: "/logo-dofi-320.webp", w: 317, h: 320 },
 } as const;
 
 // "nav": logo centrado del Header nuevo (Sprint "Header + lienzo blanco

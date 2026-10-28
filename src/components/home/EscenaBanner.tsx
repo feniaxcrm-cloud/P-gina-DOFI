@@ -8,10 +8,15 @@ import type { ClaveEscena } from "@/remotion/home/tema";
  * La parte de un banner del Home que se dibuja con Remotion (ver
  * src/remotion/home/ y BannerHibrido.tsx).
  *
- * CARGA DIFERIDA: Remotion llega cuando el banner esta a ~600 px de entrar en
- * pantalla, no antes; el banner que esta oculto en este tamaño (el de
- * escritorio en un telefono y al reves) nunca se carga. Mientras llega, el
+ * CARGA DIFERIDA: la escena se monta cuando el banner esta a ~900 px de entrar
+ * en pantalla, no antes; el banner que esta oculto en este tamaño (el de
+ * escritorio en un telefono y al reves) nunca se monta. Mientras llega, el
  * hueco muestra el fondo del banner; la escena aparece con un fundido.
+ *
+ * PRECARGA (2026-10-28, «los banners no cargan rapido»): el codigo de
+ * Remotion se baja apenas la pagina queda libre (requestIdleCallback), sin
+ * esperar a que el visitante llegue a los banners. Antes se pedia recien al
+ * acercarse y, en una conexion lenta, el banner quedaba un rato vacio.
  *
  * Solo corre mientras esta en pantalla. Con movimiento reducido no corre:
  * queda un cuadro quieto con todo en su sitio.
@@ -22,7 +27,18 @@ import type { ClaveEscena } from "@/remotion/home/tema";
  * pantalla y buscadores.
  */
 
-const ReproductorEscena = dynamic(() => import("./ReproductorEscena"), { ssr: false });
+const cargarReproductor = () => import("./ReproductorEscena");
+const ReproductorEscena = dynamic(cargarReproductor, { ssr: false });
+
+/** Una sola precarga por pagina, aunque haya 8 escenas (4 banners x 2 tamaños). */
+let precargado = false;
+function precargarReproductor() {
+  if (precargado) return;
+  precargado = true;
+  const pedir = () => void cargarReproductor();
+  if ("requestIdleCallback" in window) window.requestIdleCallback(pedir, { timeout: 2500 });
+  else setTimeout(pedir, 1200);
+}
 
 export function EscenaBanner({
   escena,
@@ -55,6 +71,7 @@ export function EscenaBanner({
   }, []);
 
   useEffect(() => {
+    precargarReproductor();
     const el = raiz.current;
     if (!el) return;
     const lejos = new IntersectionObserver(
@@ -64,7 +81,7 @@ export function EscenaBanner({
           lejos.disconnect();
         }
       },
-      { rootMargin: "600px 0px" }
+      { rootMargin: "900px 0px" }
     );
     const visible = new IntersectionObserver(([e]) => setEnVista(e.isIntersecting), { threshold: 0.1 });
     lejos.observe(el);

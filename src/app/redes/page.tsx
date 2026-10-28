@@ -53,10 +53,10 @@ export default function RedesPage() {
           <div className="relative mx-auto flex w-full max-w-[460px] flex-col items-center px-5 text-center">
             <Reveal y={14}>
               <Image
-                src="/logo-dofi.png"
+                src="/logo-dofi-320.webp"
                 alt="DOFI Agencia Creativa"
-                width={640}
-                height={654}
+                width={317}
+                height={320}
                 priority
                 className="h-auto w-[88px] sm:w-[104px]"
               />
