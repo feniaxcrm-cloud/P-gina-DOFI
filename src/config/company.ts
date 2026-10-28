@@ -47,17 +47,19 @@ const TELEFONO_VISIBLE = conDefecto(
 );
 
 // --- Redes --------------------------------------------------------------
-// SIN valor por defecto A PROPOSITO. Antes apuntaban a instagram.com,
-// tiktok.com y linkedin.com — las portadas de las plataformas, no los
-// perfiles de DOFI. Un enlace que no lleva al perfil real resta credibilidad.
-// El PIE (socialLinks) sigue ocultando el icono sin URL real. El HEADER
-// (headerSocialLinks, mas abajo) es la excepcion deliberada: pinta las 3
-// redes siempre, con o sin URL — ver "Corrección exacta del bloque social
-// del Header", §12. Para activar cualquiera, define su variable de entorno.
+// Facebook, Instagram y TikTok: los perfiles de DOFI que entrego el
+// propietario el 2026-10-28 (los 3 botones del header llevaban a ningun
+// lado: esperaban una variable de entorno que nunca se definio). La
+// variable, si se define, sigue mandando.
+// LinkedIn sigue SIN valor por defecto: no hay perfil confirmado. Antes las
+// redes apuntaban a instagram.com, tiktok.com y linkedin.com -- las portadas
+// de las plataformas, no los perfiles de DOFI -- y un enlace que no lleva al
+// perfil real resta credibilidad. El PIE (socialLinks) oculta el icono sin
+// URL real; el HEADER (headerSocialLinks, mas abajo) pinta las 3 siempre.
 const social = {
-  facebook: opcional(process.env.NEXT_PUBLIC_FACEBOOK_URL),
-  instagram: opcional(process.env.NEXT_PUBLIC_INSTAGRAM_URL),
-  tiktok: opcional(process.env.NEXT_PUBLIC_TIKTOK_URL),
+  facebook: conDefecto(process.env.NEXT_PUBLIC_FACEBOOK_URL, "https://www.facebook.com/profile.php?id=100090026347946"),
+  instagram: conDefecto(process.env.NEXT_PUBLIC_INSTAGRAM_URL, "https://www.instagram.com/dofiagenciacreativa"),
+  tiktok: conDefecto(process.env.NEXT_PUBLIC_TIKTOK_URL, "https://www.tiktok.com/@dofiagenciacreativa"),
   linkedin: opcional(process.env.NEXT_PUBLIC_LINKEDIN_URL),
 } as const;
 
@@ -183,7 +185,7 @@ export const headerSocialLinks: { key: HeaderSocialKey; label: string; href: str
  *  2026-10-20); se guardan sin los
  *  parámetros de seguimiento del enlace compartido (utm_source, xtok…), que
  *  no cambian el perfil al que llevan. Independientes de `social` (header y
- *  pie): esos siguen esperando su variable de entorno. */
+ *  pie). */
 export const perfilesRedes: {
   red: "instagram" | "tiktok";
   nombre: string;
