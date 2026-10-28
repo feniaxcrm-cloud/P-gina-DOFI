@@ -1,5 +1,7 @@
 # Ajuste del 2026-10-28 · Botones de redes del header
 
+Publicado con el commit `9c04640`; el build de Cloudflare terminó bien. En vivo, el HTML del Home ya trae los tres enlaces.
+
 Pedido: que los botones de redes de la parte superior lleven a los perfiles de DOFI.
 
 ## Qué se hizo
